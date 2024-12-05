@@ -4,31 +4,29 @@ import { InferRequestType, InferResponseType } from "hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api.accounts)[":id"]["$patch"]
+  (typeof client.api.accounts)["bulk-delete"]["$post"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api.accounts)[":id"]["$patch"]
+  (typeof client.api.accounts)["bulk-delete"]["$post"]
 >["json"];
 
-export const useEditAccount = (id?: string) => {
+export const useBulkDeleteAccounts = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api.accounts[":id"]["$patch"]({
-        param: { id },
+      const response = await client.api.accounts["bulk-delete"]["$post"]({
         json,
       });
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Account updated");
-      queryClient.invalidateQueries({ queryKey: ["account", { id }] });
+      toast.success("Accounts deleted");
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      // TODO: Invalidate summary and transactions
+      // TODO: Also invalidate summary
     },
     onError: () => {
-      toast.error("Failed to update account");
+      toast.error("Failed to delete accounts");
     },
   });
   return mutation;
