@@ -2,22 +2,23 @@
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNewAccount } from "@/features/accounts/hooks/use-new-account";
-import { Loader2, Loader2Icon, PlusIcon } from "lucide-react";
-import { columns } from "./columns";
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBulkDeleteAccounts } from "@/features/accounts/api/use-bulk-delete-accounts";
+import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-delete-transactions";
+import { useGetTransactions } from "@/features/transactions/api/use-get-transtractions";
+import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
+import { Loader2Icon, PlusIcon } from "lucide-react";
+import { columns } from "./columns";
 
-const AccountPage = () => {
-  const newAccount = useNewAccount();
-  const accountsQuery = useGetAccounts();
-  const deleteAccounts = useBulkDeleteAccounts();
-  const accounts = accountsQuery.data || [];
+const TransactionPage = () => {
+  const newTransaction = useNewTransaction();
+  const transactionsQuery = useGetTransactions();
+  const deleteTransactions = useBulkDeleteTransactions();
+  const transactions = transactionsQuery.data || [];
 
-  const isDisabled = accountsQuery.isLoading || deleteAccounts.isPending;
+  const isDisabled =
+    transactionsQuery.isLoading || deleteTransactions.isPending;
 
-  if (accountsQuery.isLoading) {
+  if (transactionsQuery.isLoading) {
     return (
       <div className="max-w-screen-xl mx-auto w-full pb-10 -mt-24">
         <Card className="border-none drop-shadow-sm">
@@ -38,8 +39,10 @@ const AccountPage = () => {
     <div className="max-w-screen-xl mx-auto w-full pb-10 -mt-24">
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">Accounts Page</CardTitle>
-          <Button size={"sm"} onClick={newAccount.onOpen}>
+          <CardTitle className="text-xl line-clamp-1">
+            Transactions Page
+          </CardTitle>
+          <Button size={"sm"} onClick={newTransaction.onOpen}>
             <PlusIcon className="size-4 mr-2" />
             Add new
           </Button>
@@ -47,11 +50,11 @@ const AccountPage = () => {
         <CardContent>
           <DataTable
             columns={columns}
-            data={accounts}
-            filterKey="name"
+            data={transactions}
+            filterKey="payee"
             onDelete={(row) => {
               const ids = row.map((r) => r.original.id);
-              deleteAccounts.mutate({ ids });
+              deleteTransactions.mutate({ ids });
             }}
             disabled={isDisabled}
           />
@@ -61,4 +64,4 @@ const AccountPage = () => {
   );
 };
 
-export default AccountPage;
+export default TransactionPage;
