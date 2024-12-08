@@ -17,7 +17,7 @@ const SignInPage = () => {
             <SignIn path="/sign-in" />
           </ClerkLoaded>
           <ClerkLoading>
-            <Loader2Icon className="animate-spin to-muted-foreground" />
+            <Loader2Icon className="animate-spin text-muted-foreground" />
           </ClerkLoading>
         </div>
       </div>
