@@ -5,6 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
+import { Spinner } from "@/components/spinner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,17 +20,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const ClerkProviderAny = ClerkProvider as any;
   return (
-    <ClerkProvider>
+    <ClerkProviderAny>
       <html lang="en">
         <body className={inter.className}>
           <QueryProvider>
             <SheetProvider />
             <Toaster />
-            {children}
+            <Suspense fallback={<Spinner />}>{children}</Suspense>
           </QueryProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkProviderAny>
   );
 }
