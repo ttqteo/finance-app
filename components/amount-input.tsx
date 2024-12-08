@@ -24,7 +24,7 @@ export const AmountInput = ({
 }: Props) => {
   const parsedValue = parseFloat(value);
   const isIncome = parsedValue > 0;
-  const isExpense = parsedValue < 0;
+  const isExpenses = parsedValue < 0;
 
   const onReverseValue = () => {
     if (!value) return;
@@ -43,12 +43,12 @@ export const AmountInput = ({
               className={cn(
                 "bg-slate-400 hover:bg-slate-500 absolute top-1.5 left-1.5 rounded-md p-2 flex items-center justify-center transition",
                 isIncome && "bg-emerald-500 hover:bg-emerald-600",
-                isExpense && "bg-rose-500 hover:bg-rose-600"
+                isExpenses && "bg-rose-500 hover:bg-rose-600"
               )}
             >
               {!parsedValue && <InfoIcon className="size-3 text-white" />}
               {isIncome && <PlusCircleIcon className="size-3 text-white" />}
-              {isExpense && <MinusCircleIcon className="size-3 text-white" />}
+              {isExpenses && <MinusCircleIcon className="size-3 text-white" />}
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -68,7 +68,7 @@ export const AmountInput = ({
       />
       <p className="text-xs text-muted-foreground mt-2">
         {isIncome && "This will count as income"}
-        {isExpense && "This will count as expense"}
+        {isExpenses && "This will count as expenses"}
       </p>
     </div>
   );

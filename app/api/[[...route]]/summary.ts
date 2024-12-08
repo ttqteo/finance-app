@@ -50,7 +50,7 @@ const app = new Hono().get(
             sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
               Number
             ),
-          expense:
+          expenses:
             sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
               Number
             ),
@@ -75,17 +75,17 @@ const app = new Hono().get(
     );
     const [lastPeriod] = await fetchFinancialData(
       auth.userId,
-      startDate,
-      endDate
+      lastPeriodStart,
+      lastPeriodEnd
     );
 
     const incomeChange = calculatePercentageChange(
       currentPeriod.income,
       lastPeriod.income
     );
-    const expenseChange = calculatePercentageChange(
-      currentPeriod.expense,
-      lastPeriod.expense
+    const expensesChange = calculatePercentageChange(
+      currentPeriod.expenses,
+      lastPeriod.expenses
     );
     const remainingChange = calculatePercentageChange(
       currentPeriod.remaining,
@@ -133,8 +133,8 @@ const app = new Hono().get(
           sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
             Number
           ),
-        expense:
-          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
+        expenses:
+          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
@@ -159,8 +159,8 @@ const app = new Hono().get(
         remainingChange,
         incomeAmount: currentPeriod.income,
         incomeChange,
-        expenseAmount: currentPeriod.expense,
-        expenseChange,
+        expensesAmount: currentPeriod.expenses,
+        expensesChange,
         categories: finalCategories,
         days,
       },
