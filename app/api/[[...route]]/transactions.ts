@@ -2,7 +2,6 @@ import { db } from "@/db/drizze";
 import {
   accounts,
   categories,
-  insertCategoriesSchema,
   insertTransactionSchema,
   transactions,
 } from "@/db/schema";
