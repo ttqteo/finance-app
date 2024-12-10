@@ -1,13 +1,16 @@
 "use client";
 
+import { Filters } from "@/components/filters";
 import { HeaderLogo } from "@/components/header-logo";
 import Navigation from "@/components/navigation";
 import WelcomeMessage from "@/components/welcome-message";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import { Loader2Icon } from "lucide-react";
-import { Filters } from "@/components/filters";
+import { usePathname } from "next/navigation";
 
 const Header = () => {
+  const pathname = usePathname();
+  const disabled = pathname.includes("settings");
   return (
     <header className="bg-gradient-to-b from-blue-700 to-blue-500 px-4 py-8 lg:px-14 pb-36">
       <div className="max-w-screen-2xl mx-auto">
@@ -24,7 +27,7 @@ const Header = () => {
           </ClerkLoading>
         </div>
         <WelcomeMessage />
-        <Filters />
+        <Filters disabled={disabled} />
       </div>
     </header>
   );

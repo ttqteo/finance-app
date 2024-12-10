@@ -1,6 +1,6 @@
-import { createInsertSchema } from "drizzle-zod";
+import { relations, sql } from "drizzle-orm";
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const accounts = pgTable("accounts", {
@@ -59,3 +59,15 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 export const insertTransactionSchema = createInsertSchema(transactions, {
   date: z.coerce.date(),
 });
+
+export const userSettings = pgTable("user_settings", {
+  userId: text("user_id").primaryKey(),
+  language: text("language").default("en"),
+  currency: text("currency").default("USD"),
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const insertUserSettingsSchema = createInsertSchema(userSettings);

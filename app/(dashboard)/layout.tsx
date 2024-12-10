@@ -6,14 +6,6 @@ type Props = {
 };
 export default function DashboardLayout({ children }: Props) {
   return (
-    // Sidebar version
-    // <SidebarProvider>
-    //   <AppSidebar />
-    //   <main>
-    //     <SidebarTrigger />
-    //     {children}
-    //   </main>
-    // </SidebarProvider>
     <>
       <Header />
       <main className="px-3 lg:px-14">{children}</main>
