@@ -26,6 +26,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { TrashIcon } from "lucide-react";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -42,9 +43,10 @@ export function DataTable<TData, TValue>({
   onDelete,
   disabled,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "You are about to perform a bulk delete."
+    t("Common.Dialog.Title"),
+    t("Common.Dialog.BulkDelete")
   );
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -95,7 +97,8 @@ export function DataTable<TData, TValue>({
             }}
           >
             <TrashIcon className="size-4 mr-2" />
-            Delete ({table.getFilteredSelectedRowModel().rows.length})
+            {t("Common.Action.Delete")} (
+            {table.getFilteredSelectedRowModel().rows.length})
           </Button>
         )}
       </div>
@@ -142,7 +145,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("Common.DataTable.NoResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -151,8 +154,9 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length}{" "}
+          {t("Common.DataTable.Of")} {table.getFilteredRowModel().rows.length}{" "}
+          {t("Common.DataTable.RowsSelected")}
         </div>
         <Button
           variant="outline"
@@ -160,7 +164,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          {t("Common.DataTable.Previous")}
         </Button>
         <Button
           variant="outline"
@@ -168,7 +172,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          {t("Common.DataTable.Next")}
         </Button>
       </div>
     </div>

@@ -17,7 +17,11 @@ import { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 
-export const DateFilter = () => {
+type Props = {
+  disabled: boolean;
+};
+
+export const DateFilter = ({ disabled }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -62,7 +66,7 @@ export const DateFilter = () => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          disabled={false}
+          disabled={disabled}
           size={"sm"}
           variant={"outline"}
           className="lg:w-auto w-full h-9 rounded-md px-3 font-normal bg-white/10 hover:bg-white/20 hover:text-white border-none focus:ring-offset-0 focus:ring-transparent outline-none text-white focus:bg-white/30 transition"

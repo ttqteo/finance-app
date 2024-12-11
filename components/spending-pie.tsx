@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
+import { useTranslations } from "next-intl";
 
 type Props = {
   data?: {
@@ -26,6 +27,7 @@ type Props = {
   }[];
 };
 export const SpendingPie = ({ data = [] }: Props) => {
+  const t = useTranslations("OverviewPage");
   const [chartType, setChartType] = useState("pie");
   const onTypeChange = (type: string) => {
     // TODO: Add paywall
@@ -34,7 +36,9 @@ export const SpendingPie = ({ data = [] }: Props) => {
   return (
     <Card className="border-none drop-shadow-sm">
       <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between">
-        <CardTitle className="text-xl line-clamp-1">Categories</CardTitle>
+        <CardTitle className="text-xl line-clamp-1">
+          {t("Categories")}
+        </CardTitle>
         <Select defaultValue={chartType} onValueChange={onTypeChange}>
           <SelectTrigger className="lg:w-auto h-9 rounded-md px-3">
             <SelectValue placeholder="Chart Type" />
@@ -43,19 +47,19 @@ export const SpendingPie = ({ data = [] }: Props) => {
             <SelectItem value="pie">
               <div className="flex items-center">
                 <PieChartIcon className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">Pie Chart</p>
+                <p className="line-clamp-1">{t("PieChart")}</p>
               </div>
             </SelectItem>
             <SelectItem value="radar">
               <div className="flex items-center">
                 <RadarIcon className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">Radar Chart</p>
+                <p className="line-clamp-1">{t("RadarChart")}</p>
               </div>
             </SelectItem>
             <SelectItem value="radial">
               <div className="flex items-center">
                 <TargetIcon className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">Radial Chart</p>
+                <p className="line-clamp-1">{t("RadialChart")}</p>
               </div>
             </SelectItem>
           </SelectContent>
@@ -65,9 +69,7 @@ export const SpendingPie = ({ data = [] }: Props) => {
         {data?.length === 0 ? (
           <div className="flex flex-col gap-y-4 items-center justify-center h-[350px] w-full">
             <FileSearchIcon className="size-6 text-muted-foreground" />
-            <p className="text-muted-foreground text-sm">
-              No data for this period
-            </p>
+            <p className="text-muted-foreground text-sm">{t("NoData")}</p>
           </div>
         ) : (
           <>

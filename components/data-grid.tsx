@@ -6,8 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { FaPiggyBank } from "react-icons/fa";
 import { FaArrowTrendDown, FaArrowTrendUp } from "react-icons/fa6";
 import { DataCard, DataCardLoading } from "./data-card";
+import { useTranslations } from "next-intl";
 
 export const DataGrid = () => {
+  const t = useTranslations("OverviewPage");
+
   const { data, isLoading } = useGetSummary();
   const params = useSearchParams();
   const from = params.get("from") || undefined;
@@ -28,7 +31,7 @@ export const DataGrid = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-2 mb-8">
       <DataCard
-        title="Remaining"
+        title={t("Remaining")}
         value={data?.remainingAmount}
         percentageChange={data?.remainingChange}
         icon={FaPiggyBank}
@@ -36,7 +39,7 @@ export const DataGrid = () => {
         dateRange={dateRangeLabel}
       />
       <DataCard
-        title="Income"
+        title={t("Income")}
         value={data?.incomeAmount}
         percentageChange={data?.incomeChange}
         icon={FaArrowTrendUp}
@@ -44,7 +47,7 @@ export const DataGrid = () => {
         dateRange={dateRangeLabel}
       />
       <DataCard
-        title="Expenses"
+        title={t("Expenses")}
         value={data?.expensesAmount}
         percentageChange={data?.expensesChange}
         icon={FaArrowTrendDown}

@@ -1,20 +1,16 @@
 import Header from "@/components/header";
-import React from "react";
+import LoadConfigs from "@/config/load-config";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 type Props = {
   children: React.ReactNode;
 };
-export default function DashboardLayout({ children }: Props) {
+
+export default async function DashboardLayout({ children }: Props) {
   return (
-    // Sidebar version
-    // <SidebarProvider>
-    //   <AppSidebar />
-    //   <main>
-    //     <SidebarTrigger />
-    //     {children}
-    //   </main>
-    // </SidebarProvider>
     <>
+      <LoadConfigs />
       <Header />
       <main className="px-3 lg:px-14">{children}</main>
     </>

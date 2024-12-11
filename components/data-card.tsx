@@ -10,6 +10,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { IconType } from "react-icons/lib";
 import { CountUp } from "@/components/count-up";
 import { Skeleton } from "./ui/skeleton";
+import { useTranslations } from "next-intl";
 
 const boxVariant = cva("shrink-0 rounded-md p-3", {
   variants: {
@@ -57,6 +58,7 @@ export const DataCard = ({
   icon: Icon,
   dateRange,
 }: DataCardProps) => {
+  const t = useTranslations();
   return (
     <Card className="border-none drop-shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between gap-x-4">
@@ -86,8 +88,8 @@ export const DataCard = ({
             percentageChange < 0 && "text-rose-500"
           )}
         >
-          {formatPercentage(percentageChange, { addPrefix: true })} from last
-          period
+          {formatPercentage(percentageChange, { addPrefix: true })}{" "}
+          {t("OverviewPage.FromLastPeriod")}
         </p>
       </CardContent>
     </Card>

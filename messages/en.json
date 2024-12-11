@@ -1,0 +1,79 @@
+{
+  "Common": {
+    "WelcomeBack": {
+      "Header": "Welcome Back",
+      "Description": "This is your Financial Overview Report"
+    },
+    "Page": {
+      "Header": "{key} Page"
+    },
+    "Action": {
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "New": "Add New",
+      "Save": "Save Changes",
+      "Import": "Import"
+    },
+    "DataTable": {
+      "NoResults": "No Results",
+      "Previous": "Previous",
+      "Next": "Next",
+      "Of": "of",
+      "RowsSelected": "row(s) selected."
+    },
+    "Dialog": {
+      "Title": "Are you sure?",
+      "Delete": "You are about to delete this {key}.",
+      "BulkDelete": "You are about to perform a bulk delete."
+    },
+    "AllAccounts": "All Accounts"
+  },
+  "Toast": {
+    "Success": "Success",
+    "Failure": "Failure",
+    "ImportFailure": "Please select an account to continue."
+  },
+  "OverviewPage": {
+    "Header": "Overview",
+    "Categories": "Categories",
+    "PieChart": "Pie Chart",
+    "RadarChart": "Radar Chart",
+    "RadialChart": "Radial Chart",
+    "Transactions": "Transactions",
+    "AreaChart": "Area Chart",
+    "LineChart": "Line Chart",
+    "BarChart": "Bar Chart",
+    "Remaining": "Remaining",
+    "Income": "Income",
+    "Expenses": "Expenses",
+    "FromLastPeriod": "from last period",
+    "NoData": "No data for this period"
+  },
+  "TransactionsPage": {
+    "Header": "Transactions"
+  },
+  "AccountsPage": {
+    "Header": "Accounts"
+  },
+  "CategoriesPage": {
+    "Header": "Categories",
+    "Columns": {
+      "Name": "Name"
+    }
+  },
+  "SettingsPage": {
+    "Header": "Settings",
+    "Form": {
+      "Language": {
+        "Label": "Language",
+        "English": "English",
+        "Vietnamese": "Vietnamese",
+        "Description": "Your language selection applies to all devices you’re logged into."
+      },
+      "Currency": {
+        "Label": "Currency"
+      }
+    },
+    "Version": "Version {version}"
+  }
+}

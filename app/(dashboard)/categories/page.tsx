@@ -1,4 +1,5 @@
 "use client";
+
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +9,11 @@ import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { useNewCategory } from "@/features/categories/hooks/use-new-category";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { columns } from "./columns";
+import { useTranslations } from "next-intl";
 
 const CategoriesPage = () => {
+  const t = useTranslations();
+
   const newCategory = useNewCategory();
   const categoriesQuery = useGetCategories();
   const deleteCategories = useBulkDeleteCategories();
@@ -39,11 +43,11 @@ const CategoriesPage = () => {
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">
-            Categories Page
+            {t("Common.Page.Header", { key: t("CategoriesPage.Header") })}
           </CardTitle>
           <Button size={"sm"} onClick={newCategory.onOpen}>
             <PlusIcon className="size-4 mr-2" />
-            Add new
+            {t("Common.Action.Add")}
           </Button>
         </CardHeader>
         <CardContent>

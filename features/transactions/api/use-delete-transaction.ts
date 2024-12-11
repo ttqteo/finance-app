@@ -1,6 +1,7 @@
 import { client } from "@/lib/hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferResponseType } from "hono";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
@@ -8,6 +9,7 @@ type ResponseType = InferResponseType<
 >;
 
 export const useDeleteTransaction = (id?: string) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error>({
@@ -18,13 +20,13 @@ export const useDeleteTransaction = (id?: string) => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Transaction deleted");
+      toast.success(t("Toast.Success"));
       queryClient.invalidateQueries({ queryKey: ["transaction", { id }] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Failed to edit transaction");
+      toast.error(t("Toast.Failure"));
     },
   });
   return mutation;

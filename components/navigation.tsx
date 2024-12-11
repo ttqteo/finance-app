@@ -8,36 +8,38 @@ import { useMedia } from "react-use";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "lucide-react";
-
-const routes = [
-  {
-    href: "/",
-    label: "Overview",
-  },
-  {
-    href: "/transactions",
-    label: "Transactions",
-  },
-  {
-    href: "/accounts",
-    label: "Accounts",
-  },
-  {
-    href: "/categories",
-    label: "Categories",
-  },
-  {
-    href: "/settings",
-    label: "Settings",
-  },
-];
+import { useTranslations } from "next-intl";
 
 const Navigation = () => {
+  const t = useTranslations();
   const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const isMobile = useMedia("(max-width: 1024px)", false);
+
+  const routes = [
+    {
+      href: "/",
+      label: t("OverviewPage.Header"),
+    },
+    {
+      href: "/transactions",
+      label: t("TransactionsPage.Header"),
+    },
+    {
+      href: "/accounts",
+      label: t("AccountsPage.Header"),
+    },
+    {
+      href: "/categories",
+      label: t("CategoriesPage.Header"),
+    },
+    {
+      href: "/settings",
+      label: t("SettingsPage.Header"),
+    },
+  ];
 
   const onClick = (href: string) => {
     router.push(href);

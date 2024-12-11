@@ -2,6 +2,7 @@ import { client } from "@/lib/hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type ResponseType = InferResponseType<typeof client.api.transactions.$post>;
 type RequestType = InferRequestType<
@@ -9,6 +10,7 @@ type RequestType = InferRequestType<
 >["json"];
 
 export const useCreateTransaction = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
@@ -17,11 +19,11 @@ export const useCreateTransaction = () => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Transaction created");
+      toast.success(t("Toast.Success"));
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
     onError: () => {
-      toast.error("Failed to create transaction");
+      toast.error(t("Toast.Failure"));
     },
   });
   return mutation;

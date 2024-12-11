@@ -1,0 +1,79 @@
+{
+  "Common": {
+    "WelcomeBack": {
+      "Header": "Chào mừng trở lại",
+      "Description": "Đây là báo cáo tổng quan tài chính của bạn"
+    },
+    "Page": {
+      "Header": "Trang {key}"
+    },
+    "Action": {
+      "Edit": "Chỉnh sửa",
+      "Delete": "Xóa",
+      "New": "Thêm mới",
+      "Save": "Lưu Thay Đổi",
+      "Import": "Nhập Dữ Liệu"
+    },
+    "DataTable": {
+      "NoResults": "Không có kết quả",
+      "Previous": "Trước",
+      "Next": "Tiếp theo",
+      "Of": "của",
+      "RowsSelected": "dòng đã chọn."
+    },
+    "Dialog": {
+      "Title": "Bạn có chắc chắn không?",
+      "Delete": "Bạn sắp xóa {key} này.",
+      "BulkDelete": "Bạn sắp thực hiện xóa hàng loạt."
+    },
+    "AllAccounts": "Tất Cả Tài Khoản"
+  },
+  "Toast": {
+    "Success": "Thành Công",
+    "Failure": "Thất Bại",
+    "ImportFailure": "Hãy chọn một tài khoản để tiếp tục."
+  },
+  "OverviewPage": {
+    "Header": "Tổng Quan",
+    "Categories": "Danh Mục",
+    "PieChart": "Biểu Đồ Tròn",
+    "RadarChart": "Biểu Đồ Radar",
+    "RadialChart": "Biểu Đồ Hình Tròn",
+    "Transactions": "Giao Dịch",
+    "AreaChart": "Biểu Đồ Khu Vực",
+    "LineChart": "Biểu Đồ Đường",
+    "BarChart": "Biểu Đồ Cột",
+    "Remaining": "Còn Lại",
+    "Income": "Thu Nhập",
+    "Expenses": "Chi Tiêu",
+    "FromLastPeriod": "từ kỳ trước",
+    "NoData": "Không có dữ liệu cho kỳ này"
+  },
+  "TransactionsPage": {
+    "Header": "Giao Dịch"
+  },
+  "AccountsPage": {
+    "Header": "Tài Khoản"
+  },
+  "CategoriesPage": {
+    "Header": "Danh Mục",
+    "Columns": {
+      "Name": "Treen"
+    }
+  },
+  "SettingsPage": {
+    "Header": "Cài Đặt",
+    "Form": {
+      "Language": {
+        "Label": "Ngôn ngữ",
+        "English": "Tiếng Anh",
+        "Vietnamese": "Tiếng Việt",
+        "Description": "Lựa chọn ngôn ngữ của bạn sẽ được áp dụng trên tất cả các thiết bị bạn đã đăng nhập."
+      },
+      "Currency": {
+        "Label": "Tiền tệ"
+      }
+    },
+    "Version": "Phiên bản {version}"
+  }
+}

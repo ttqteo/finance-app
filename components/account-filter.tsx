@@ -9,10 +9,16 @@ import {
 } from "@/components/ui/select";
 import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import qs from "query-string";
 
-export const AccountFilter = () => {
+type Props = {
+  disabled: boolean;
+};
+
+export const AccountFilter = ({ disabled }: Props) => {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,13 +55,13 @@ export const AccountFilter = () => {
     <Select
       value={accountId}
       onValueChange={onChange}
-      disabled={isLoadingAccounts || isLoadingSummary}
+      disabled={isLoadingAccounts || isLoadingSummary || disabled}
     >
       <SelectTrigger className="lg:w-auto w-full h-9 rounded-md px-3 font-normal bg-white/10 hover:bg-white/20 hover:text-white border-none focus:ring-offset-0 focus:ring-transparent outline-none text-white focus:bg-white/30 transition">
         <SelectValue placeholder="Select account" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All Accounts</SelectItem>
+        <SelectItem value="all">{t("Common.AllAccounts")}</SelectItem>
         {accounts?.map((account) => (
           <SelectItem key={account.id} value={account.id}>
             {account.name}
