@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import qs from "query-string";
 
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export const AccountFilter = ({ disabled }: Props) => {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -59,7 +61,7 @@ export const AccountFilter = ({ disabled }: Props) => {
         <SelectValue placeholder="Select account" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All Accounts</SelectItem>
+        <SelectItem value="all">{t("Common.AllAccounts")}</SelectItem>
         {accounts?.map((account) => (
           <SelectItem key={account.id} value={account.id}>
             {account.name}

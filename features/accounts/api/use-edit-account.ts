@@ -2,6 +2,7 @@ import { client } from "@/lib/hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type ResponseType = InferResponseType<
   (typeof client.api.accounts)[":id"]["$patch"]
@@ -11,6 +12,7 @@ type RequestType = InferRequestType<
 >["json"];
 
 export const useEditAccount = (id?: string) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
@@ -29,7 +31,7 @@ export const useEditAccount = (id?: string) => {
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Failed to update account");
+      toast.error(t("Toast.Failure"));
     },
   });
   return mutation;

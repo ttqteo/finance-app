@@ -62,8 +62,8 @@ export const insertTransactionSchema = createInsertSchema(transactions, {
 
 export const userSettings = pgTable("user_settings", {
   userId: text("user_id").primaryKey(),
-  language: text("language").default("en"),
-  currency: text("currency").default("USD"),
+  language: text("language").notNull().default("en"),
+  currency: text("currency").notNull().default("USD"),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()
     .$onUpdate(() => new Date())

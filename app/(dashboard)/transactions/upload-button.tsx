@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UploadIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCSVReader } from "react-papaparse";
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
 };
 
 const UploadButton = ({ onUpload }: Props) => {
+  const t = useTranslations();
   const { CSVReader } = useCSVReader();
   // TODO: Add a paywall
   return (
@@ -14,7 +16,7 @@ const UploadButton = ({ onUpload }: Props) => {
       {({ getRootProps }: any) => (
         <Button size="sm" className="w-full lg:w-auto" {...getRootProps()}>
           <UploadIcon className="size-4 mr-2" />
-          Import
+          {t("Common.Action.Import")}
         </Button>
       )}
     </CSVReader>

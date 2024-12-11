@@ -7,7 +7,9 @@ import { client } from "@/lib/hono";
 import { ColumnDef } from "@tanstack/react-table";
 import { InferResponseType } from "hono";
 import { ArrowUpDownIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Actions from "./actions";
+import { getTranslations } from "next-intl/server";
 
 export type ResponseType = InferResponseType<
   typeof client.api.categories.$get,

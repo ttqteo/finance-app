@@ -1,5 +1,11 @@
+import { currencyConfig } from "@/config/constant";
+import { db } from "@/db/drizze";
+import { userSettings } from "@/db/schema";
+import { auth } from "@clerk/nextjs/server";
 import { clsx, type ClassValue } from "clsx";
 import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import { eq } from "drizzle-orm";
+import { cookies } from "next/headers";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -14,11 +20,28 @@ export function convertAmountToMiliunits(amount: number) {
   return Math.round(amount * 1000);
 }
 
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+export function setCookie(name: string, value: string, days: number = 7) {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000); // Default expiry is 7 days
+  const expiresStr = `expires=${expires.toUTCString()}`;
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; ${expiresStr}; path=/`;
+}
+
 export function formatCurrency(value: number) {
-  return Intl.NumberFormat("en-US", {
+  const currency = getCookie("currency") || "USD";
+  const config = currencyConfig[currency];
+
+  return Intl.NumberFormat(config.locale, {
     style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
+    currency: config.currency,
+    minimumFractionDigits: config.fractionDigits,
   }).format(value);
 }
 

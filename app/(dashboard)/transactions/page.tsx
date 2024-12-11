@@ -76,7 +76,7 @@ const TransactionPage = () => {
   ) => {
     const accountId = await confirm();
     if (!accountId) {
-      return toast.error("Please select an account to continue.");
+      return toast.error(t("Toast.ImportFailure"));
     }
     const data = values.map((value) => ({
       ...value,
@@ -85,6 +85,7 @@ const TransactionPage = () => {
 
     createTransactions.mutate(data, {
       onSuccess: () => {
+        toast.success(t("Toast.Success"));
         onCancelImport();
       },
     });
@@ -108,7 +109,7 @@ const TransactionPage = () => {
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">
-            {t("Common.Page.Header", { key: "Transactions" })}
+            {t("Common.Page.Header", { key: t("TransactionsPage.Header") })}
           </CardTitle>
           <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
             <Button

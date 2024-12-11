@@ -1,6 +1,7 @@
 import { client } from "@/lib/hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
@@ -11,6 +12,7 @@ type RequestType = InferRequestType<
 >["json"];
 
 export const useBulkDeleteAccounts = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
@@ -21,12 +23,12 @@ export const useBulkDeleteAccounts = () => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Accounts deleted");
+      toast.success(t("Toast.Success"));
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Failed to delete accounts");
+      toast.error(t("Toast.Failure"));
     },
   });
   return mutation;
