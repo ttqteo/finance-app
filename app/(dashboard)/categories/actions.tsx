@@ -11,14 +11,16 @@ import { useDeleteCategory } from "@/features/categories/api/use-delete-category
 import { useOpenCategory } from "@/features/categories/hooks/use-open-category";
 import { useConfirm } from "@/hooks/use-confirm";
 import { EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   id: string;
 };
 const Actions = ({ id }: Props) => {
+  const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "You are about to delete this category"
+    t("Common.Dialog.Title"),
+    t("Common.Dialog.Delete", { key: "category" })
   );
   const deleteMutation = useDeleteCategory(id);
   const { onOpen } = useOpenCategory();
@@ -45,14 +47,14 @@ const Actions = ({ id }: Props) => {
             onClick={() => onOpen(id)}
           >
             <EditIcon className="size-4 mr-2" />
-            Edit
+            {t("Common.Action.Edit")}
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={deleteMutation.isPending}
             onClick={handleDelete}
           >
             <TrashIcon className="size-4 mr-2" />
-            Delete
+            {t("Common.Action.Delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

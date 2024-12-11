@@ -10,6 +10,7 @@ import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-
 import { useGetTransactions } from "@/features/transactions/api/use-get-transtractions";
 import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
 import { Loader2Icon, PlusIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { columns } from "./columns";
@@ -28,6 +29,8 @@ const INITIAL_IMPORT_RESULTS = {
 };
 
 const TransactionPage = () => {
+  const t = useTranslations();
+
   const [AccountDialog, confirm] = useSelectAccount();
   const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
   const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
@@ -105,7 +108,7 @@ const TransactionPage = () => {
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">
-            Transactions Page
+            {t("Common.Page.Header", { key: "Transactions" })}
           </CardTitle>
           <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
             <Button
@@ -114,7 +117,7 @@ const TransactionPage = () => {
               className="w-full lg:w-auto"
             >
               <PlusIcon className="size-4 mr-2" />
-              Add new
+              {t("Common.Action.Add")}
             </Button>
             <UploadButton onUpload={onUpload} />
           </div>

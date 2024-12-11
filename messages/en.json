@@ -1,0 +1,48 @@
+{
+  "Common": {
+    "WelcomeBack": {
+      "Header": "Welcome Back",
+      "Description": "This is your Financial Overview Report"
+    },
+    "Page": {
+      "Header": "{key} Page"
+    },
+    "Action": {
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "New": "Add New",
+      "Save": "Save Changes"
+    },
+    "Dialog": {
+      "Title": "Are you sure?",
+      "Delete": "You are about to delete this {key}."
+    }
+  },
+  "OverviewPage": {
+    "Header": "Overview"
+  },
+  "TransactionsPage": {
+    "Header": "Transactions"
+  },
+  "AccountsPage": {
+    "Header": "Accounts"
+  },
+  "CategoriesPage": {
+    "Header": "Categories"
+  },
+  "SettingsPage": {
+    "Header": "Settings",
+    "Form": {
+      "Language": {
+        "Label": "Language",
+        "English": "English",
+        "Vietnamese": "Vietnamese",
+        "Description": "Your language selection applies to all devices you’re logged into."
+      },
+      "Currency": {
+        "Label": "Currency"
+      }
+    },
+    "Version": "Version {version}"
+  }
+}

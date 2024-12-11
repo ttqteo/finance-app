@@ -15,12 +15,13 @@ export const metadata: Metadata = {
   description: "Finace Platform to track your money",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const ClerkProviderAny = ClerkProvider as any;
+
   return (
     <ClerkProviderAny
       appearance={{

@@ -1,3 +1,5 @@
+"use client";
+
 import { DataChart } from "@/components/data-chart";
 import { DataGrid } from "@/components/data-grid";
 

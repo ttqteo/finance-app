@@ -13,6 +13,7 @@ import { insertUserSettingsSchema } from "@/db/schema";
 import { useEditSettings } from "@/features/settings/api/use-edit-settings";
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import SettingsForm from "@/features/settings/components/settings-form";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 const formSchema = insertUserSettingsSchema.pick({
@@ -23,7 +24,9 @@ const formSchema = insertUserSettingsSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 const SettingsPage = () => {
-  const { data, isFetching, isLoading } = useGetSettings();
+  const t = useTranslations();
+
+  const { data, isLoading } = useGetSettings();
 
   const editMutation = useEditSettings();
 
@@ -36,39 +39,25 @@ const SettingsPage = () => {
     editMutation.mutate(values);
   };
 
-  if (isLoading) {
-    return (
-      <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-        <Card className="border-none drop-shadow-sm">
-          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-xl line-clamp-1">
-              Settings Page
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Spinner />
-          </CardContent>
-          <CardFooter className="text-muted-foreground">
-            Version {appConfig.version}
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">Settings Page</CardTitle>
+          <CardTitle className="text-xl line-clamp-1">
+            {t("Common.Page.Header", { key: "Settings" })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
-            <SettingsForm onSubmit={onSubmit} defaultValues={defaultValues} />
-          </div>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+              <SettingsForm onSubmit={onSubmit} defaultValues={defaultValues} />
+            </div>
+          )}
         </CardContent>
         <CardFooter className="text-muted-foreground">
-          Version {appConfig.version}
+          {t("SettingsPage.Version", { version: appConfig.version })}
         </CardFooter>
       </Card>
     </div>

@@ -1,0 +1,48 @@
+{
+  "Common": {
+    "WelcomeBack": {
+      "Header": "Chào mừng trở lại",
+      "Description": "Đây là báo cáo tổng quan tài chính của bạn"
+    },
+    "Page": {
+      "Header": "Trang {key}"
+    },
+    "Action": {
+      "Edit": "Chỉnh sửa",
+      "Delete": "Xóa",
+      "New": "Thêm mới",
+      "Save": "Lưu thay đổi"
+    },
+    "Dialog": {
+      "Title": "Bạn có chắc chắn không?",
+      "Delete": "Bạn sắp xóa {key} này."
+    }
+  },
+  "OverviewPage": {
+    "Header": "Tổng quan"
+  },
+  "TransactionsPage": {
+    "Header": "Giao dịch"
+  },
+  "AccountsPage": {
+    "Header": "Tài khoản"
+  },
+  "CategoriesPage": {
+    "Header": "Danh mục"
+  },
+  "SettingsPage": {
+    "Header": "Cài đặt",
+    "Form": {
+      "Language": {
+        "Label": "Ngôn ngữ",
+        "English": "Tiếng Anh",
+        "Vietnamese": "Tiếng Việt",
+        "Description": "Lựa chọn ngôn ngữ của bạn sẽ được áp dụng trên tất cả các thiết bị bạn đã đăng nhập."
+      },
+      "Currency": {
+        "Label": "Tiền tệ"
+      }
+    },
+    "Version": "Phiên bản {version}"
+  }
+}

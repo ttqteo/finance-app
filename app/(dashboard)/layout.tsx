@@ -1,14 +1,19 @@
 import Header from "@/components/header";
-import React from "react";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 type Props = {
   children: React.ReactNode;
 };
-export default function DashboardLayout({ children }: Props) {
+export default async function DashboardLayout({ children }: Props) {
+  const messages = await getMessages();
+
   return (
     <>
-      <Header />
-      <main className="px-3 lg:px-14">{children}</main>
+      <NextIntlClientProvider messages={messages}>
+        <Header />
+        <main className="px-3 lg:px-14">{children}</main>
+      </NextIntlClientProvider>
     </>
   );
 }
