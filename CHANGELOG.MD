@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## FinanceApp 1.0.1 Release
+Minor release with the following improvements:
+* Support language English and Vietnamese
+* Support currency USD and VND
+
 ## FinanceApp 1.0.0 Release
 
 Initial release with the following features:

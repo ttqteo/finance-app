@@ -1,4 +1,4 @@
-# Finance App
+# Finance Pro
 
 This is Finance App written by next.js 14.
 
