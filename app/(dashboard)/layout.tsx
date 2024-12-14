@@ -1,7 +1,5 @@
 import Header from "@/components/header";
 import LoadConfigs from "@/config/load-config";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 
 type Props = {
   children: React.ReactNode;

@@ -15,6 +15,7 @@ import { useNewTransaction } from "@/features/transactions/hooks/use-new-transac
 import { z } from "zod";
 import TransactionForm from "@/features/transactions/components/transaction-form";
 import { Loader2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const formSchema = insertTransactionSchema.omit({
   id: true,
@@ -23,6 +24,7 @@ const formSchema = insertTransactionSchema.omit({
 type FormValues = z.input<typeof formSchema>;
 
 const NewTransactionSheet = () => {
+  const t = useTranslations();
   const { isOpen, onClose } = useNewTransaction();
 
   const createMutation = useCreateTransaction();
@@ -62,9 +64,11 @@ const NewTransactionSheet = () => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle>New Transaction</SheetTitle>
+          <SheetTitle>{t("TransactionsPage.Form.NewTransaction")}</SheetTitle>
         </SheetHeader>
-        <SheetDescription>Create a new transaction.</SheetDescription>
+        <SheetDescription>
+          {t("TransactionsPage.Form.NewTransactionDesc")}
+        </SheetDescription>
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2Icon className="size-4  text-muted-foreground animate-spin" />

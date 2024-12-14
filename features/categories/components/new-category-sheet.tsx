@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useCreateCategory } from "@/features/categories/api/use-create-category";
 import { useNewCategory } from "@/features/categories/hooks/use-new-category";
 import CategoryForm from "@/features/categories/components/category-form";
+import { useTranslations } from "next-intl";
 
 const formSchema = insertCategoriesSchema.pick({
   name: true,
@@ -18,6 +19,7 @@ const formSchema = insertCategoriesSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 const NewCategorySheet = () => {
+  const t = useTranslations();
   const { isOpen, onClose } = useNewCategory();
 
   const mutation = useCreateCategory();
@@ -33,10 +35,10 @@ const NewCategorySheet = () => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle>New Category</SheetTitle>
+          <SheetTitle>{t("CategoriesPage.Form.NewCategory")}</SheetTitle>
         </SheetHeader>
         <SheetDescription>
-          Create a new category to organize your transactions.
+          {t("CategoriesPage.Form.NewCategoryDesc")}
         </SheetDescription>
         <CategoryForm
           onSubmit={onSubmit}

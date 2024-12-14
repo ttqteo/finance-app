@@ -76,18 +76,21 @@ export function fillMissingDays(
   return transactionByDay;
 }
 
-export const getLocale = (locale: string | null) => {
+export const getLocale = () => {
+  const locale = getCookie("locale");
   if (locale === "vi") {
     return {
       locale: vi,
       formatString: "dd LLL",
       formatStringFull: "dd LLL, y",
+      formatNormal: "dd MMMM, yyyy",
     };
   }
   return {
     locale: enUS,
     formatString: "LLL dd",
     formatStringFull: "LLL dd, y",
+    formatNormal: "dd MMMM, yyyy",
   };
 };
 
@@ -96,9 +99,7 @@ type Period = {
   to: string | Date | undefined;
 };
 export function formatDateRange(period?: Period) {
-  const { locale, formatString, formatStringFull } = getLocale(
-    getCookie("locale")
-  );
+  const { locale, formatString, formatStringFull } = getLocale();
   const defaultTo = new Date();
   const defaultFrom = subDays(defaultTo, 30);
 

@@ -125,9 +125,10 @@ const TransactionPage = () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            columns={columns}
+            columns={columns(t)}
             data={transactions}
             filterKey="payee"
+            filterKeyTranslate={t("TransactionsPage.Column.Payee")}
             onDelete={(row) => {
               const ids = row.map((r) => r.original.id);
               deleteTransactions.mutate({ ids });

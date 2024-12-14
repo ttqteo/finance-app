@@ -16,7 +16,9 @@ export type ResponseType = InferResponseType<
   200
 >["data"][0];
 
-export const columns: ColumnDef<ResponseType>[] = [
+export const columns = (
+  t: (key: string) => string
+): ColumnDef<ResponseType>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -26,14 +28,14 @@ export const columns: ColumnDef<ResponseType>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("Common.DataTable.SelectAll")}
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("Common.DataTable.SelectRow")}
       />
     ),
     enableSorting: false,
@@ -47,7 +49,7 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          {t("CategoriesPage.Column.Name")}
           <ArrowUpDownIcon className="ml-2 h-4 w-4" />
         </Button>
       );

@@ -8,6 +8,7 @@ import {
 } from "./ui/tooltip";
 
 import CurrencyInput from "react-currency-input-field";
+import { useTranslations } from "next-intl";
 
 type Props = {
   value: string;
@@ -22,6 +23,7 @@ export const AmountInput = ({
   placeholder,
   disabled,
 }: Props) => {
+  const t = useTranslations();
   const parsedValue = parseFloat(value);
   const isIncome = parsedValue > 0;
   const isExpenses = parsedValue < 0;
@@ -52,7 +54,7 @@ export const AmountInput = ({
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            Use [+] for income and [-] for expenses
+            {t("TransactionsPage.Form.TooltipDesc")}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -67,8 +69,8 @@ export const AmountInput = ({
         disabled={disabled}
       />
       <p className="text-xs text-muted-foreground mt-2">
-        {isIncome && "This will count as income"}
-        {isExpenses && "This will count as expenses"}
+        {isIncome && t("TransactionsPage.Form.IncomeDesc")}
+        {isExpenses && t("TransactionsPage.Form.ExpensesDesc")}
       </p>
     </div>
   );

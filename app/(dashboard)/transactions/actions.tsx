@@ -20,7 +20,7 @@ const Actions = ({ id }: Props) => {
   const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
     t("Common.Dialog.Title"),
-    t("Common.Dialog.Delete", { key: "transaction" })
+    t("Common.Dialog.Delete", { key: t("TransactionsPage.Header") })
   );
   const deleteMutation = useDeleteTransaction(id);
   const { onOpen } = useOpenTransaction();

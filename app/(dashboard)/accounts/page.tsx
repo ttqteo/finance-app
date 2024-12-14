@@ -53,9 +53,10 @@ const AccountPage = () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            columns={columns}
+            columns={columns(t)}
             data={accounts}
             filterKey="name"
+            filterKeyTranslate={t("AccountsPage.Column.Name")}
             onDelete={(row) => {
               const ids = row.map((r) => r.original.id);
               deleteAccounts.mutate({ ids });

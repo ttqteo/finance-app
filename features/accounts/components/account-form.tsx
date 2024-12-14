@@ -63,7 +63,7 @@ const AccountForm = ({
               <FormLabel>{t("AccountsPage.Form.Name")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("AccountsPage.Form.NamePlaceholer")}
+                  placeholder={t("AccountsPage.Form.NamePlaceholder")}
                   disabled={disabled}
                   {...field}
                 />

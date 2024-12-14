@@ -14,6 +14,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { Loader2Icon } from "lucide-react";
 import { z } from "zod";
 import CategoryForm from "@/features/categories/components/category-form";
+import { useTranslations } from "next-intl";
 
 const formSchema = insertCategoriesSchema.pick({
   name: true,
@@ -22,9 +23,11 @@ const formSchema = insertCategoriesSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 const EditCategorySheet = () => {
+  const t = useTranslations();
+
   const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "You are about to delete this category"
+    t("Common.Dialog.Title"),
+    t("Common.Dialog.Delete", { key: t("CategoriesPage.Header") })
   );
   const { isOpen, onClose, id } = useOpenCategory();
 
@@ -68,9 +71,11 @@ const EditCategorySheet = () => {
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent className="space-y-4">
           <SheetHeader>
-            <SheetTitle>Edit Category</SheetTitle>
+            <SheetTitle>{t("CategoriesPage.Form.EditCategory")}</SheetTitle>
           </SheetHeader>
-          <SheetDescription>Edit an existing category.</SheetDescription>
+          <SheetDescription>
+            {t("CategoriesPage.Form.EditCategoryDesc")}
+          </SheetDescription>
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <Loader2Icon className="size-4 text-muted-foreground animate-spin" />

@@ -20,7 +20,7 @@ const Actions = ({ id }: Props) => {
   const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
     t("Common.Dialog.Title"),
-    t("Common.Dialog.Delete", { key: "category" })
+    t("Common.Dialog.Delete", { key: t("CategoriesPage.Header") })
   );
   const deleteMutation = useDeleteCategory(id);
   const { onOpen } = useOpenCategory();

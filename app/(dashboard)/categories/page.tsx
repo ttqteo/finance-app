@@ -52,9 +52,10 @@ const CategoriesPage = () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            columns={columns}
+            columns={columns(t)}
             data={categories}
             filterKey="name"
+            filterKeyTranslate={t("CategoriesPage.Column.Name")}
             onDelete={(row) => {
               const ids = row.map((r) => r.original.id);
               deleteCategories.mutate({ ids });

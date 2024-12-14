@@ -10,6 +10,7 @@ import AccountForm from "@/features/accounts/components/account-form";
 import { insertAccountSchema } from "@/db/schema";
 import { z } from "zod";
 import { useCreateAccount } from "@/features/accounts/api/use-create-account";
+import { useTranslations } from "next-intl";
 
 const formSchema = insertAccountSchema.pick({
   name: true,
@@ -18,6 +19,7 @@ const formSchema = insertAccountSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 const NewAccountSheet = () => {
+  const t = useTranslations();
   const { isOpen, onClose } = useNewAccount();
 
   const mutation = useCreateAccount();
@@ -33,10 +35,10 @@ const NewAccountSheet = () => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle>New Account</SheetTitle>
+          <SheetTitle>{t("AccountsPage.Form.NewAccount")}</SheetTitle>
         </SheetHeader>
         <SheetDescription>
-          Create a new account to track your transactions.
+          {t("AccountsPage.Form.NewAccountDesc")}
         </SheetDescription>
         <AccountForm
           onSubmit={onSubmit}

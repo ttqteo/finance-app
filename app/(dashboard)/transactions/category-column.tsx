@@ -1,9 +1,8 @@
-import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
 import { useOpenCategory } from "@/features/categories/hooks/use-open-category";
 import { useOpenTransaction } from "@/features/transactions/hooks/use-open-transaction";
 import { cn } from "@/lib/utils";
 import { TriangleAlertIcon } from "lucide-react";
-import React from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   id: string;
@@ -11,6 +10,7 @@ type Props = {
   categoryId: string | null;
 };
 const CategoryColumn = ({ id, category, categoryId }: Props) => {
+  const t = useTranslations();
   const { onOpen: onOpenCategory } = useOpenCategory();
   const { onOpen: onOpenTransaction } = useOpenTransaction();
 
@@ -31,7 +31,7 @@ const CategoryColumn = ({ id, category, categoryId }: Props) => {
       onClick={onClick}
     >
       {!category && <TriangleAlertIcon className="mr-2 size-4 shrink-0" />}
-      {category || "Uncategorized"}
+      {category || t("TransactionsPage.Uncategorized")}
     </div>
   );
 };
