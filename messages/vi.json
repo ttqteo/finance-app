@@ -12,6 +12,7 @@
       "Delete": "Xóa",
       "New": "Thêm mới",
       "Save": "Lưu Thay Đổi",
+      "Create": "Tạo Mới",
       "Import": "Nhập Dữ Liệu"
     },
     "DataTable": {
@@ -50,15 +51,36 @@
     "NoData": "Không có dữ liệu cho kỳ này"
   },
   "TransactionsPage": {
-    "Header": "Giao Dịch"
+    "Header": "Giao Dịch",
+    "Form": {
+      "Account": "Tài khoản",
+      "AccountPlaceholder": "Chọn một tài khoản",
+      "Category": "Danh mục",
+      "CategoryPlaceholder": "Chọn một danh mục",
+      "Payee": "Người nhận thanh toán",
+      "PayeePlaceholder": "Người nhận thanh toán",
+      "Amount": "Số tiền",
+      "Note": "Ghi chú",
+      "NotePlaceholder": "Ghi chú tùy chọn"
+    }
   },
   "AccountsPage": {
-    "Header": "Tài Khoản"
+    "Header": "Tài Khoản",
+    "Form": {
+      "Name": "Tên",
+      "NotePlaceholder": "ví dụ: Ngân hàng, Tiền mặt, v.v.",
+      "NameDesc": "Đây là tên hiển thị công khai của bạn."
+    }
   },
   "CategoriesPage": {
     "Header": "Danh Mục",
     "Columns": {
       "Name": "Treen"
+    },
+    "Form": {
+      "Name": "Tên",
+      "NotePlaceholder": "ví dụ: Đồ ăn, Du lịch, v.v.",
+      "NameDesc": "Đây là tên hiển thị công khai của bạn."
     }
   },
   "SettingsPage": {

@@ -16,6 +16,7 @@ import { insertTransactionSchema } from "@/db/schema";
 import { convertAmountToMiliunits } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TrashIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -55,6 +56,8 @@ const TransactionForm = ({
   onCreateCategory,
   onCreateAccount,
 }: Props) => {
+  const t = useTranslations();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -97,10 +100,10 @@ const TransactionForm = ({
           name="accountId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Account")}</FormLabel>
               <FormControl>
                 <Select
-                  placeholder="Select an account"
+                  placeholder={t("TransactionsPage.Form.AccountPlaceholder")}
                   options={accountOptions}
                   onCreate={onCreateAccount}
                   value={field.value}
@@ -117,10 +120,10 @@ const TransactionForm = ({
           name="categoryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Category")}</FormLabel>
               <FormControl>
                 <Select
-                  placeholder="Select a category"
+                  placeholder={t("TransactionsPage.Form.Category")}
                   options={categoryOptions}
                   onCreate={onCreateCategory}
                   value={field.value}
@@ -137,12 +140,12 @@ const TransactionForm = ({
           name="payee"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Payee</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Payee")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   disabled={disabled}
-                  placeholder="Add a payee"
+                  placeholder={t("TransactionsPage.Form.PayeePlaceholder")}
                 />
               </FormControl>
               <FormMessage />
@@ -154,7 +157,7 @@ const TransactionForm = ({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Amount")}</FormLabel>
               <FormControl>
                 <AmountInput
                   {...field}
@@ -171,13 +174,13 @@ const TransactionForm = ({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Note")}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   value={field.value ?? ""}
                   disabled={disabled}
-                  placeholder="Optional notes"
+                  placeholder={t("TransactionsPage.Form.NotePlaceholder")}
                 />
               </FormControl>
               <FormMessage />
@@ -185,7 +188,7 @@ const TransactionForm = ({
           )}
         />
         <Button className="w-full" disabled={disabled}>
-          {id ? "Save changes" : "Create transaction"}
+          {id ? t("Common.Action.Save") : t("Common.Action.Create")}
         </Button>
         {!!id && (
           <Button
@@ -196,7 +199,7 @@ const TransactionForm = ({
             variant={"outline"}
           >
             <TrashIcon className="size-4 mr-2" />
-            Delete transaction
+            {t("Common.Action.Delete")}
           </Button>
         )}
       </form>

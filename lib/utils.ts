@@ -1,12 +1,8 @@
 import { currencyConfig } from "@/config/constant";
-import { db } from "@/db/drizze";
-import { userSettings } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
 import { clsx, type ClassValue } from "clsx";
 import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
-import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
 import { twMerge } from "tailwind-merge";
+import { vi, enUS } from "date-fns/locale";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,7 +17,9 @@ export function convertAmountToMiliunits(amount: number) {
 }
 
 function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  const match =
+    typeof window !== "undefined" &&
+    document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[2]) : null;
 }
 
@@ -78,27 +76,47 @@ export function fillMissingDays(
   return transactionByDay;
 }
 
+export const getLocale = (locale: string | null) => {
+  if (locale === "vi") {
+    return {
+      locale: vi,
+      formatString: "dd LLL",
+      formatStringFull: "dd LLL, y",
+    };
+  }
+  return {
+    locale: enUS,
+    formatString: "LLL dd",
+    formatStringFull: "LLL dd, y",
+  };
+};
+
 type Period = {
   from: string | Date | undefined;
   to: string | Date | undefined;
 };
 export function formatDateRange(period?: Period) {
+  const { locale, formatString, formatStringFull } = getLocale(
+    getCookie("locale")
+  );
   const defaultTo = new Date();
   const defaultFrom = subDays(defaultTo, 30);
 
   if (!period?.from) {
-    return `${format(defaultFrom, "LLL dd")} - ${format(
+    return `${format(defaultFrom, formatString, { locale })} - ${format(
       defaultTo,
-      "LLL dd, y"
+      formatStringFull,
+      { locale }
     )}`;
   }
   if (period.to) {
-    return `${format(period.from, "LLL dd")} - ${format(
+    return `${format(period.from, formatString, { locale })} - ${format(
       period.to,
-      "LLL dd, y"
+      formatStringFull,
+      { locale }
     )}`;
   }
-  return format(period.from, "LLL dd, y");
+  return format(period.from, formatStringFull, { locale });
 }
 
 export function formatPercentage(

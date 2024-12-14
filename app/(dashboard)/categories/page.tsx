@@ -47,7 +47,7 @@ const CategoriesPage = () => {
           </CardTitle>
           <Button size={"sm"} onClick={newCategory.onOpen}>
             <PlusIcon className="size-4 mr-2" />
-            {t("Common.Action.Add")}
+            {t("Common.Action.New")}
           </Button>
         </CardHeader>
         <CardContent>

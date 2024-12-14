@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { insertAccountSchema } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TrashIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,6 +36,7 @@ const AccountForm = ({
   onDelete,
   disabled,
 }: Props) => {
+  const t = useTranslations();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -58,23 +60,23 @@ const AccountForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("AccountsPage.Form.Name")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="e.g. Cash, Bank, Credit Card..."
+                  placeholder={t("AccountsPage.Form.NamePlaceholer")}
                   disabled={disabled}
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                {t("AccountsPage.Form.NameDesc")}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button className="w-full" disabled={disabled}>
-          {id ? "Save changes" : "Create account"}
+          {id ? t("Common.Action.Save") : t("Common.Action.Create")}
         </Button>
         {!!id && (
           <Button
@@ -85,7 +87,7 @@ const AccountForm = ({
             variant={"outline"}
           >
             <TrashIcon className="size-4 mr-2" />
-            Delete account
+            {t("Common.Action.Delete")}
           </Button>
         )}
       </form>

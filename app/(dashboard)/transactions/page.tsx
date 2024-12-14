@@ -118,7 +118,7 @@ const TransactionPage = () => {
               className="w-full lg:w-auto"
             >
               <PlusIcon className="size-4 mr-2" />
-              {t("Common.Action.Add")}
+              {t("Common.Action.New")}
             </Button>
             <UploadButton onUpload={onUpload} />
           </div>

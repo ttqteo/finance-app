@@ -12,6 +12,7 @@
       "Delete": "Delete",
       "New": "Add New",
       "Save": "Save Changes",
+      "Create": "Create",
       "Import": "Import"
     },
     "DataTable": {
@@ -50,15 +51,36 @@
     "NoData": "No data for this period"
   },
   "TransactionsPage": {
-    "Header": "Transactions"
+    "Header": "Transactions",
+    "Form": {
+      "Account": "Account",
+      "AccountPlaceholder": "Select an account",
+      "Category": "Category",
+      "CategoryPlaceholder": "Select a category",
+      "Payee": "Payee",
+      "PayeePlaceholder": "Payee",
+      "Amount": "Amount",
+      "Note": "Note",
+      "NotePlaceholder": "Optional note"
+    }
   },
   "AccountsPage": {
-    "Header": "Accounts"
+    "Header": "Accounts",
+    "Form": {
+      "Name": "Name",
+      "NotePlaceholder": "e.g. Bank, Cash, etc",
+      "NameDesc": "This is your public display name."
+    }
   },
   "CategoriesPage": {
     "Header": "Categories",
     "Columns": {
       "Name": "Name"
+    },
+    "Form": {
+      "Name": "Name",
+      "NotePlaceholder": "e.g. Food, Travel, etc",
+      "NameDesc": "This is your public display name."
     }
   },
   "SettingsPage": {

@@ -48,7 +48,7 @@ const AccountPage = () => {
           </CardTitle>
           <Button size={"sm"} onClick={newAccount.onOpen}>
             <PlusIcon className="size-4 mr-2" />
-            {t("Common.Action.Add")}
+            {t("Common.Action.New")}
           </Button>
         </CardHeader>
         <CardContent>

@@ -8,6 +8,7 @@ const LoadConfigs = () => {
   useEffect(() => {
     if (data) {
       setCookie("currency", data.currency, 7);
+      setCookie("locale", data.language, 7);
     }
   }, [data]);
   return <></>;
