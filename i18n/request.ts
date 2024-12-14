@@ -3,7 +3,7 @@ import { getRequestConfig } from "next-intl/server";
 
 export default getRequestConfig(async () => {
   const data = await getUserSettings();
-  const locale = data.language || "en";
+  const locale = data?.language || "en";
 
   return {
     locale,

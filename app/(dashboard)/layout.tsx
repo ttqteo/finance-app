@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default async function DashboardLayout({ children }: Props) {
+export default function DashboardLayout({ children }: Props) {
   return (
     <>
       <LoadConfigs />

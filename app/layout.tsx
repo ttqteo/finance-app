@@ -19,17 +19,19 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const ClerkProviderAny = ClerkProvider as any; // TODO: Remove this later
+}) {
   const messages = await getMessages();
 
   return (
-    <ClerkProviderAny
+    <ClerkProvider
       appearance={{
         layout: {
           unsafe_disableDevelopmentModeWarnings: true,
+        },
+        elements: {
+          footer: "hidden",
         },
       }}
     >
@@ -37,13 +39,13 @@ export default async function RootLayout({
         <body className={inter.className}>
           <NextIntlClientProvider messages={messages}>
             <QueryProvider>
-              <SheetProvider />
               <Toaster />
+              <SheetProvider />
               <Suspense fallback={<Spinner />}>{children}</Suspense>
             </QueryProvider>
           </NextIntlClientProvider>
         </body>
       </html>
-    </ClerkProviderAny>
+    </ClerkProvider>
   );
 }

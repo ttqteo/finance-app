@@ -1,4 +1,5 @@
 "use client";
+
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import { setCookie } from "@/lib/utils";
 import { useEffect } from "react";
