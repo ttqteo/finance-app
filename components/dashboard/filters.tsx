@@ -1,5 +1,5 @@
-import { AccountFilter } from "@/components/account-filter";
-import { DateFilter } from "@/components/date-filter";
+import { AccountFilter } from "@/components/dashboard/account-filter";
+import { DateFilter } from "@/components/dashboard/date-filter";
 
 type Props = {
   disabled: boolean;

@@ -1,6 +1,6 @@
 "use client";
 
-import NavButton from "@/components//nav-button";
+import NavButton from "@/components/dashboard/nav-button";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMedia } from "react-use";
@@ -20,23 +20,23 @@ const Navigation = () => {
 
   const routes = [
     {
-      href: "/",
+      href: "/dashboard",
       label: t("OverviewPage.Header"),
     },
     {
-      href: "/transactions",
+      href: "/dashboard/transactions",
       label: t("TransactionsPage.Header"),
     },
     {
-      href: "/accounts",
+      href: "/dashboard/accounts",
       label: t("AccountsPage.Header"),
     },
     {
-      href: "/categories",
+      href: "/dashboard/categories",
       label: t("CategoriesPage.Header"),
     },
     {
-      href: "/settings",
+      href: "/dashboard/settings",
       label: t("SettingsPage.Header"),
     },
   ];

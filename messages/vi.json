@@ -1,4 +1,16 @@
 {
+  "AppName": "Tài Chính Chuyên Nghiệp",
+  "Landing": {
+    "DocsPage": {
+      "Header": "Tài Liệu"
+    },
+    "PricingPage": {
+      "Header": "Giá"
+    },
+    "ContactPage": {
+      "Header": "Liên Hệ"
+    }
+  },
   "Common": {
     "WelcomeBack": {
       "Header": "Chào mừng trở lại",

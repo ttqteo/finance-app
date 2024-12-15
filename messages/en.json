@@ -1,4 +1,16 @@
 {
+  "AppName": "Finance Pro",
+  "Landing": {
+    "DocsPage": {
+      "Header": "Docs"
+    },
+    "PricingPage": {
+      "Header": "Pricing"
+    },
+    "ContactPage": {
+      "Header": "Contact"
+    }
+  },
   "Common": {
     "WelcomeBack": {
       "Header": "Welcome Back",

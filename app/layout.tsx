@@ -1,7 +1,5 @@
 import { Spinner } from "@/components/spinner";
 import { Toaster } from "@/components/ui/sonner";
-import QueryProvider from "@/providers/query-provider";
-import SheetProvider from "@/providers/sheet-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -35,14 +33,11 @@ export default async function RootLayout({
         },
       }}
     >
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
           <NextIntlClientProvider messages={messages}>
-            <QueryProvider>
-              <Toaster />
-              <SheetProvider />
-              <Suspense fallback={<Spinner />}>{children}</Suspense>
-            </QueryProvider>
+            <Toaster />
+            <Suspense fallback={<Spinner />}>{children}</Suspense>
           </NextIntlClientProvider>
         </body>
       </html>

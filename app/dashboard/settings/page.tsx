@@ -47,26 +47,6 @@ const SettingsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-        <Card className="border-none drop-shadow-sm">
-          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-xl line-clamp-1">
-              {t("Common.Page.Header", { key: t("SettingsPage.Header") })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Spinner />
-          </CardContent>
-          <CardFooter className="text-muted-foreground">
-            {t("SettingsPage.Version", { version: appConfig.version })}
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">
@@ -74,15 +54,31 @@ const SettingsPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
-            <SettingsForm onSubmit={onSubmit} defaultValues={defaultValues} />
-          </div>
+          <Spinner />
         </CardContent>
         <CardFooter className="text-muted-foreground">
           {t("SettingsPage.Version", { version: appConfig.version })}
         </CardFooter>
       </Card>
-    </div>
+    );
+  }
+
+  return (
+    <Card className="border-none drop-shadow-sm">
+      <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+        <CardTitle className="text-xl line-clamp-1">
+          {t("Common.Page.Header", { key: t("SettingsPage.Header") })}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+          <SettingsForm onSubmit={onSubmit} defaultValues={defaultValues} />
+        </div>
+      </CardContent>
+      <CardFooter className="text-muted-foreground">
+        {t("SettingsPage.Version", { version: appConfig.version })}
+      </CardFooter>
+    </Card>
   );
 };
 

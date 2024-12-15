@@ -56,18 +56,16 @@ const TransactionPage = () => {
 
   if (transactionsQuery.isLoading) {
     return (
-      <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-        <Card className="border-none drop-shadow-sm">
-          <CardHeader>
-            <Skeleton className="h-8 w-48" />
-          </CardHeader>
-          <CardContent>
-            <div className="h-[500px] w-full flex items-center justify-center">
-              <Loader2Icon className="size-6 text-slate-300 animate-spin" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="border-none drop-shadow-sm">
+        <CardHeader>
+          <Skeleton className="h-8 w-48" />
+        </CardHeader>
+        <CardContent>
+          <div className="h-[500px] w-full flex items-center justify-center">
+            <Loader2Icon className="size-6 text-slate-300 animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -105,39 +103,37 @@ const TransactionPage = () => {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">
-            {t("Common.Page.Header", { key: t("TransactionsPage.Header") })}
-          </CardTitle>
-          <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
-            <Button
-              size={"sm"}
-              onClick={newTransaction.onOpen}
-              className="w-full lg:w-auto"
-            >
-              <PlusIcon className="size-4 mr-2" />
-              {t("Common.Action.New")}
-            </Button>
-            <UploadButton onUpload={onUpload} />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns(t)}
-            data={transactions}
-            filterKey="payee"
-            filterKeyTranslate={t("TransactionsPage.Column.Payee")}
-            onDelete={(row) => {
-              const ids = row.map((r) => r.original.id);
-              deleteTransactions.mutate({ ids });
-            }}
-            disabled={isDisabled}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border-none drop-shadow-sm">
+      <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+        <CardTitle className="text-xl line-clamp-1">
+          {t("Common.Page.Header", { key: t("TransactionsPage.Header") })}
+        </CardTitle>
+        <div className="flex flex-col lg:flex-row gap-y-2 items-center gap-x-2">
+          <Button
+            size={"sm"}
+            onClick={newTransaction.onOpen}
+            className="w-full lg:w-auto"
+          >
+            <PlusIcon className="size-4 mr-2" />
+            {t("Common.Action.New")}
+          </Button>
+          <UploadButton onUpload={onUpload} />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <DataTable
+          columns={columns(t)}
+          data={transactions}
+          filterKey="payee"
+          filterKeyTranslate={t("TransactionsPage.Column.Payee")}
+          onDelete={(row) => {
+            const ids = row.map((r) => r.original.id);
+            deleteTransactions.mutate({ ids });
+          }}
+          disabled={isDisabled}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

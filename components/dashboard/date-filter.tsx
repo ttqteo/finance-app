@@ -15,7 +15,7 @@ import { formatDateRange } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 
 type Props = {
   disabled: boolean;

@@ -1,14 +1,26 @@
 "use client";
 
-import { Filters } from "@/components/filters";
-import { HeaderLogo } from "@/components/header-logo";
-import Navigation from "@/components/navigation";
+import { Filters } from "@/components/dashboard/filters";
+import Navigation from "@/components/dashboard/navigation";
+import { Logo } from "@/components/logo";
 import WelcomeMessage from "@/components/welcome-message";
+import { useGetSettings } from "@/features/settings/api/use-get-settings";
+import { setCookie } from "@/lib/utils";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import { Loader2Icon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const Header = () => {
+  const { data } = useGetSettings();
+
+  useEffect(() => {
+    if (data) {
+      setCookie("currency", data.currency, 7);
+      setCookie("locale", data.language, 7);
+    }
+  }, [data]);
+
   const pathname = usePathname();
   const disabled = pathname.includes("settings");
 
@@ -17,7 +29,7 @@ const Header = () => {
       <div className="max-w-screen-2xl mx-auto">
         <div className="w-full flex items-center justify-between mb-14">
           <div className="flex items-center lg:gap-x-16">
-            <HeaderLogo />
+            <Logo />
             <Navigation />
           </div>
           <ClerkLoaded>
