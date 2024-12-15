@@ -1,9 +1,11 @@
 "use client";
 
 import Header from "@/components/dashboard/header";
+import Tools from "@/components/dashboard/tools";
+import { FullscreenLoader } from "@/components/fullscreen-loader";
 import QueryProvider from "@/providers/query-provider";
 import SheetProvider from "@/providers/sheet-provider";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -11,7 +13,11 @@ type Props = {
 };
 
 export default function DashboardLayout({ children }: Props) {
-  const { isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return <FullscreenLoader />;
+  }
 
   if (!isSignedIn) {
     redirect("/");
@@ -26,6 +32,7 @@ export default function DashboardLayout({ children }: Props) {
           {children}
         </div>
       </main>
+      <Tools />
     </QueryProvider>
   );
 }

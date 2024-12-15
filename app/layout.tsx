@@ -1,5 +1,6 @@
-import { Spinner } from "@/components/spinner";
+import { FullscreenLoader } from "@/components/fullscreen-loader";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ClerkProvider, GoogleOneTap } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -31,25 +32,27 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <ClerkProvider
-            appearance={{
-              layout: {
-                unsafe_disableDevelopmentModeWarnings: true,
-              },
-              elements: {
-                footer: "hidden",
-              },
-            }}
-          >
-            <Toaster />
-            <GoogleOneTap />
-            <Suspense fallback={<Spinner />}>{children}</Suspense>
-          </ClerkProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        layout: {
+          unsafe_disableDevelopmentModeWarnings: true,
+        },
+        elements: {
+          footer: "hidden",
+        },
+      }}
+    >
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <NextIntlClientProvider messages={messages}>
+            <TooltipProvider>
+              <Toaster />
+              <GoogleOneTap />
+              <Suspense fallback={<FullscreenLoader />}>{children}</Suspense>
+            </TooltipProvider>
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

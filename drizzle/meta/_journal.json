@@ -36,13 +36,6 @@
       "when": 1733935061571,
       "tag": "0004_aberrant_northstar",
       "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1734252972325,
-      "tag": "0005_premium_iceman",
-      "breakpoints": true
     }
   ]
 }

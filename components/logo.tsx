@@ -2,9 +2,15 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-export const Logo = ({ className }: { className?: string }) => {
+export const Logo = ({
+  href,
+  className,
+}: {
+  href: string;
+  className?: string;
+}) => {
   return (
-    <Link href={"/"}>
+    <Link href={href}>
       <div className="items-center hidden lg:flex">
         <Image
           src="/logo.png"
