@@ -32,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterKey: string;
+  filterKeyTranslate: string;
   onDelete: (rows: Row<TData>[]) => void;
   disabled?: boolean;
 }
@@ -40,6 +41,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   filterKey,
+  filterKeyTranslate,
   onDelete,
   disabled,
 }: DataTableProps<TData, TValue>) {
@@ -75,7 +77,9 @@ export function DataTable<TData, TValue>({
       <ConfirmDialog />
       <div className="flex items-center py-4">
         <Input
-          placeholder={`Filter ${filterKey}...`}
+          placeholder={`${t(
+            "Common.DataTable.Filter"
+          )} ${filterKeyTranslate}...`}
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(filterKey)?.setFilterValue(event.target.value)

@@ -1,4 +1,16 @@
 {
+  "AppName": "Finance Pro",
+  "Landing": {
+    "DocsPage": {
+      "Header": "Docs"
+    },
+    "PricingPage": {
+      "Header": "Pricing"
+    },
+    "ContactPage": {
+      "Header": "Contact"
+    }
+  },
   "Common": {
     "WelcomeBack": {
       "Header": "Welcome Back",
@@ -7,11 +19,13 @@
     "Page": {
       "Header": "{key} Page"
     },
+    "DatePicker": "Pick A Date",
     "Action": {
       "Edit": "Edit",
       "Delete": "Delete",
       "New": "Add New",
       "Save": "Save Changes",
+      "Create": "Create",
       "Import": "Import"
     },
     "DataTable": {
@@ -19,7 +33,10 @@
       "Previous": "Previous",
       "Next": "Next",
       "Of": "of",
-      "RowsSelected": "row(s) selected."
+      "Filter": "Filter",
+      "RowsSelected": "row(s) selected.",
+      "SelectAll": "Select All",
+      "SelectRow": "Select Row"
     },
     "Dialog": {
       "Title": "Are you sure?",
@@ -50,15 +67,62 @@
     "NoData": "No data for this period"
   },
   "TransactionsPage": {
-    "Header": "Transactions"
+    "Header": "Transactions",
+    "Column": {
+      "Date": "Date",
+      "Category": "Category",
+      "Payee": "Payee",
+      "Amount": "Amount",
+      "Account": "Account"
+    },
+    "Uncategorized": "Uncategorized",
+    "Form": {
+      "NewTransaction": "New Transaction",
+      "NewTransactionDesc": "Create a new transaction.",
+      "EditTransaction": "Edit Transaction",
+      "EditTransactionDesc": "Edit an existing transaction.",
+      "Account": "Account",
+      "AccountPlaceholder": "Select an account",
+      "Category": "Category",
+      "CategoryPlaceholder": "Select a category",
+      "Payee": "Payee",
+      "PayeePlaceholder": "Payee",
+      "Amount": "Amount",
+      "TooltipDesc": "Use [+] for income and [-] for expenses",
+      "IncomeDesc": "This will count as income",
+      "ExpensesDesc":  "This will count as expenses",
+      "Note": "Note",
+      "NotePlaceholder": "Optional note"
+    }
   },
   "AccountsPage": {
-    "Header": "Accounts"
+    "Header": "Accounts",
+    "Column": {
+      "Name": "Name"
+    },
+    "Form": {
+      "NewAccount": "New Account",
+      "NewAccountDesc": "Create a new account.",
+      "EditAccount": "Edit Account",
+      "EditAccountDesc": "Edit an existing account.",
+      "Name": "Name",
+      "NamePlaceholder": "e.g. Bank, Cash, etc",
+      "NameDesc": "This is your public display name."
+    }
   },
   "CategoriesPage": {
     "Header": "Categories",
-    "Columns": {
+    "Column": {
       "Name": "Name"
+    },
+    "Form": {
+      "NewCategory": "New Category",
+      "NewCategoryDesc": "Create a new category to organize your transactions.",
+      "EditCategory": "Edit Category",
+      "EditCategoryDesc": "Edit an existing category.",
+      "Name": "Name",
+      "NamePlaceholder": "e.g. Food, Travel, etc",
+      "NameDesc": "This is your public display name."
     }
   },
   "SettingsPage": {

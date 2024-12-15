@@ -1,4 +1,16 @@
 {
+  "AppName": "Tài Chính Chuyên Nghiệp",
+  "Landing": {
+    "DocsPage": {
+      "Header": "Tài Liệu"
+    },
+    "PricingPage": {
+      "Header": "Giá"
+    },
+    "ContactPage": {
+      "Header": "Liên Hệ"
+    }
+  },
   "Common": {
     "WelcomeBack": {
       "Header": "Chào mừng trở lại",
@@ -7,11 +19,13 @@
     "Page": {
       "Header": "Trang {key}"
     },
+    "DatePicker": "Chọn Ngày",
     "Action": {
       "Edit": "Chỉnh sửa",
       "Delete": "Xóa",
       "New": "Thêm mới",
       "Save": "Lưu Thay Đổi",
+      "Create": "Tạo Mới",
       "Import": "Nhập Dữ Liệu"
     },
     "DataTable": {
@@ -19,7 +33,10 @@
       "Previous": "Trước",
       "Next": "Tiếp theo",
       "Of": "của",
-      "RowsSelected": "dòng đã chọn."
+      "Filter": "Lọc theo",
+      "RowsSelected": "dòng đã chọn.",
+      "SelectAll": "Chọn tất cả",
+      "SelectRow": "Chọn dòng"
     },
     "Dialog": {
       "Title": "Bạn có chắc chắn không?",
@@ -50,15 +67,62 @@
     "NoData": "Không có dữ liệu cho kỳ này"
   },
   "TransactionsPage": {
-    "Header": "Giao Dịch"
+    "Header": "Giao Dịch",
+    "Column": {
+      "Date": "Ngày",
+      "Category": "Danh Mục",
+      "Payee": "Người nhận thanh toán",
+      "Amount": "Tổng",
+      "Account": "Tài khoản"
+    },
+    "Uncategorized": "Chưa Phân Loại",
+    "Form": {
+      "NewTransaction": "Tạo Giao Dịch",
+      "NewTransactionDesc": "Tạo giao dịch mới.",
+      "EditTransaction": "Sửa Giao Dịch",
+      "EditTransactionDesc": "Sửa giao dịch đã tồn tại.",
+      "Account": "Tài khoản",
+      "AccountPlaceholder": "Chọn một tài khoản",
+      "Category": "Danh mục",
+      "CategoryPlaceholder": "Chọn một danh mục",
+      "Payee": "Người nhận thanh toán",
+      "PayeePlaceholder": "Người nhận thanh toán",
+      "Amount": "Số tiền",
+      "TooltipDesc": "Dùng [+] cho thu nhập và [-] cho chi phí",
+      "IncomeDesc": "Cái này sẽ tính là thu nhập.",
+      "ExpensesDesc":  "Cái này sẽ tính là chi phí.",
+      "Note": "Ghi chú",
+      "NotePlaceholder": "Ghi chú tùy chọn"
+    }
   },
   "AccountsPage": {
-    "Header": "Tài Khoản"
+    "Header": "Tài Khoản",
+    "Column": {
+      "Name": "Tên"
+    },
+    "Form": {
+      "NewAccount": "Tạo Tài Khoản",
+      "NewAccountDesc": "Tạo tài khoản mới.",
+      "EditAccount": "Sửa Tài Khoản",
+      "EditAccountDesc": "Sửa tài khoản đã tồn tại.",
+      "Name": "Tên",
+      "NamePlaceholder": "ví dụ: Ngân hàng, Tiền mặt, v.v.",
+      "NameDesc": "Đây là tên hiển thị công khai của bạn."
+    }
   },
   "CategoriesPage": {
     "Header": "Danh Mục",
-    "Columns": {
-      "Name": "Treen"
+    "Column": {
+      "Name": "Tên"
+    },
+    "Form": {
+      "NewCategory": "Tạo Danh Mục",
+      "NewCategoryDesc": "Tạo danh mục mới để sắp xếp giao dịch.",
+      "EditCategory": "Sửa Danh Mục",
+      "EditCategoryDesc": "Sửa danh mục đã tồn tại.",
+      "Name": "Tên",
+      "NamePlaceholder": "ví dụ: Đồ ăn, Du lịch, v.v.",
+      "NameDesc": "Đây là tên hiển thị công khai của bạn."
     }
   },
   "SettingsPage": {

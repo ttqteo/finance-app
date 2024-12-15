@@ -18,6 +18,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { Loader2Icon } from "lucide-react";
 import { z } from "zod";
 import TransactionForm from "./transaction-form";
+import { useTranslations } from "next-intl";
 
 const formSchema = insertTransactionSchema.omit({
   id: true,
@@ -26,9 +27,10 @@ const formSchema = insertTransactionSchema.omit({
 type FormValues = z.input<typeof formSchema>;
 
 const EditTransactionSheet = () => {
+  const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "You are about to delete this transaction"
+    t("Common.Dialog.Title"),
+    t("Common.Dialog.Delete", { key: t("TransactionsPage.Header") })
   );
   const { isOpen, onClose, id } = useOpenTransaction();
 
@@ -109,9 +111,13 @@ const EditTransactionSheet = () => {
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent className="space-y-4">
           <SheetHeader>
-            <SheetTitle>Edit Transaction</SheetTitle>
+            <SheetTitle>
+              {t("TransactionsPage.Form.EditTransaction")}
+            </SheetTitle>
           </SheetHeader>
-          <SheetDescription>Edit an existing transaction.</SheetDescription>
+          <SheetDescription>
+            {t("TransactionsPage.Form.EditTransactionDesc")}
+          </SheetDescription>
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <Loader2Icon className="size-4 text-muted-foreground animate-spin" />

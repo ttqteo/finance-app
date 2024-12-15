@@ -13,6 +13,7 @@ import AccountForm from "@/features/accounts/components/account-form";
 import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Loader2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 const formSchema = insertAccountSchema.pick({
@@ -22,9 +23,10 @@ const formSchema = insertAccountSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 const EditAccountSheet = () => {
+  const t = useTranslations();
   const [ConfirmDialog, confirm] = useConfirm(
-    "Are you sure?",
-    "You are about to delete this account"
+    t("Common.Dialog.Title"),
+    t("Common.Dialog.Delete", { key: t("AccountsPage.Header") })
   );
   const { isOpen, onClose, id } = useOpenAccount();
 
@@ -68,9 +70,11 @@ const EditAccountSheet = () => {
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent className="space-y-4">
           <SheetHeader>
-            <SheetTitle>Edit Account</SheetTitle>
+            <SheetTitle>{t("AccountsPage.Form.EditAccount")}</SheetTitle>
           </SheetHeader>
-          <SheetDescription>Edit an existing account.</SheetDescription>
+          <SheetDescription>
+            {t("AccountsPage.Form.EditAccountDesc")}
+          </SheetDescription>
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <Loader2Icon className="size-4 text-muted-foreground animate-spin" />

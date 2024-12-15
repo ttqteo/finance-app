@@ -11,10 +11,11 @@ import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
 import { useCreateCategory } from "@/features/categories/api/use-create-category";
 import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { useCreateTransaction } from "@/features/transactions/api/use-create-transaction";
-import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
-import { z } from "zod";
 import TransactionForm from "@/features/transactions/components/transaction-form";
+import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
 import { Loader2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { z } from "zod";
 
 const formSchema = insertTransactionSchema.omit({
   id: true,
@@ -23,6 +24,7 @@ const formSchema = insertTransactionSchema.omit({
 type FormValues = z.input<typeof formSchema>;
 
 const NewTransactionSheet = () => {
+  const t = useTranslations();
   const { isOpen, onClose } = useNewTransaction();
 
   const createMutation = useCreateTransaction();
@@ -62,9 +64,11 @@ const NewTransactionSheet = () => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle>New Transaction</SheetTitle>
+          <SheetTitle>{t("TransactionsPage.Form.NewTransaction")}</SheetTitle>
         </SheetHeader>
-        <SheetDescription>Create a new transaction.</SheetDescription>
+        <SheetDescription>
+          {t("TransactionsPage.Form.NewTransactionDesc")}
+        </SheetDescription>
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2Icon className="size-4  text-muted-foreground animate-spin" />
