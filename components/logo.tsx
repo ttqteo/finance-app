@@ -6,7 +6,13 @@ export const Logo = ({ className }: { className?: string }) => {
   return (
     <Link href={"/"}>
       <div className="items-center hidden lg:flex">
-        <Image src="/logo.png" height={32} width={32} alt="logo" />
+        <Image
+          src="/logo.png"
+          height={32}
+          width={32}
+          alt="logo"
+          className="rounded-full"
+        />
         <p
           className={cn(
             "font-semibold text-white text-2xl ml-2.5",

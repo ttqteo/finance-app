@@ -5,19 +5,17 @@ import { cn } from "@/lib/utils";
 type Props = {
   href: string;
   label: string;
-  isActive?: boolean;
+  isLoginBtn?: boolean;
 };
-const NavButton = ({ href, label, isActive }: Props) => {
+const NavButton = ({ href, label, isLoginBtn }: Props) => {
   return (
     <Button
       asChild
       size={"sm"}
-      variant={"outline"}
+      variant={isLoginBtn ? "blue" : "outline"}
       className={cn(
-        "w-full lg:w-auto justify-between font-normal border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-none focus-within:bg-white/30 transition",
-        isActive ? "bg-white/10" : "bg-transparent"
+        "w-full lg:w-auto justify-between font-normal border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-none focus-within:bg-white/30 transition"
       )}
-      disabled
     >
       <Link href={href}>{label}</Link>
     </Button>

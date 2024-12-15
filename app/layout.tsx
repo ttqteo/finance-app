@@ -1,6 +1,6 @@
 import { Spinner } from "@/components/spinner";
 import { Toaster } from "@/components/ui/sonner";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, GoogleOneTap } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -13,6 +13,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Finance Pro",
   description: "Finace Platform to track your money",
+  icons: {
+    icon: [
+      {
+        url: "/logo.png",
+        href: "/logo.png",
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
@@ -23,24 +31,25 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <ClerkProvider
-      appearance={{
-        layout: {
-          unsafe_disableDevelopmentModeWarnings: true,
-        },
-        elements: {
-          footer: "hidden",
-        },
-      }}
-    >
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
-          <NextIntlClientProvider messages={messages}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <NextIntlClientProvider messages={messages}>
+          <ClerkProvider
+            appearance={{
+              layout: {
+                unsafe_disableDevelopmentModeWarnings: true,
+              },
+              elements: {
+                footer: "hidden",
+              },
+            }}
+          >
             <Toaster />
+            <GoogleOneTap />
             <Suspense fallback={<Spinner />}>{children}</Suspense>
-          </NextIntlClientProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+          </ClerkProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

@@ -54,7 +54,7 @@ const Navigation = () => {
           <nav className="flex flex-col gap-y-2 pt-6">
             {routes.map((route) => (
               <Button
-                key={route.href}
+                key={route.label}
                 variant={route.href === pathname ? "secondary" : "ghost"}
                 onClick={() => onClick(route.href)}
                 className="justify-start"
@@ -72,13 +72,9 @@ const Navigation = () => {
   return (
     <nav className="hidden lg:flex items-center gap-x-2 overflow-x-auto">
       {routes.map((route) => (
-        <NavButton
-          key={route.href}
-          href={route.href}
-          label={route.label}
-          isActive={pathname === route.href}
-        />
+        <NavButton key={route.label} href={route.href} label={route.label} />
       ))}
+      <NavButton href={"/dashboard"} label={"Login"} isLoginBtn />
     </nav>
   );
 };
