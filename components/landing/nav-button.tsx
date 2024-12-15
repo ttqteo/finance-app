@@ -12,7 +12,7 @@ const NavButton = ({ href, label, isLoginBtn }: Props) => {
     <Button
       asChild
       size={"sm"}
-      variant={isLoginBtn ? "blue" : "outline"}
+      variant={isLoginBtn ? "default" : "outline"}
       className={cn(
         "w-full lg:w-auto justify-between font-normal border-none outline-none transition"
       )}
