@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useUser } from "@clerk/nextjs";
 
 const Navigation = () => {
   const t = useTranslations();
   const pathname = usePathname();
+  const { isSignedIn } = useUser();
 
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -74,7 +76,11 @@ const Navigation = () => {
       {routes.map((route) => (
         <NavButton key={route.label} href={route.href} label={route.label} />
       ))}
-      <NavButton href={"/dashboard"} label={"Login"} isLoginBtn />
+      {isSignedIn ? (
+        <NavButton href={"/dashboard"} label={"Dashboard"} isLoginBtn />
+      ) : (
+        <NavButton href={"/dashboard"} label={"Login"} isLoginBtn />
+      )}
     </nav>
   );
 };

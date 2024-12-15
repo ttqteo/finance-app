@@ -100,7 +100,7 @@ const TransactionForm = ({
           name="accountId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("TransactionsPage.Form.Account")}</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Account")} *</FormLabel>
               <FormControl>
                 <Select
                   placeholder={t("TransactionsPage.Form.AccountPlaceholder")}
@@ -157,7 +157,7 @@ const TransactionForm = ({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("TransactionsPage.Form.Amount")}</FormLabel>
+              <FormLabel>{t("TransactionsPage.Form.Amount")} *</FormLabel>
               <FormControl>
                 <AmountInput
                   {...field}

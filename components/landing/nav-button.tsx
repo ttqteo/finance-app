@@ -14,7 +14,7 @@ const NavButton = ({ href, label, isLoginBtn }: Props) => {
       size={"sm"}
       variant={isLoginBtn ? "blue" : "outline"}
       className={cn(
-        "w-full lg:w-auto justify-between font-normal border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-none focus-within:bg-white/30 transition"
+        "w-full lg:w-auto justify-between font-normal border-none outline-none transition"
       )}
     >
       <Link href={href}>{label}</Link>

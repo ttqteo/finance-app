@@ -60,7 +60,7 @@ const CategoryForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("CategoriesPage.Form.Name")}</FormLabel>
+              <FormLabel>{t("CategoriesPage.Form.Name")} *</FormLabel>
               <FormControl>
                 <Input
                   placeholder={t("CategoriesPage.Form.NamePlaceholder")}

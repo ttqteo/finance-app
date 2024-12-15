@@ -16,7 +16,7 @@ export function convertAmountToMiliunits(amount: number) {
   return Math.round(amount * 1000);
 }
 
-function getCookie(name: string): string | null {
+export function getCookie(name: string): string | null {
   const match =
     typeof window !== "undefined" &&
     document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));

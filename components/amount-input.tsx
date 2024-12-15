@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, getCookie } from "@/lib/utils";
 import { InfoIcon, MinusCircleIcon, PlusCircleIcon } from "lucide-react";
 import {
   Tooltip,
@@ -9,6 +9,7 @@ import {
 
 import CurrencyInput from "react-currency-input-field";
 import { useTranslations } from "next-intl";
+import { currencyConfig } from "@/config/constant";
 
 type Props = {
   value: string;
@@ -27,6 +28,7 @@ export const AmountInput = ({
   const parsedValue = parseFloat(value);
   const isIncome = parsedValue > 0;
   const isExpenses = parsedValue < 0;
+  const currency = currencyConfig[getCookie("currency") || "USD"];
 
   const onReverseValue = () => {
     if (!value) return;
@@ -59,7 +61,8 @@ export const AmountInput = ({
         </Tooltip>
       </TooltipProvider>
       <CurrencyInput
-        prefix="$"
+        prefix={currency.prefix}
+        suffix={currency.suffix}
         className="pl-10 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
         placeholder={placeholder}
         value={value}

@@ -60,7 +60,7 @@ const AccountForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("AccountsPage.Form.Name")}</FormLabel>
+              <FormLabel>{t("AccountsPage.Form.Name")} *</FormLabel>
               <FormControl>
                 <Input
                   placeholder={t("AccountsPage.Form.NamePlaceholder")}
