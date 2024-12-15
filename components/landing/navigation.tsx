@@ -10,11 +10,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useUser } from "@clerk/nextjs";
+import { Spinner } from "../spinner";
 
 const Navigation = () => {
   const t = useTranslations();
   const pathname = usePathname();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
 
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -44,16 +45,20 @@ const Navigation = () => {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger>
-          <Button
-            variant={"outline"}
-            size="sm"
-            className="font-normal border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-none transition"
-          >
-            <MenuIcon className="size-4" />
-          </Button>
+          {!isLoaded ? (
+            <Spinner size={"small"} />
+          ) : (
+            <Button
+              variant={"outline"}
+              size="lg"
+              className="font-normal border-none focus-visible:ring-offset-0 focus-visible:ring-transparent outline-none transition"
+            >
+              <MenuIcon className="size-6" />
+            </Button>
+          )}
         </SheetTrigger>
         <SheetContent>
-          <nav className="flex flex-col gap-y-2 pt-6">
+          <nav className="flex flex-col gap-y-2 pt-8 z-20">
             {routes.map((route) => (
               <Button
                 key={route.label}
@@ -65,6 +70,21 @@ const Navigation = () => {
                 {route.label}
               </Button>
             ))}
+            {isSignedIn ? (
+              <Button
+                onClick={() => onClick("/dashboard")}
+                className="justify-start"
+              >
+                {t("Landing.GoToDashboard")}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => onClick("/dashboard")}
+                className="justify-start"
+              >
+                {t("Landing.SignIn")}
+              </Button>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
@@ -76,10 +96,16 @@ const Navigation = () => {
       {routes.map((route) => (
         <NavButton key={route.label} href={route.href} label={route.label} />
       ))}
-      {isSignedIn ? (
-        <NavButton href={"/dashboard"} label={"Dashboard"} isLoginBtn />
+      {!isLoaded ? (
+        <Spinner />
+      ) : isSignedIn ? (
+        <NavButton
+          href={"/dashboard"}
+          label={t("Landing.GoToDashboard")}
+          isLoginBtn
+        />
       ) : (
-        <NavButton href={"/dashboard"} label={"Login"} isLoginBtn />
+        <NavButton href={"/dashboard"} label={t("Landing.SignIn")} isLoginBtn />
       )}
     </nav>
   );

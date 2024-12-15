@@ -11,7 +11,12 @@ export const Logo = ({
 }) => {
   return (
     <Link href={href}>
-      <div className="items-center hidden lg:flex">
+      <div
+        className={cn(
+          "items-center",
+          href === "/dashboard" ? "hidden lg:flex" : "flex"
+        )}
+      >
         <Image
           src="/logo.png"
           height={32}
@@ -20,10 +25,7 @@ export const Logo = ({
           className="rounded-full"
         />
         <p
-          className={cn(
-            "font-semibold text-white text-2xl ml-2.5",
-            className && className
-          )}
+          className={cn("font-semibold text-white text-2xl ml-2.5", className)}
         >
           Finance
         </p>

@@ -1,6 +1,8 @@
 {
   "AppName": "Finance Pro",
   "Landing": {
+    "GoToDashboard": "Go To Dashboard",
+    "SignIn": "Sign In",
     "DocsPage": {
       "Header": "Docs"
     },

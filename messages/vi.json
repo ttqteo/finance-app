@@ -1,6 +1,8 @@
 {
   "AppName": "Tài Chính Chuyên Nghiệp",
   "Landing": {
+    "GoToDashboard": "Đến Tổng Quan",
+    "SignIn": "Đăng Nhập",
     "DocsPage": {
       "Header": "Tài Liệu"
     },
