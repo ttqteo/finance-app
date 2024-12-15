@@ -1,3 +1,5 @@
+"use client";
+
 import { SelectSingleEventHandler } from "react-day-picker";
 import {
   Popover,
@@ -9,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import { useTranslations } from "next-intl";
 
 type Props = {
   value?: Date;
@@ -17,6 +20,7 @@ type Props = {
 };
 
 export const DatePicker = ({ value, onChange, disabled }: Props) => {
+  const t = useTranslations();
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -29,7 +33,7 @@ export const DatePicker = ({ value, onChange, disabled }: Props) => {
           )}
         >
           <CalendarIcon className="size-4 mr-2" />
-          {value ? format(value, "PPP") : <span>Pick a date</span>}
+          {value ? format(value, "PPP") : <span>{t("Common.DatePicker")}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent>

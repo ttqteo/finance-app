@@ -19,6 +19,7 @@
     "Page": {
       "Header": "Trang {key}"
     },
+    "DatePicker": "Chọn Ngày",
     "Action": {
       "Edit": "Chỉnh sửa",
       "Delete": "Xóa",
