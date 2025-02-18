@@ -3,6 +3,9 @@
   "Landing": {
     "GoToDashboard": "Go To Dashboard",
     "SignIn": "Sign In",
+    "StockPage": {
+      "Header": "Stock"
+    },
     "DocsPage": {
       "Header": "Docs"
     },

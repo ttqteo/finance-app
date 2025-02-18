@@ -3,6 +3,9 @@
   "Landing": {
     "GoToDashboard": "Đến Tổng Quan",
     "SignIn": "Đăng Nhập",
+    "StockPage": {
+      "Header": "Chứng Khoán"
+    },
     "DocsPage": {
       "Header": "Tài Liệu"
     },

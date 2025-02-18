@@ -23,6 +23,10 @@ const Navigation = () => {
 
   const routes = [
     {
+      href: "/stock",
+      label: t("Landing.StockPage.Header"),
+    },
+    {
       href: "/",
       label: t("Landing.DocsPage.Header"),
     },

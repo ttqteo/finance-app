@@ -10,7 +10,17 @@ const Footer = () => {
           <GithubIcon className="size-4" />
         </Button>
       </Link>
-      <div>© Copyright 2024 Finance Pro</div>
+      <div>
+        © Copyright {new Date().getFullYear()}
+        {"  "}
+        <Link
+          href={"https://github.com/ttqteo"}
+          target="_blank"
+          className="hover:underline"
+        >
+          ttqteo
+        </Link>
+      </div>
     </footer>
   );
 };
