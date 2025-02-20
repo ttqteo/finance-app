@@ -100,9 +100,7 @@ const Navigation = () => {
       {routes.map((route) => (
         <NavButton key={route.label} href={route.href} label={route.label} />
       ))}
-      {!isLoaded ? (
-        <Spinner />
-      ) : isSignedIn ? (
+      {isSignedIn ? (
         <NavButton
           href={"/dashboard"}
           label={t("Landing.GoToDashboard")}

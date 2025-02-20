@@ -7,7 +7,14 @@ const StockPage = async ({
   searchParams: Promise<{ share?: string }>;
 }) => {
   const { share } = await searchParams;
-  const shareList = share?.split(",") ?? ["TCH", "MBB", "ACB", "HPG", "TCB"];
+  const shareList = share?.split(",") ?? [
+    "TCH",
+    "MBB",
+    "ACB",
+    "HPG",
+    "TCB",
+    "FPT",
+  ];
   const data = await vnstock.trading.priceBoard(shareList);
   return (
     <div className="max-w-screen-2xl mx-auto w-full">
