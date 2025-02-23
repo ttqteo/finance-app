@@ -14,7 +14,7 @@ const StockClient = ({ data }: { data: any }) => {
   const now = new Date();
   const { locale, formatNormal } = getLocale("vi");
 
-  const [displayRadio, setDisplayRadio] = useState("comfortable");
+  const [displayRadio, setDisplayRadio] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -36,7 +36,7 @@ const StockClient = ({ data }: { data: any }) => {
       <div className="flex gap-4">
         <span>Hiển thị</span>
         <RadioGroup
-          defaultValue={displayRadio}
+          value={displayRadio}
           className="flex gap-4"
           onValueChange={(val) => {
             setDisplayRadio(val);

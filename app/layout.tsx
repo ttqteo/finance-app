@@ -1,15 +1,15 @@
 import { FullscreenLoader } from "@/components/fullscreen-loader";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ClerkProvider, GoogleOneTap } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Inter } from "next/font/google";
+import { Inter, Roboto } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: {
@@ -52,12 +52,14 @@ export default async function RootLayout({
         },
       }}
     >
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+      <html lang="en">
+        <body
+          className={`${roboto.className} font-regular antialiased tracking-wide`}
+          suppressHydrationWarning
+        >
           <NextIntlClientProvider messages={messages}>
             <TooltipProvider>
               <Toaster />
-              <GoogleOneTap />
               <Suspense fallback={<FullscreenLoader />}>{children}</Suspense>
             </TooltipProvider>
           </NextIntlClientProvider>

@@ -7,13 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useCreateAccount } from "@/features/accounts/api/use-create-account";
 import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
 import { Select } from "@/components/select";
 
 export const useSelectAccount = (): [
-  () => JSX.Element,
+  () => React.JSX.Element,
   () => Promise<unknown>
 ] => {
   const accountQuery = useGetAccounts();

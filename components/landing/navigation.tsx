@@ -27,17 +27,21 @@ const Navigation = () => {
       label: t("Landing.StockPage.Header"),
     },
     {
-      href: "/",
-      label: t("Landing.DocsPage.Header"),
+      href: "/blog",
+      label: t("Landing.BlogPage.Header"),
     },
-    {
-      href: "/",
-      label: t("Landing.PricingPage.Header"),
-    },
-    {
-      href: "/",
-      label: t("Landing.ContactPage.Header"),
-    },
+    // {
+    //   href: "/",
+    //   label: t("Landing.DocsPage.Header"),
+    // },
+    // {
+    //   href: "/",
+    //   label: t("Landing.PricingPage.Header"),
+    // },
+    // {
+    //   href: "/",
+    //   label: t("Landing.ContactPage.Header"),
+    // },
   ];
 
   const onClick = (href: string) => {
