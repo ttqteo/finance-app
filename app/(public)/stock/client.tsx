@@ -21,6 +21,8 @@ const StockClient = ({ data }: { data: any }) => {
       const displayStock = localStorage.getItem("displayStock");
       if (displayStock) {
         setDisplayRadio(displayStock);
+      } else {
+        localStorage.setItem("displayStock", "comfortable");
       }
     }
   }, []);
