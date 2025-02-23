@@ -32,14 +32,25 @@ export function setCookie(name: string, value: string, days: number = 7) {
   )}; ${expiresStr}; path=/`;
 }
 
-export function formatCurrency(value: number) {
-  const currency = getCookie("currency") || "USD";
+export function formatCurrency(
+  value: number,
+  currencyCustom?: string,
+  isSuffix: boolean = true
+) {
+  const currency = currencyCustom ?? (getCookie("currency") || "USD");
   const config = currencyConfig[currency];
 
+  if (isSuffix) {
+    return Intl.NumberFormat(config.locale, {
+      style: "currency",
+      currency: config.currency,
+      minimumFractionDigits: config.fractionDigits,
+    }).format(value);
+  }
   return Intl.NumberFormat(config.locale, {
-    style: "currency",
-    currency: config.currency,
     minimumFractionDigits: config.fractionDigits,
+    maximumFractionDigits: config.fractionDigits,
+    useGrouping: true,
   }).format(value);
 }
 
@@ -76,8 +87,8 @@ export function fillMissingDays(
   return transactionByDay;
 }
 
-export const getLocale = () => {
-  const locale = getCookie("locale");
+export const getLocale = (localeCustom?: string) => {
+  const locale = localeCustom ?? getCookie("locale");
   if (locale === "vi") {
     return {
       locale: vi,
@@ -135,4 +146,35 @@ export function formatPercentage(
   }
 
   return result;
+}
+
+export function formatDate(dateStr: string): string {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+
+  return date.toLocaleDateString("vi-VN", options);
+}
+
+export function formatDate2(dateStr: string): string {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("vi-VN", options);
+}
+
+export function stringToDate(date: string) {
+  const [day, month, year] = date.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }

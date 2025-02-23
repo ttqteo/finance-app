@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getLocale } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,6 +21,8 @@ type Props = {
 
 export const DatePicker = ({ value, onChange, disabled }: Props) => {
   const t = useTranslations();
+  const { locale } = getLocale();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -43,6 +45,7 @@ export const DatePicker = ({ value, onChange, disabled }: Props) => {
           onSelect={onChange}
           disabled={disabled}
           initialFocus
+          locale={locale}
         />
       </PopoverContent>
     </Popover>

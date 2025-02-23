@@ -18,12 +18,11 @@ const Tools = () => {
       <Tooltip delayDuration={100}>
         <TooltipTrigger>
           <Button
-            variant={"blue"}
             className="rounded-full"
-            size="icon"
+            size="icon-big"
             onClick={newTransaction.onOpen}
           >
-            <PlusIcon className="size-4" />
+            <PlusIcon className="size-6" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

@@ -4,7 +4,8 @@ const LandingLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Header />
-      <main className="px-3 lg:px-14">{children}</main>
+      <div className="h-[68px]" />
+      <main className="mt-4 px-3 lg:px-14">{children}</main>
     </>
   );
 };
