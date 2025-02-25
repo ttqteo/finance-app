@@ -3,6 +3,9 @@
   "Landing": {
     "GoToDashboard": "Go To Dashboard",
     "SignIn": "Sign In",
+    "NewsPage": {
+      "Header": "News"
+    },
     "BlogPage": {
       "Header": "Blog"
     },

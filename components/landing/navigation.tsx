@@ -30,10 +30,10 @@ const Navigation = () => {
       href: "/blog",
       label: t("Landing.BlogPage.Header"),
     },
-    // {
-    //   href: "/",
-    //   label: t("Landing.DocsPage.Header"),
-    // },
+    {
+      href: "/news",
+      label: t("Landing.NewsPage.Header"),
+    },
     // {
     //   href: "/",
     //   label: t("Landing.PricingPage.Header"),
@@ -73,7 +73,6 @@ const Navigation = () => {
                 variant={route.href === pathname ? "secondary" : "ghost"}
                 onClick={() => onClick(route.href)}
                 className="justify-start"
-                disabled
               >
                 {route.label}
               </Button>
@@ -102,7 +101,12 @@ const Navigation = () => {
   return (
     <nav className="hidden lg:flex items-center gap-x-2 overflow-x-auto">
       {routes.map((route) => (
-        <NavButton key={route.label} href={route.href} label={route.label} />
+        <NavButton
+          key={route.label}
+          href={route.href}
+          label={route.label}
+          isActive={route.href === pathname}
+        />
       ))}
       {isSignedIn ? (
         <NavButton
