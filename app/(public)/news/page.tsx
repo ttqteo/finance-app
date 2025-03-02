@@ -1,9 +1,6 @@
-import { getLocale } from "@/lib/utils";
-import { format } from "date-fns";
-import { Metadata } from "next";
-import Link from "next/link";
-import Parser from "rss-parser";
+"use client";
 
+import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -11,93 +8,118 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-export const metadata: Metadata = {
-  title: "News",
-};
+import { format } from "date-fns-tz";
+import { XMLParser } from "fast-xml-parser";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface INews {
-  categories: string[];
-  content: string;
-  contentEncoded: string;
-  contentEncodedSnippet: string;
-  encodedSnippet: string;
-  guid: string;
-  isoDate: string;
+  title: string;
   link: string;
   pubDate: string;
-  title: string;
+  description: string;
+  generator: string;
 }
 
-async function getNews() {
-  const parser = new Parser();
-  const feed = await parser.parseURL("https://vneconomy.vn/chung-khoan.rss");
+const generatorList = [
+  {
+    name: "VnEconomy",
+    logoUrl: "/images/vneconomy-logo.jpg",
+  },
+];
 
-  const groupedArray = Object.entries(
-    feed.items.reduce((acc, item) => {
-      const date = new Date(item.pubDate ?? Date.now())
-        .toISOString()
-        .split("T")[0]; // Extract YYYY-MM-DD
-      if (!acc[date]) {
-        acc[date] = [];
+const parser = new XMLParser({
+  ignoreAttributes: false,
+});
+
+function decodeHTMLEntities(text: string) {
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = text;
+  return textarea.value;
+}
+
+export default function NewsPage() {
+  const [news, setNews] = useState<{
+    generator: string;
+    data: { date: string; data: INews[] }[];
+  }>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const rssUrl = "https://vneconomy.vn/chung-khoan.rss";
+        const response = await fetch(rssUrl);
+        const xml = await response.text();
+        const jsonData = parser.parse(xml);
+
+        const items = jsonData.rss.channel.item.map((item: any) => ({
+          title: item.title,
+          link: item.link,
+          pubDate: item.pubDate,
+          description: decodeHTMLEntities(item["content:encoded"] ?? ""),
+        }));
+
+        const groupedArray = Object.entries(
+          items.reduce((acc: Record<string, INews[]>, item: INews) => {
+            const date = new Date(item.pubDate ?? Date.now())
+              .toISOString()
+              .split("T")[0];
+            if (!acc[date]) acc[date] = [];
+            acc[date].push(item);
+            return acc;
+          }, {})
+        ).map(([date, data]) => ({ date, data: data as INews[] }));
+
+        setNews({ generator: "VnEconomy", data: groupedArray });
+      } catch (error) {
+        console.error("Failed to fetch news:", error);
+      } finally {
+        setLoading(false);
       }
-      acc[date].push({
-        ...item,
-        contentEncoded: item["content:encoded"],
-        contentEncodedSnippet: item["content:encodedSnippet"],
-      });
-      return acc;
-    }, {})
-  ).map(([date, data]) => ({ date, data })) as [
-    { date: string; data: INews[] }
-  ];
+    }
 
-  return {
-    data: groupedArray,
-  };
-}
+    fetchNews();
+  }, []);
 
-export default async function NewsPage() {
-  const news = await getNews();
+  if (loading) return <Spinner />;
+
   return (
     <div className="w-full mx-auto flex flex-col gap-1 sm:min-h-[91vh] min-h-[88vh] pt-2">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold">Tin tức</h1>
-        <p className="text-muted-foreground">
-          Từ mục Chứng Khoán của VnEconomy.
-        </p>
-      </div>
+      <h1 className="text-3xl font-extrabold">Tin tức</h1>
+      <p className="text-muted-foreground">Từ mục Chứng Khoán của VnEconomy.</p>
       <div className="flex flex-col mb-5">
-        {news?.data.map(({ date, data }) => (
-          <div key={date}>
-            <p className="py-1">{date}</p>
-            <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 gap-2">
+          {/* <div className="col-span-2"> */}
+          {news?.data.map(({ date, data }) => (
+            <div key={date}>
+              <p className="py-1">{date}</p>
               {data.map((item) => (
-                <NewsCard {...item} key={item.guid} />
+                <NewsCard
+                  {...item}
+                  generator={news.generator}
+                  key={item.link}
+                />
               ))}
             </div>
-          </div>
-        ))}
+          ))}
+          {/* </div> */}
+          {/* <div className="basis-1/3">Hello</div> */}
+        </div>
       </div>
     </div>
   );
 }
 
-function NewsCard({
-  categories,
-  content,
-  encodedSnippet,
-  contentEncodedSnippet,
-  guid,
-  isoDate,
-  link,
-  pubDate,
-  title,
-}: INews) {
-  const { locale } = getLocale("vi");
-  const words = contentEncodedSnippet.split(/\s+/);
+function NewsCard({ title, link, pubDate, description, generator }: INews) {
+  const words = description.split(/\s+/);
   const wordsLimit = 60;
-
+  const content =
+    words.length > wordsLimit
+      ? words.slice(0, wordsLimit).join(" ") + "..."
+      : description;
+  const generatorInfo = generatorList.filter((g) => g.name === generator)[0];
   return (
     <Link
       href={link}
@@ -106,21 +128,30 @@ function NewsCard({
     >
       <TooltipProvider>
         <Tooltip delayDuration={0}>
-          <TooltipTrigger>
-            <div className="flex justify-between items-center gap-4">
-              <p className="text-[13px] text-muted-foreground flex gap-2 items-center">
-                {format(isoDate, "p", { locale })}
+          <TooltipTrigger className="max-w-full">
+            <div className="flex justify-between items-center gap-2">
+              {generatorInfo && (
+                <Image
+                  src={generatorInfo.logoUrl}
+                  width={20}
+                  height={20}
+                  alt="generator logo"
+                />
+              )}
+              <p className="text-[13px] text-right text-muted-foreground w-[60px]">
+                {format(new Date(pubDate), "p", {
+                  timeZone: "Asia/Ho_Chi_Minh",
+                })}
               </p>
-              <Button variant={"link"} className="p-0 pr-7">
+              <span className="py-1 pr-7 truncate overflow-hidden text-ellipsis whitespace-nowrap flex-1 min-w-0 text-primary underline-offset-4 hover:underline">
                 {title}
-              </Button>
+              </span>
             </div>
           </TooltipTrigger>
-          <TooltipContent side={"left"}>
+          <TooltipContent side={"bottom"}>
             <p className="max-w-[600px]">
-              {words.length > wordsLimit
-                ? words.slice(0, wordsLimit).join(" ") + "..."
-                : contentEncodedSnippet}
+              <span className="font-semibold">{title}</span>
+              <div dangerouslySetInnerHTML={{ __html: content }} />
             </p>
           </TooltipContent>
         </Tooltip>
