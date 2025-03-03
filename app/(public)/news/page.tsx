@@ -1,7 +1,6 @@
 "use client";
 
 import { Spinner } from "@/components/spinner";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +26,10 @@ const generatorList = [
     name: "VnEconomy",
     logoUrl: "/images/vneconomy-logo.jpg",
   },
+  {
+    name: "VietStock",
+    logoUrl: "/images/vietstock-logo.png",
+  },
 ];
 
 const parser = new XMLParser({
@@ -40,29 +43,47 @@ function decodeHTMLEntities(text: string) {
 }
 
 export default function NewsPage() {
-  const [news, setNews] = useState<{
-    generator: string;
-    data: { date: string; data: INews[] }[];
-  }>();
+  const [news, setNews] = useState<{ date: string; data: INews[] }[]>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchNews() {
       try {
-        const rssUrl = "https://vneconomy.vn/chung-khoan.rss";
-        const response = await fetch(rssUrl);
-        const xml = await response.text();
-        const jsonData = parser.parse(xml);
+        const rssUrls = [
+          {
+            url: "https://vneconomy.vn/chung-khoan.rss",
+            generator: "VnEconomy",
+          },
+          {
+            url: "https://vietstock.vn/830/chung-khoan/co-phieu.rss",
+            generator: "VietStock",
+          },
+        ];
 
-        const items = jsonData.rss.channel.item.map((item: any) => ({
-          title: item.title,
-          link: item.link,
-          pubDate: item.pubDate,
-          description: decodeHTMLEntities(item["content:encoded"] ?? ""),
-        }));
+        const allItems: INews[] = [];
+
+        for (const { url, generator } of rssUrls) {
+          const response = await fetch(
+            `/api/public/news?url=${encodeURIComponent(url)}`
+          );
+          const xml = await response.text();
+          const jsonData = parser.parse(xml);
+
+          const items = jsonData.rss.channel.item.map((item: any) => ({
+            title: item.title,
+            link: item.link,
+            pubDate: item.pubDate,
+            description: decodeHTMLEntities(
+              item["content:encoded"] ?? item["description"] ?? ""
+            ),
+            generator,
+          }));
+
+          allItems.push(...items);
+        }
 
         const groupedArray = Object.entries(
-          items.reduce((acc: Record<string, INews[]>, item: INews) => {
+          allItems.reduce((acc: Record<string, INews[]>, item: INews) => {
             const date = new Date(item.pubDate ?? Date.now())
               .toISOString()
               .split("T")[0];
@@ -70,9 +91,19 @@ export default function NewsPage() {
             acc[date].push(item);
             return acc;
           }, {})
-        ).map(([date, data]) => ({ date, data: data as INews[] }));
+        ).map(([date, data]) => ({
+          date,
+          data: data.sort(
+            (a, b) =>
+              new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+          ) as INews[],
+        }));
 
-        setNews({ generator: "VnEconomy", data: groupedArray });
+        groupedArray.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+
+        setNews(groupedArray);
       } catch (error) {
         console.error("Failed to fetch news:", error);
       } finally {
@@ -88,19 +119,17 @@ export default function NewsPage() {
   return (
     <div className="w-full mx-auto flex flex-col gap-1 sm:min-h-[91vh] min-h-[88vh] pt-2">
       <h1 className="text-3xl font-extrabold">Tin tức</h1>
-      <p className="text-muted-foreground">Từ mục Chứng Khoán của VnEconomy.</p>
+      <p className="text-muted-foreground">
+        Từ mục Chứng Khoán của VnEconomy và VietStock.
+      </p>
       <div className="flex flex-col mb-5">
         <div className="grid grid-cols-1 gap-2">
           {/* <div className="col-span-2"> */}
-          {news?.data.map(({ date, data }) => (
+          {news?.map(({ date, data }) => (
             <div key={date}>
               <p className="py-1">{date}</p>
               {data.map((item) => (
-                <NewsCard
-                  {...item}
-                  generator={news.generator}
-                  key={item.link}
-                />
+                <NewsCard {...item} key={item.link} />
               ))}
             </div>
           ))}
@@ -126,8 +155,8 @@ function NewsCard({ title, link, pubDate, description, generator }: INews) {
       className="flex gap-2 items-start border rounded-md pl-2"
       target="_blank"
     >
-      <TooltipProvider>
-        <Tooltip delayDuration={0}>
+      <TooltipProvider skipDelayDuration={0} delayDuration={0}>
+        <Tooltip>
           <TooltipTrigger className="max-w-full">
             <div className="flex justify-between items-center gap-2">
               {generatorInfo && (
@@ -148,11 +177,11 @@ function NewsCard({ title, link, pubDate, description, generator }: INews) {
               </span>
             </div>
           </TooltipTrigger>
-          <TooltipContent side={"bottom"}>
-            <p className="max-w-[600px]">
+          <TooltipContent side={"top"}>
+            <div className="max-w-[600px]">
               <span className="font-semibold">{title}</span>
               <div dangerouslySetInnerHTML={{ __html: content }} />
-            </p>
+            </div>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
