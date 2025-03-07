@@ -54,18 +54,19 @@ export default function NewsPage() {
             url: "https://vneconomy.vn/chung-khoan.rss",
             generator: "VnEconomy",
           },
-          {
-            url: "https://vietstock.vn/830/chung-khoan/co-phieu.rss",
-            generator: "VietStock",
-          },
+          // {
+          //   url: "https://vietstock.vn/830/chung-khoan/co-phieu.rss",
+          //   generator: "VietStock",
+          // },
         ];
 
         const allItems: INews[] = [];
 
         for (const { url, generator } of rssUrls) {
-          const response = await fetch(
-            `/api/public/news?url=${encodeURIComponent(url)}`
-          );
+          // const response = await fetch(
+          //   `/api/public/news?url=${encodeURIComponent(url)}`
+          // );
+          const response = await fetch(`/api/public/news/vneconomy`);
           const xml = await response.text();
           const jsonData = parser.parse(xml);
 

@@ -8,25 +8,35 @@ import { and, desc, eq, gte, lt, lte, sql, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 
-const app = new Hono().get(
-  "/",
-  zValidator(
-    "query",
-    z.object({
-      url: z.string().optional(),
-    })
-  ),
-  async (c) => {
-    const { url } = c.req.valid("query");
+const app = new Hono()
+  .get(
+    "/",
+    zValidator(
+      "query",
+      z.object({
+        url: z.string().optional(),
+      })
+    ),
+    async (c) => {
+      const { url } = c.req.valid("query");
 
-    if (!url) {
-      return c.json({ error: "Missing RSS URL" }, 400);
+      if (!url) {
+        return c.json({ error: "Missing RSS URL" }, 400);
+      }
+
+      const resp = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0" },
+      });
+      const data = await resp.text();
+      return c.json(data);
     }
-
-    const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+  )
+  .get("/vneconomy", async (c) => {
+    const resp = await fetch("https://vneconomy.vn/chung-khoan.rss", {
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
     const data = await resp.text();
     return c.json(data);
-  }
-);
+  });
 
 export default app;
