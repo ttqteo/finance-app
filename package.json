@@ -39,7 +39,6 @@
     "date-fns-tz": "^3.2.0",
     "drizzle-orm": "^0.36.4",
     "drizzle-zod": "^0.5.1",
-    "fast-xml-parser": "^5.0.8",
     "gray-matter": "^4.0.3",
     "hono": "^4.6.12",
     "lucide-react": "^0.462.0",

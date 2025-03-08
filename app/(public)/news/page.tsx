@@ -9,40 +9,6 @@ export interface INews {
   generator: string;
 }
 
-// async function getNews() {
-//   const parser = new Parser();
-//   const feed = await parser.parseURL("https://vneconomy.vn/chung-khoan.rss");
-
-//   const groupedArray = Object.entries(
-//     feed.items.reduce((acc, item) => {
-//       const date = new Date(item.pubDate ?? Date.now())
-//         .toISOString()
-//         .split("T")[0]; // Extract YYYY-MM-DD
-//       if (!acc[date]) {
-//         acc[date] = [];
-//       }
-//       acc[date].push({
-//         ...item,
-//         contentEncoded: item["content:encoded"],
-//         contentEncodedSnippet: item["content:encodedSnippet"],
-//       });
-//       return acc;
-//     }, {})
-//   ).map(([date, data]) => ({ date, data })) as [
-//     { date: string; data: INews[] }
-//   ];
-
-//   return {
-//     data: groupedArray,
-//   };
-// }
-
-// function decodeHTMLEntities(text: string) {
-//   const textarea = document.createElement("textarea");
-//   textarea.innerHTML = text;
-//   return textarea.value;
-// }
-
 async function getNews() {
   const parser = new Parser();
 
@@ -60,23 +26,7 @@ async function getNews() {
   const allItems: INews[] = [];
 
   for (const { url, generator } of rssUrls) {
-    // const response = await fetch(
-    //   `/api/public/news?url=${encodeURIComponent(url)}`
-    // );
     const feed = await parser.parseURL(url);
-    // const response = await fetch(`/api/public/news/vneconomy`);
-    // const xml = await response.text();
-    // const jsonData = parser.parse(xml);
-
-    // const items = jsonData.rss.channel.item.map((item: any) => ({
-    //   title: item.title,
-    //   link: item.link,
-    //   pubDate: item.pubDate,
-    //   description: decodeHTMLEntities(
-    //     item["content:encoded"] ?? item["description"] ?? ""
-    //   ),
-    //   generator,
-    // }));
 
     const items = feed.items.map((item) => ({
       title: item.title,
@@ -85,28 +35,6 @@ async function getNews() {
       description: item["content:encoded"] ?? item["description"] ?? "",
       generator,
     })) as INews[];
-    // Object.entries(
-    //   feed.items.reduce((acc, item) => {
-    //     const date = new Date(item.pubDate ?? Date.now())
-    //       .toISOString()
-    //       .split("T")[0]; // Extract YYYY-MM-DD
-    //     if (!acc[date]) {
-    //       acc[date] = [];
-    //     }
-    //     acc[date].push({
-    //       title: item.title,
-    //       link: item.link,
-    //       pubDate: item.pubDate,
-    //       description: decodeHTMLEntities(
-    //         item["content:encoded"] ?? item["description"] ?? ""
-    //       ),
-    //       generator,
-    //     });
-    //     return acc;
-    //   }, {})
-    // ).map(([date, data]) => ({ date, data })) as [
-    //   { date: string; data: INews[] }
-    // ];
 
     allItems.push(...items);
   }

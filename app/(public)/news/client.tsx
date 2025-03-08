@@ -8,10 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { format } from "date-fns-tz";
-import { XMLParser } from "fast-xml-parser";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { INews } from "./page";
 
 const generatorList = [
@@ -25,87 +23,12 @@ const generatorList = [
   },
 ];
 
-const parser = new XMLParser({
-  ignoreAttributes: false,
-});
-
-function decodeHTMLEntities(text: string) {
-  const textarea = document.createElement("textarea");
-  textarea.innerHTML = text;
-  return textarea.value;
-}
-
 export default function NewsClient({
   data,
 }: {
   data: { date: string; data: INews[] }[];
 }) {
-  const [news, setNews] = useState<{ date: string; data: INews[] }[]>();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchNews() {
-      try {
-        // const rssUrls = [
-        //   {
-        //     url: "https://vneconomy.vn/chung-khoan.rss",
-        //     generator: "VnEconomy",
-        //   },
-        //   // {
-        //   //   url: "https://vietstock.vn/830/chung-khoan/co-phieu.rss",
-        //   //   generator: "VietStock",
-        //   // },
-        // ];
-        // const allItems: INews[] = [];
-        // for (const { url, generator } of rssUrls) {
-        //   // const response = await fetch(
-        //   //   `/api/public/news?url=${encodeURIComponent(url)}`
-        //   // );
-        //   const response = await fetch(`/api/public/news/vneconomy`);
-        //   const xml = await response.text();
-        //   const jsonData = parser.parse(xml);
-        //   const items = jsonData.rss.channel.item.map((item: any) => ({
-        //     title: item.title,
-        //     link: item.link,
-        //     pubDate: item.pubDate,
-        //     description: decodeHTMLEntities(
-        //       item["content:encoded"] ?? item["description"] ?? ""
-        //     ),
-        //     generator,
-        //   }));
-        //   allItems.push(...items);
-        // }
-        // const groupedArray = Object.entries(
-        //   allItems.reduce((acc: Record<string, INews[]>, item: INews) => {
-        //     const date = new Date(item.pubDate ?? Date.now())
-        //       .toISOString()
-        //       .split("T")[0];
-        //     if (!acc[date]) acc[date] = [];
-        //     acc[date].push(item);
-        //     return acc;
-        //   }, {})
-        // ).map(([date, data]) => ({
-        //   date,
-        //   data: data.sort(
-        //     (a, b) =>
-        //       new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
-        //   ) as INews[],
-        // }));
-        // groupedArray.sort(
-        //   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        // );
-        // setNews(groupedArray);
-      } catch (error) {
-        console.error("Failed to fetch news:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchNews();
-  }, []);
-
-  if (loading || !data) return <Spinner />;
+  if (!data) return <Spinner />;
 
   return (
     <div className="w-full mx-auto flex flex-col gap-1 sm:min-h-[91vh] min-h-[88vh] pt-2">
