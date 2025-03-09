@@ -63,6 +63,5 @@ async function getNews() {
 
 export default async function NewsPage() {
   const news = await getNews();
-  console.log({ news });
   return <NewsClient data={news} />;
 }

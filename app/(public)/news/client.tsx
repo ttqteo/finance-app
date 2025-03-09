@@ -91,8 +91,8 @@ function NewsCard({ title, link, pubDate, description, generator }: INews) {
               </span>
             </div>
           </TooltipTrigger>
-          <TooltipContent side={"top"}>
-            <div className="max-w-[600px]">
+          <TooltipContent side={"left"}>
+            <div className="max-w-[400px]">
               <span className="font-semibold">{title}</span>
               <div dangerouslySetInnerHTML={{ __html: content }} />
             </div>
