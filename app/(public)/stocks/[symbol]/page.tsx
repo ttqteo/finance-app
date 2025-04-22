@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useParams } from "next/navigation";
 
 // Mock data for the stock
 const stockData = {
@@ -92,11 +93,9 @@ const transactions = [
   },
 ];
 
-export default function StockDetailPage({
-  params,
-}: {
-  params: { symbol: string };
-}) {
+export default function StockDetailPage() {
+  const params = useParams<{ symbol: string }>();
+
   const [timeRange, setTimeRange] = useState("1M");
 
   return (

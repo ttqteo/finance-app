@@ -23,15 +23,13 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { useSearchParams } from "next/navigation";
 
-export default function AddTransactionPage({
-  searchParams,
-}: {
-  searchParams: { symbol?: string };
-}) {
+export default function AddTransactionPage() {
+  const searchParams = useSearchParams();
   const [date, setDate] = useState<Date>();
   const [transactionType, setTransactionType] = useState("buy");
-  const [symbol, setSymbol] = useState(searchParams.symbol || "");
+  const [symbol, setSymbol] = useState(searchParams.get("symbol") || "");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [fees, setFees] = useState("4.99");

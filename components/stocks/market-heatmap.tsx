@@ -233,7 +233,7 @@ export function MarketHeatmap() {
             <Card>
               <CardContent className="pt-6">
                 <h3 className="text-lg font-medium mb-4">
-                  Today's Trading Volume
+                  Today{"'"}s Trading Volume
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">

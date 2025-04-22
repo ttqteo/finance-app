@@ -9,7 +9,7 @@ import {
   Loader2Icon,
 } from "lucide-react";
 import { useState } from "react";
-import { LineVariant } from "@/components/line-variant";
+import { LineVariant } from "@/components/dashboard/line-variant";
 import {
   Select,
   SelectContent,

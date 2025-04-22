@@ -263,8 +263,8 @@ export function ChartIndicators({
       <div className="text-sm text-muted-foreground">
         <p>
           Technical indicators help identify trading opportunities by analyzing
-          historical price and volume data. Click "Add Indicator" to customize
-          your chart.
+          historical price and volume data. Click {"'"}Add Indicator{"'"} to
+          customize your chart.
         </p>
       </div>
     </div>

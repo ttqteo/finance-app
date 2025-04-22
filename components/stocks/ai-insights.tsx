@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Bot, RefreshCw } from "lucide-react";
+import { getPortfolioInsights } from "@/actions/ai-actions";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPortfolioInsights } from "@/actions/ai-actions";
+import { Bot, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface Stock {
   id: string;
@@ -39,29 +39,34 @@ export function AIInsights({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInsights = async () => {
-    setLoading(true);
-    setError(null);
-
+  const fetchInsights = useCallback(async () => {
     try {
-      const result = await getPortfolioInsights({
-        stocks,
-        portfolioPerformance: portfolioData,
-        sectorAllocation: sectorData,
-      });
+      setLoading(true);
+      setError(null);
 
-      setInsights(result);
-    } catch (err) {
-      console.error("Error fetching AI insights:", err);
-      setError("Failed to generate AI insights. Please try again later.");
-    } finally {
-      setLoading(false);
+      try {
+        const result = await getPortfolioInsights({
+          stocks,
+          portfolioPerformance: portfolioData,
+          sectorAllocation: sectorData,
+        });
+
+        setInsights(result);
+      } catch (err) {
+        console.error("Error fetching AI insights:", err);
+        setError("Failed to generate AI insights. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Failed to fetch insights", error);
     }
-  };
+  }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchInsights();
-  }, []);
+  }, [fetchInsights]);
 
   return (
     <Card>
