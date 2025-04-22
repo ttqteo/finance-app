@@ -51,6 +51,7 @@ export default async function RootLayout({
           footer: "hidden",
         },
       }}
+      afterSignOutUrl="/"
     >
       <html lang="en">
         <body

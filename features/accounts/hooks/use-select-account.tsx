@@ -10,7 +10,7 @@ import {
 import React, { useRef, useState } from "react";
 import { useCreateAccount } from "@/features/accounts/api/use-create-account";
 import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
-import { Select } from "@/components/select";
+import { Select } from "@/components/dashboard/select";
 
 export const useSelectAccount = (): [
   () => React.JSX.Element,

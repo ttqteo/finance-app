@@ -1,6 +1,6 @@
-import { AmountInput } from "@/components/amount-input";
-import { DatePicker } from "@/components/date-picker";
-import { Select } from "@/components/select";
+import { AmountInput } from "@/components/dashboard/amount-input";
+import { DatePicker } from "@/components/dashboard/date-picker";
+import { Select } from "@/components/dashboard/select";
 import { Button } from "@/components/ui/button";
 import {
   Form,
