@@ -24,11 +24,6 @@ export const Logo = ({
           alt="logo"
           className="rounded-full"
         />
-        <p
-          className={cn("font-semibold text-white text-2xl ml-2.5", className)}
-        >
-          Finance
-        </p>
       </div>
     </Link>
   );

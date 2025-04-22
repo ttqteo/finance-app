@@ -3,7 +3,7 @@
 import { Filters } from "@/components/dashboard/filters";
 import Navigation from "@/components/dashboard/navigation";
 import { Logo } from "@/components/logo";
-import WelcomeMessage from "@/components/welcome-message";
+import WelcomeMessage from "@/components/dashboard/welcome-message";
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import { setCookie } from "@/lib/utils";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
@@ -25,15 +25,15 @@ const Header = () => {
   const disabled = pathname.includes("settings");
 
   return (
-    <header className="bg-gradient-to-b from-blue-700 to-blue-500 px-4 py-8 lg:px-14 pb-36">
+    <header className="bg-gradient-to-b from-blue-700 to-blue-500 px-4 py-8 lg:px-14 pb-36 relative">
       <div className="max-w-screen-2xl mx-auto">
         <div className="w-full flex items-center justify-between mb-14">
-          <div className="flex items-center lg:gap-x-16">
-            <Logo href="/dashboard" />
+          <div className="flex items-center lg:gap-x-6">
+            <Logo href="/" />
             <Navigation />
           </div>
           <ClerkLoaded>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </ClerkLoaded>
           <ClerkLoading>
             <Loader2Icon className="size-8 animate-spin text-slate-400" />
