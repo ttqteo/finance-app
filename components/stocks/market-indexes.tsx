@@ -13,6 +13,13 @@ import {
 } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 // Mock data for Vietnamese indexes
 const vietnameseIndexes = [
@@ -147,17 +154,37 @@ const economicEvents = [
 
 export function MarketIndexes() {
   const [selectedIndex, setSelectedIndex] = useState(vietnameseIndexes[0]);
+  const [activeTab, setActiveTab] = useState<string>("vietnamese");
+
+  const handleSelectChange = (value: string) => {
+    setActiveTab(value);
+  };
 
   return (
-    <Tabs defaultValue="vietnamese" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="vietnamese">Vietnamese</TabsTrigger>
-        <TabsTrigger value="international">International</TabsTrigger>
-        <TabsTrigger value="economic">Economic Events</TabsTrigger>
-      </TabsList>
+    <Tabs className="space-y-4" value={activeTab} onValueChange={setActiveTab}>
+      <div className="hidden sm:block">
+        <TabsList className="grid w-full sm:grid-cols-3">
+          <TabsTrigger value="vietnamese">Vietnamese</TabsTrigger>
+          <TabsTrigger value="international">International</TabsTrigger>
+          <TabsTrigger value="economic">Economic Events</TabsTrigger>
+        </TabsList>
+      </div>
+
+      <div className="sm:hidden">
+        <Select value={activeTab} onValueChange={handleSelectChange}>
+          <SelectTrigger className="w-full p-2 border rounded">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vietnamese">Vietnamese</SelectItem>
+            <SelectItem value="international">International</SelectItem>
+            <SelectItem value="economic">Economic Events</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <TabsContent value="vietnamese" className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
           {vietnameseIndexes.map((index) => (
             <div
               key={index.name}

@@ -34,7 +34,7 @@ const components = {
 };
 
 // can be used for other pages like blogs, Guides etc
-async function parseMdx<Frontmatter>(rawMdx: string) {
+export async function parseMdx<Frontmatter>(rawMdx: string) {
   return await compileMDX<Frontmatter>({
     source: rawMdx,
     options: {

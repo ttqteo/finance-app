@@ -59,6 +59,7 @@
     "react-financial-charts": "^2.0.1",
     "react-hook-form": "^7.53.2",
     "react-icons": "^5.4.0",
+    "react-markdown": "^10.1.0",
     "react-papaparse": "^4.4.0",
     "react-select": "^5.8.3",
     "react-use": "^17.5.1",

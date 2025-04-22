@@ -13,7 +13,7 @@ const roboto = Roboto({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Finance Pro",
+    template: "%s - Finance Pro",
     default: "Finance Pro",
   },
   description: "Finace Platform to track your money",

@@ -58,7 +58,7 @@ const Navigation = () => {
             <MenuIcon className="size-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent side="left">
           <nav className="flex flex-col gap-y-2 pt-6">
             {routes.map((route) => (
               <Button

@@ -2,10 +2,9 @@ import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import accounts from "./accounts";
 import categories from "./categories";
-import transactions from "./transactions";
-import summary from "./summary";
-import public_news from "./public-news";
 import settings from "./settings";
+import summary from "./summary";
+import transactions from "./transactions";
 
 export const runtime = "edge";
 
@@ -16,7 +15,6 @@ const routes = app
   .route("/categories", categories)
   .route("/transactions", transactions)
   .route("/summary", summary)
-  .route("/public/news", public_news)
   .route("/settings", settings);
 
 export const GET = handle(app);

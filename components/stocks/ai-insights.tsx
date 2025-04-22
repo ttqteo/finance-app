@@ -13,7 +13,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Bot, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-
+import ReactMarkdown from "react-markdown";
 interface Stock {
   id: string;
   symbol: string;
@@ -101,13 +101,7 @@ export function AIInsights({
           </div>
         ) : (
           <div className="prose prose-sm dark:prose-invert max-w-none">
-            {insights && (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: insights.replace(/\n/g, "<br />"),
-                }}
-              />
-            )}
+            {insights && <ReactMarkdown>{insights}</ReactMarkdown>}
           </div>
         )}
       </CardContent>

@@ -14,7 +14,8 @@ export const Logo = ({
       <div
         className={cn(
           "items-center",
-          href === "/dashboard" ? "hidden lg:flex" : "flex"
+          href === "/dashboard" ? "hidden lg:flex" : "flex",
+          className
         )}
       >
         <Image

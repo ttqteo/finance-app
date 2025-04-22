@@ -74,6 +74,7 @@ export async function getPortfolioInsights(
       4. 1-2 stocks that might be worth considering adding to this portfolio
 
       Format your response in clear paragraphs with headings. Keep your response concise and focused on actionable insights.
+      And answer in Vietnamese.
     `;
 
     // Call the Gemini API

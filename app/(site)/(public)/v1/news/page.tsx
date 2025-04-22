@@ -1,5 +1,5 @@
 import Parser from "rss-parser";
-import NewsClient from "../../../../components/v1/news-client";
+import NewsClient from "../../../../../components/v1/news-client";
 
 export interface INews {
   title: string;
