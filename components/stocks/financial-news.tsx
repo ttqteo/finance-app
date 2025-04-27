@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { format } from "date-fns";
-import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BlogMdxFrontmatter } from "@/lib/markdown";
+import { formatDate2 } from "@/lib/utils";
+import { format } from "date-fns";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 // Mock financial news data
 const newsData = [
@@ -97,7 +100,11 @@ const marketInsights = [
   },
 ];
 
-export function FinancialNews() {
+export function FinancialNews({
+  blogs,
+}: {
+  blogs: (BlogMdxFrontmatter & { slug: string })[];
+}) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const filteredNews = activeCategory
@@ -107,10 +114,10 @@ export function FinancialNews() {
   const categories = Array.from(new Set(newsData.map((news) => news.category)));
 
   return (
-    <Tabs defaultValue="latest" className="space-y-4">
+    <Tabs defaultValue="insights" className="space-y-4">
       <TabsList>
-        <TabsTrigger value="latest">Latest News</TabsTrigger>
-        <TabsTrigger value="insights">Market Insights</TabsTrigger>
+        <TabsTrigger value="latest">Tin Tức</TabsTrigger>
+        <TabsTrigger value="insights">Bài Viết</TabsTrigger>
       </TabsList>
 
       <TabsContent value="latest" className="space-y-4">
@@ -171,6 +178,7 @@ export function FinancialNews() {
 
       <TabsContent value="insights" className="space-y-4">
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+          {/* MOCK DATA
           {marketInsights.map((insight) => (
             <div key={insight.id} className="border rounded-lg p-4 space-y-2">
               <h3 className="font-medium">{insight.title}</h3>
@@ -182,6 +190,21 @@ export function FinancialNews() {
                 <ExternalLink className="h-3 w-3" />
                 <span className="text-xs">Read full analysis</span>
               </Button>
+            </div>
+          ))} */}
+          {blogs.map((blog) => (
+            <div key={blog.title} className="border rounded-lg p-4 space-y-2">
+              <h3 className="font-medium">{blog.title}</h3>
+              <div className="text-xs text-muted-foreground">
+                admin • {formatDate2(blog.date)}
+              </div>
+              <p className="text-sm">{blog.description}</p>
+              <Link href={`/v1/blogs/${blog.slug}`} target="_blank">
+                <Button variant="ghost" size="sm" className="h-7 gap-1">
+                  <ExternalLink className="h-3 w-3" />
+                  <span className="text-xs">Đọc đầy đủ</span>
+                </Button>
+              </Link>
             </div>
           ))}
         </div>

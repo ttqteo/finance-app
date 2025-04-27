@@ -1,5 +1,3 @@
-"use client";
-
 import { LineChart, BarChart3, Newspaper } from "lucide-react";
 import {
   Card,
@@ -11,8 +9,14 @@ import {
 import { MarketIndexes } from "@/components/stocks/market-indexes";
 import { MarketHeatmap } from "@/components/stocks/market-heatmap";
 import { FinancialNews } from "@/components/stocks/financial-news";
+import { getAllBlogs } from "@/lib/markdown";
+import { stringToDate } from "@/lib/utils";
 
-export default function MarketDashboardPage() {
+export default async function MarketDashboardPage() {
+  const blogs = (await getAllBlogs()).sort(
+    (a, b) => stringToDate(b.date).getTime() - stringToDate(a.date).getTime()
+  );
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -47,7 +51,7 @@ export default function MarketDashboardPage() {
               <Newspaper className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <FinancialNews />
+              <FinancialNews blogs={blogs} />
             </CardContent>
           </Card>
         </div>
