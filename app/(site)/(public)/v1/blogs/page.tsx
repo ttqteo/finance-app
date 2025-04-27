@@ -59,7 +59,9 @@ function BlogCard({
         <p className="text-[13px] text-muted-foreground">
           Đăng vào ngày {formatDate2(date)}
         </p>
-        <AvatarGroup users={authors} />
+        <Avatar>
+          <AvatarFallback>AD</AvatarFallback>
+        </Avatar>
       </div>
     </Link>
   );

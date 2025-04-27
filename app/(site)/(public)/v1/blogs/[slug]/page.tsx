@@ -57,19 +57,30 @@ export default async function BlogPage(props: PageProps) {
         <h1 className="sm:text-4xl text-3xl font-extrabold">
           {res.frontmatter.title}
         </h1>
-        <div className="mt-6 flex flex-col gap-3">
+        {/* <div className="mt-6 flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">Đăng bởi</p>
           <Authors authors={res.frontmatter.authors} />
+        </div> */}
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarFallback>AD</AvatarFallback>
+          </Avatar>
+          <div className="">
+            <p className="text-sm font-medium">admin</p>
+            <p className="font-code text-[13px] text-muted-foreground">
+              @admin
+            </p>
+          </div>
         </div>
       </div>
-      <div className="!w-full">
+      <div className="!w-full mb-24">
         <div className="w-full mb-7">
           <Image
             src={res.frontmatter.cover}
             alt="cover"
             width={700}
             height={400}
-            className="w-full h-[400px] rounded-md border object-cover"
+            className="w-full h-[400px] rounded-lg border object-cover"
           />
         </div>
         <Typography>{res.content}</Typography>
