@@ -17,46 +17,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ArrowRight, ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 
 const NewOverview = () => {
   return (
     <>
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold md:text-2xl">Overview</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <Select defaultValue="month">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select view" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
-              <SelectItem value="all">All Time</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex items-center gap-1 rounded-lg border px-3 py-1">
-            <Button variant="ghost" size="icon" className="h-6 w-6">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium">Apr 2025</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <AccountSummary
           title="Total Balance"

@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 const boxVariant = cva("shrink-0 rounded-md p-3", {
   variants: {
     variant: {
-      default: "bg-blue-500/20",
+      default: "bg-secondary",
       success: "bg-emerald-500/20",
       danger: "bg-rose-500/20",
       warning: "bg-yellow-500/20",
@@ -29,7 +29,7 @@ const boxVariant = cva("shrink-0 rounded-md p-3", {
 const iconVariant = cva("size-6", {
   variants: {
     variant: {
-      default: "fill-blue-500",
+      default: "fill-primary",
       success: "fill-emerald-500",
       danger: "fill-rose-500",
       warning: "fill-yellow-500",
@@ -60,7 +60,7 @@ export const DataCard = ({
 }: DataCardProps) => {
   const t = useTranslations();
   return (
-    <Card className="border-none drop-shadow-sm">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-x-4">
         <div className="space-y-2">
           <CardTitle className="text-2xl line-clamp-1">{title}</CardTitle>
@@ -98,7 +98,7 @@ export const DataCard = ({
 
 export const DataCardLoading = () => {
   return (
-    <Card className="border-none drop-shadow-sm h-[192px]">
+    <Card className="h-[192px]">
       <CardHeader className="flex flex-row items-center justify-between gap-x-4">
         <div className="space-y-2">
           <Skeleton className="h-6 w-24" />
