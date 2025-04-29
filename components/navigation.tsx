@@ -27,7 +27,7 @@ const Navigation = () => {
 
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center px-4 fixed z-10 w-full bg-white shadow-sm">
+      <div className="flex h-16 items-center px-4 fixed z-10 w-full bg-background border-b">
         {isMobile ? (
           <MobileNav />
         ) : (

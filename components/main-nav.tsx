@@ -80,12 +80,12 @@ const NavItem = ({
   <Link
     href={href}
     className={cn(
-      "block px-3 py-1.5 text-sm rounded-md transition-colors",
+      "block pl-3 py-1.5 text-sm rounded-md transition-colors",
       (currentPath === href && href === "/") ||
         (currentPath.startsWith(href) && href !== "/")
         ? "text-primary font-bold"
         : "text-muted-foreground font-medium",
-      "hover:text-primary hover:text-blue-800"
+      "hover:text-primary hover:text-gray-100"
     )}
   >
     {label}
