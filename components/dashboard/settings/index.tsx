@@ -24,7 +24,7 @@ const formSchema = insertUserSettingsSchema.pick({
 
 type FormValues = z.input<typeof formSchema>;
 
-const SettingsClient = () => {
+const SettingsPage = () => {
   const t = useTranslations();
   const router = useRouter();
 
@@ -82,4 +82,4 @@ const SettingsClient = () => {
   );
 };
 
-export default SettingsClient;
+export default SettingsPage;

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 import { SingleValue } from "react-select";
 import CreateableSelect from "react-select/creatable";
@@ -33,12 +34,23 @@ export const Select = ({
     <CreateableSelect
       placeholder={placeholder}
       className="text-sm h-10"
-      styles={{
-        control: (base) => ({
-          ...base,
-          borderColor: "#e2e8f0",
-          ":hover": { borderColor: "#e2e8f0" },
-        }),
+      classNames={{
+        control: ({ isDisabled, isFocused }) =>
+          cn(
+            "!border !border-input !bg-background !ring-offset-background !cursor-pointer",
+            isFocused && "!outline-none !ring-ring !ring-2 !ring-offset-2",
+            isDisabled && "!cursor-not-allowed !opacity-50"
+          ),
+        menu: () => "!border !bg-popover !text-popover-foreground",
+        option: ({ isSelected, isFocused, isDisabled }) =>
+          cn(
+            "!cursor-pointer",
+            isSelected && "!bg-secondary",
+            isFocused && "!bg-accent !text-accent-foreground",
+            isDisabled && "!pointer-events-none !opacity-50"
+          ),
+        placeholder: () => "!text-muted-foreground",
+        singleValue: () => "!text-primary",
       }}
       value={formattedValue}
       onChange={onSelect}

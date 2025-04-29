@@ -1,15 +1,16 @@
+import TransactionsPage from "@/components/dashboard/transactions";
 import { Metadata } from "next";
-import TransactionsClient from "./client";
 
 export const metadata: Metadata = {
   title: "Transactions",
 };
-const TransactionsPage = () => {
+
+const Page = () => {
   return (
     <>
-      <TransactionsClient />
+      <TransactionsPage />
     </>
   );
 };
 
-export default TransactionsPage;
+export default Page;

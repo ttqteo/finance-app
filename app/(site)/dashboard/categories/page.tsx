@@ -1,15 +1,16 @@
+import CategoriesPage from "@/components/dashboard/categories";
 import { Metadata } from "next";
-import CategoriesClient from "./client";
 
 export const metadata: Metadata = {
   title: "Categories",
 };
-const CategoriesPage = () => {
+
+const Page = () => {
   return (
     <>
-      <CategoriesClient />
+      <CategoriesPage />
     </>
   );
 };
 
-export default CategoriesPage;
+export default Page;

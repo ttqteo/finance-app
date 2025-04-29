@@ -4,25 +4,24 @@ import { DataTable } from "@/components/dashboard/data-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBulkDeleteAccounts } from "@/features/accounts/api/use-bulk-delete-accounts";
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
-import { useNewAccount } from "@/features/accounts/hooks/use-new-account";
+import { useBulkDeleteCategories } from "@/features/categories/api/use-bulk-delete-categories";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { useNewCategory } from "@/features/categories/hooks/use-new-category";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { columns } from "./columns";
+import { useTranslations } from "next-intl";
 
-const AccountsClient = () => {
+const CategoriesPage = () => {
   const t = useTranslations();
 
-  const newAccount = useNewAccount();
-  const accountsQuery = useGetAccounts();
-  const deleteAccounts = useBulkDeleteAccounts();
-  const accounts = accountsQuery.data || [];
+  const newCategory = useNewCategory();
+  const categoriesQuery = useGetCategories();
+  const deleteCategories = useBulkDeleteCategories();
+  const categories = categoriesQuery.data || [];
 
-  const isLoading = accountsQuery.isLoading;
-  const isDisabled = accountsQuery.isLoading || deleteAccounts.isPending;
+  const isDisabled = categoriesQuery.isLoading || deleteCategories.isPending;
 
-  if (isLoading) {
+  if (categoriesQuery.isLoading) {
     return (
       <Card className="border-none drop-shadow-sm">
         <CardHeader>
@@ -41,9 +40,9 @@ const AccountsClient = () => {
     <Card className="border-none drop-shadow-sm">
       <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
         <CardTitle className="text-xl line-clamp-1">
-          {t("Common.Page.Header", { key: t("AccountsPage.Header") })}
+          {t("Common.Page.Header", { key: t("CategoriesPage.Header") })}
         </CardTitle>
-        <Button size={"sm"} onClick={newAccount.onOpen}>
+        <Button size={"sm"} onClick={newCategory.onOpen}>
           <PlusIcon className="size-4 mr-2" />
           {t("Common.Action.New")}
         </Button>
@@ -51,12 +50,12 @@ const AccountsClient = () => {
       <CardContent>
         <DataTable
           columns={columns(t)}
-          data={accounts}
+          data={categories}
           filterKey="name"
-          filterKeyTranslate={t("AccountsPage.Column.Name")}
+          filterKeyTranslate={t("CategoriesPage.Column.Name")}
           onDelete={(row) => {
             const ids = row.map((r) => r.original.id);
-            deleteAccounts.mutate({ ids });
+            deleteCategories.mutate({ ids });
           }}
           disabled={isDisabled}
         />
@@ -65,4 +64,4 @@ const AccountsClient = () => {
   );
 };
 
-export default AccountsClient;
+export default CategoriesPage;

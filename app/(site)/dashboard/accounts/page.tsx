@@ -1,15 +1,15 @@
+import AccountsPage from "@/components/dashboard/accounts";
 import { Metadata } from "next";
-import AccountsClient from "./client";
 
 export const metadata: Metadata = {
   title: "Accounts",
 };
-const AccountsPage = () => {
+const Page = () => {
   return (
     <>
-      <AccountsClient />
+      <AccountsPage />
     </>
   );
 };
 
-export default AccountsPage;
+export default Page;

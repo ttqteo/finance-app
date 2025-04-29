@@ -28,7 +28,7 @@ const INITIAL_IMPORT_RESULTS = {
   meta: {},
 };
 
-const TransactionsClient = () => {
+const TransactionsPage = () => {
   const t = useTranslations();
 
   const [AccountDialog, confirm] = useSelectAccount();
@@ -137,4 +137,4 @@ const TransactionsClient = () => {
   );
 };
 
-export default TransactionsClient;
+export default TransactionsPage;

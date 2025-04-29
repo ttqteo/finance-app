@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const PREFIX_URL = "/dashboard";
 
@@ -60,7 +61,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="flex w-16 h-screen flex-col justify-center px-2 border-r">
+    <div className="fixed z-10 top-0 left-0 flex h-screen flex-col justify-center px-2 border-r">
       <div className="flex h-16 items-center justify-center border-b border-gray-800">
         <div className="flex h-8 w-8 items-center justify-center">
           <Logo href={PREFIX_URL} />
@@ -101,7 +102,7 @@ interface NavItemProps {
 function NavItem({ href, icon: Icon, label, isActive }: NavItemProps) {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Link
           href={href}
           className="relative flex h-12 w-full items-center justify-center"

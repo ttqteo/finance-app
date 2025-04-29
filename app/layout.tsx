@@ -54,9 +54,10 @@ export default async function RootLayout({
       }}
       afterSignOutUrl="/"
     >
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en">
         <body
           className={`${roboto.className} font-regular antialiased tracking-wide`}
+          suppressHydrationWarning
         >
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider

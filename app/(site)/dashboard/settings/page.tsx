@@ -1,15 +1,16 @@
 import { Metadata } from "next";
-import SettingsClient from "./client";
+import SettingsPage from "@/components/dashboard/settings";
 
 export const metadata: Metadata = {
   title: "Settings",
 };
-const SettingsPage = () => {
+
+const Page = () => {
   return (
     <>
-      <SettingsClient />
+      <SettingsPage />
     </>
   );
 };
 
-export default SettingsPage;
+export default Page;

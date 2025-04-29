@@ -15,10 +15,10 @@ const Tools = () => {
   const newTransaction = useNewTransaction();
 
   return (
-    <div className="fixed right-0 bottom-0 z-99 flex items-center justify-between m-4">
+    <div className="fixed right-0 bottom-0 z-10 flex items-center justify-between m-4">
       <div></div>
       <Tooltip delayDuration={100}>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             className="rounded-full"
             size="icon"
