@@ -16,8 +16,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Skeleton } from "./ui/skeleton";
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
 
 type Props = {

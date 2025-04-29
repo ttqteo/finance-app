@@ -1,38 +1,30 @@
-"use client";
-
-import Header from "@/components/dashboard/header";
+import { Sidebar } from "@/app/(site)/dashboard/sidebar";
 import Tools from "@/components/dashboard/tools";
-import { FullscreenLoader } from "@/components/fullscreen-loader";
 import QueryProvider from "@/providers/query-provider";
 import SheetProvider from "@/providers/sheet-provider";
-import { useAuth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import Header from "./header";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function DashboardLayout({ children }: Props) {
-  const { isLoaded, isSignedIn } = useAuth();
-
-  if (!isLoaded) {
-    return <FullscreenLoader />;
-  }
-
-  if (!isSignedIn) {
-    redirect("/");
-  }
-
   return (
-    <QueryProvider>
-      <SheetProvider />
-      <Header />
-      <main className="px-3 lg:px-14">
-        <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-          {children}
+    <div className="flex min-h-screen bg-background">
+      <QueryProvider>
+        <SheetProvider />
+        <Sidebar />
+        <div className="flex flex-1 flex-col">
+          <Header />
+          <main
+            className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8"
+            style={{ maxWidth: "calc(100vw - 64px)" }}
+          >
+            {children}
+          </main>
         </div>
-      </main>
-      <Tools />
-    </QueryProvider>
+        <Tools />
+      </QueryProvider>
+    </div>
   );
 }

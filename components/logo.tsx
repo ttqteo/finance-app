@@ -13,15 +13,15 @@ export const Logo = ({
     <Link href={href}>
       <div
         className={cn(
-          "items-center",
+          "items-center border rounded-full",
           href === "/dashboard" ? "hidden lg:flex" : "flex",
           className
         )}
       >
         <Image
           src="/logo.png"
-          height={32}
-          width={32}
+          height={40}
+          width={40}
           alt="logo"
           className="rounded-full"
         />

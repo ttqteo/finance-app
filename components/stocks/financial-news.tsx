@@ -194,17 +194,14 @@ export function FinancialNews({
           ))} */}
           {blogs.map((blog) => (
             <div key={blog.title} className="border rounded-lg p-4 space-y-2">
-              <h3 className="font-medium">{blog.title}</h3>
-              <div className="text-xs text-muted-foreground">
-                admin • {formatDate2(blog.date)}
-              </div>
-              <p className="text-sm">{blog.description}</p>
               <Link href={`/v1/blogs/${blog.slug}`} target="_blank">
-                <Button variant="ghost" size="sm" className="h-7 gap-1">
-                  <ExternalLink className="h-3 w-3" />
-                  <span className="text-xs">Đọc đầy đủ</span>
-                </Button>
+                <h3 className="font-medium">{blog.title}</h3>
               </Link>
+              <div className="text-xs text-muted-foreground">
+                {formatDate2(blog.date)}
+              </div>
+
+              <p className="text-sm">{blog.description}</p>
             </div>
           ))}
         </div>
