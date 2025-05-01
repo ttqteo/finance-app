@@ -1,9 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
-
 import {
   Popover,
   PopoverContent,
@@ -11,8 +7,11 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as React from "react";
 import { Logo } from "./logo";
-import { ROUTES } from "./navigation";
+import { PUBLIC_ROUTES } from "./navigation";
 
 type HoverPopoverProps = {
   currentPath: string;
@@ -85,7 +84,7 @@ const NavItem = ({
         (currentPath.startsWith(href) && href !== "/")
         ? "text-primary font-bold"
         : "text-muted-foreground font-medium",
-      "hover:text-primary hover:text-gray-100"
+      "hover:text-gray-900 hover:dark:text-gray-100"
     )}
   >
     {label}
@@ -103,7 +102,7 @@ export function MainNav({
       <Logo href="/" className="text-black mr-2" />
 
       <div className="hidden sm:flex items-center space-x-4">
-        {ROUTES.map((route) =>
+        {PUBLIC_ROUTES.map((route) =>
           route.subPath ? (
             <HoverPopover
               key={route.label}

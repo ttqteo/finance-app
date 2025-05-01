@@ -1,6 +1,7 @@
 "use client";
 
 import { Filters } from "@/components/dashboard/filters";
+import { ModeToggle } from "@/components/mode-toggle";
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import { setCookie } from "@/lib/utils";
 import { Search } from "lucide-react";
@@ -32,6 +33,7 @@ const Header = () => {
           />
         </div>
       </div>
+      <ModeToggle />
       <Filters disabled={disabled} />
     </header>
   );

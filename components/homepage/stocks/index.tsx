@@ -6,11 +6,11 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useEffect, useState } from "react";
-import ComfortableDisplay from "./components/comfortable-display";
-import FullDisplay from "./components/full-display";
-import MinimalDisplay from "./components/minimal-display";
+import ComfortableDisplay from "./comfortable-display";
+import FullDisplay from "./full-display";
+import MinimalDisplay from "./minimal-display";
 
-const StockClient = ({ data }: { data: any }) => {
+const StockPage = ({ data }: { data: any }) => {
   const now = new Date();
   const { locale, formatNormal } = getLocale("vi");
 
@@ -67,4 +67,4 @@ const StockClient = ({ data }: { data: any }) => {
   );
 };
 
-export default StockClient;
+export default StockPage;

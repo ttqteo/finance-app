@@ -1,6 +1,9 @@
-import Link from "next/link";
 import { ArrowUp, DollarSign, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
+import { RecentTransactions } from "@/components/dashboard/investing/recent-transactions";
+import { StockChart } from "@/components/dashboard/investing/stock-chart";
+import { TopPerformers } from "@/components/dashboard/investing/top-performers";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StockChart } from "@/components/stocks/stock-chart";
-import { RecentTransactions } from "@/components/stocks/recent-transactions";
-import { TopPerformers } from "@/components/stocks/top-performers";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Investing",
+};
 
 export default function Dashboard() {
   return (

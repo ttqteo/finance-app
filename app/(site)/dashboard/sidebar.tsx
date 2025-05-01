@@ -12,19 +12,30 @@ import { cn } from "@/lib/utils";
 import { ClerkLoaded, ClerkLoading, useAuth, UserButton } from "@clerk/nextjs";
 import {
   BarChart3,
+  ChartArea,
+  ChartCandlestick,
+  ChartNoAxesCombined,
   Cog,
   FileText,
+  IconNode,
+  ListPlus,
   Loader2Icon,
-  Monitor,
+  NotebookPen,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const PREFIX_URL = "/dashboard";
 
-const PROTECTED_ROUTES = [
+type Route = {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  subPath?: Route[];
+};
+
+const PROTECTED_ROUTES: Route[] = [
   {
     label: "Tổng Quan",
     href: "",
@@ -43,7 +54,21 @@ const PROTECTED_ROUTES = [
   {
     label: "Danh Mục",
     href: "/categories",
-    icon: Monitor,
+    icon: ListPlus,
+  },
+  {
+    label: "Investing",
+    href: "/investing",
+    icon: ChartNoAxesCombined,
+    subPath: [
+      { href: "/investing/stocks", label: "Stocks", icon: ChartCandlestick },
+      {
+        href: "/investing/transactions",
+        label: "Transactions",
+        icon: NotebookPen,
+      },
+      { href: "/investing/analytics", label: "Analytics", icon: ChartArea },
+    ],
   },
   {
     label: "Cài Đặt",
@@ -61,22 +86,40 @@ export function Sidebar() {
   }
 
   return (
-    <div className="fixed z-10 top-0 left-0 flex h-screen flex-col justify-center px-2 border-r">
+    <div className="fixed z-10 top-0 left-0 flex h-screen flex-col justify-center px-1 pl-3">
       <div className="flex h-16 items-center justify-center border-b border-gray-800">
         <div className="flex h-8 w-8 items-center justify-center">
           <Logo href={PREFIX_URL} />
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col mt-4 gap-2">
+      <div className="flex flex-1 flex-col mt-4 gap-1">
         {PROTECTED_ROUTES.map((item) => (
-          <NavItem
-            key={PREFIX_URL + item.href}
-            href={PREFIX_URL + item.href}
-            icon={item.icon}
-            label={item.label}
-            isActive={pathname === PREFIX_URL + item.href}
-          />
+          <div
+            key={PREFIX_URL + (item.href ?? item.label)}
+            className={cn(
+              "flex flex-col gap-1",
+              item.subPath && "border-y py-2"
+            )}
+          >
+            <NavItem
+              href={PREFIX_URL + (item.href ?? "")}
+              icon={item.icon}
+              label={item.label}
+              isActive={pathname === PREFIX_URL + (item.href ?? "")}
+            />
+
+            {item.subPath &&
+              item.subPath.map((sub) => (
+                <NavItem
+                  key={PREFIX_URL + sub.href}
+                  href={PREFIX_URL + sub.href}
+                  icon={sub.icon}
+                  label={sub.label}
+                  isActive={pathname === PREFIX_URL + sub.href}
+                />
+              ))}
+          </div>
         ))}
       </div>
 
@@ -109,15 +152,18 @@ function NavItem({ href, icon: Icon, label, isActive }: NavItemProps) {
         >
           <div
             className={cn(
-              "hover:border hover:bg-[#1C1C1C] hover:border-[#2C2C2C] p-3",
-              isActive && "border border-[#2C2C2C]/80 bg-[#1C1C1C]"
+              "hover:border hover:bg-[#F2F1EF] hover:dark:bg-[#1C1C1C] hover:border-[#DCDAD2] hover:dark:border-[#2C2C2C] p-3",
+              isActive &&
+                "border bg-[#F2F1EF] dark:border-[#2C2C2C]/80 dark:bg-[#1C1C1C]"
             )}
           >
             <Icon className="size-5" />
           </div>
         </Link>
       </TooltipTrigger>
-      <TooltipContent side="right">{label}</TooltipContent>
+      <TooltipContent side="right" sideOffset={12} className="rounded-none">
+        {label}
+      </TooltipContent>
     </Tooltip>
   );
 }

@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "lucide-react";
-import { ROUTES } from "./navigation";
-import { UserNav } from "./stocks/user-nav";
+import { PUBLIC_ROUTES } from "./navigation";
+import { UserNav } from "./homepage/user-nav";
 import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
 
@@ -35,7 +35,7 @@ const MobileNav = () => {
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col justify-between">
         <nav className="flex flex-col gap-y-2 pt-8 z-20">
-          {ROUTES.map((route) =>
+          {PUBLIC_ROUTES.map((route) =>
             route.subPath ? (
               <div key={route.label}>
                 <Separator />

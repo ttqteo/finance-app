@@ -75,7 +75,7 @@ export const DateFilter = ({ disabled }: Props) => {
           disabled={disabled}
           size={"sm"}
           variant={"outline"}
-          className="lg:w-auto w-full h-9 rounded-md px-3 font-normal bg-white/10 hover:bg-white/20 hover:text-white border-none focus:ring-offset-0 focus:ring-transparent outline-none text-white focus:bg-white/30 transition flex justify-between items-center"
+          className="lg:w-auto w-full h-9 px-3 transition flex justify-between items-center"
         >
           <span>{mounted ? formatDateRange(paramState) : "Loading..."}</span>
           <ChevronDownIcon className="ml-2 size-4 opacity-50" />

@@ -194,7 +194,7 @@ export function FinancialNews({
           ))} */}
           {blogs.map((blog) => (
             <div key={blog.title} className="border rounded-lg p-4 space-y-2">
-              <Link href={`/v1/blogs/${blog.slug}`} target="_blank">
+              <Link href={`/blogs/${blog.slug}`} target="_blank">
                 <h3 className="font-medium">{blog.title}</h3>
               </Link>
               <div className="text-xs text-muted-foreground">

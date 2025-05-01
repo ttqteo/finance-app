@@ -10,7 +10,7 @@ import {
 import { format } from "date-fns-tz";
 import Image from "next/image";
 import Link from "next/link";
-import { INews } from "../../app/(site)/(public)/v1/news/page";
+import { INews } from "@/app/(site)/(public)/news/page";
 
 const generatorList = [
   {

@@ -19,9 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CandlestickChart } from "@/components/stocks/candlestick-chart";
-import { ChartIndicators } from "@/components/stocks/chart-indicators";
-import { Watchlist } from "@/components/stocks/watchlist";
+import { CandlestickChart } from "@/components/homepage/candlestick-chart";
+import { ChartIndicators } from "@/components/homepage/chart-indicators";
+import { Watchlist } from "@/components/dashboard/investing/watchlist";
 
 // Mock data for the current stock
 const currentStock = {
@@ -32,7 +32,7 @@ const currentStock = {
   changePercent: 1.35,
 };
 
-export default function AdvancedChartPage() {
+export default function ChartPage() {
   const [timeframe, setTimeframe] = useState("1D");
   const [chartType, setChartType] = useState("candle");
   const [activeIndicators, setActiveIndicators] = useState<string[]>([

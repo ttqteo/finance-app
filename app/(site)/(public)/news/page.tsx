@@ -1,5 +1,6 @@
+import NewsClient from "@/components/homepage/news-client";
+import { Metadata } from "next";
 import Parser from "rss-parser";
-import NewsClient from "../../../../../components/v1/news-client";
 
 export interface INews {
   title: string;
@@ -8,8 +9,6 @@ export interface INews {
   description: string;
   generator: string;
 }
-
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "News",

@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { StockDetailChart } from "@/components/stocks/stock-detail-chart";
+import { StockDetailChart } from "@/components/dashboard/investing/stock-detail-chart";
 import {
   Select,
   SelectContent,

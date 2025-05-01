@@ -20,10 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PortfolioPerformanceChart } from "@/components/stocks/portfolio-performance-chart";
-import { SectorAllocationChart } from "@/components/stocks/sector-allocation-chart";
-import { StockComparisonChart } from "@/components/stocks/stock-comparison-chart";
-import { AIInsights } from "@/components/stocks/ai-insights";
+import { PortfolioPerformanceChart } from "@/components/dashboard/investing/portfolio-performance-chart";
+import { SectorAllocationChart } from "@/components/homepage/sector-allocation-chart";
+import { StockComparisonChart } from "@/components/dashboard/investing/stock-comparison-chart";
+import { AIInsights } from "@/components/dashboard/investing/ai-insights";
 
 // Mock portfolio data
 const portfolioData = [

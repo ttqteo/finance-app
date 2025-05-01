@@ -14,7 +14,7 @@ export const Logo = ({
       <div
         className={cn(
           "items-center border rounded-full",
-          href === "/dashboard" ? "hidden lg:flex" : "flex",
+          href === "/dashboard" ? "hidden sm:flex" : "flex",
           className
         )}
       >

@@ -3,23 +3,20 @@
 import { useMedia } from "react-use";
 import { MainNav } from "./main-nav";
 import MobileNav from "./mobile-nav";
-import { UserNav } from "./stocks/user-nav";
+import { UserNav } from "./homepage/user-nav";
 
-export const ROUTES = [
+type Route = {
+  href: string;
+  label: string;
+  subPath?: { href: string; label: string }[];
+};
+
+export const PUBLIC_ROUTES: Route[] = [
   { href: "/", label: "Market" },
   { href: "/stocks", label: "Stocks" },
-  { href: "/transactions", label: "Transactions" },
-  { href: "/advanced-chart", label: "Advanced Chart" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/portfolio", label: "Portfolio" },
-  {
-    label: "v1",
-    subPath: [
-      { href: "/v1/stocks", label: "Stocks" },
-      { href: "/v1/news", label: "News" },
-      { href: "/v1/blogs", label: "Blog" },
-    ],
-  },
+  { href: "/chart", label: "Chart" },
+  { href: "/news", label: "News" },
+  { href: "/blogs", label: "Blog" },
 ];
 
 const Navigation = () => {
