@@ -1,4 +1,4 @@
-import vnstock from "@/lib/vnstock";
+import { vnstock } from "@/lib/vnstock";
 import StockPage from "@/components/homepage/stocks";
 import { Metadata } from "next";
 

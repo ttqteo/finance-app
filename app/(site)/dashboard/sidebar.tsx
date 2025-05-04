@@ -57,6 +57,11 @@ const PROTECTED_ROUTES: Route[] = [
     icon: ListPlus,
   },
   {
+    label: "Subscriptions",
+    href: "/subscriptions",
+    icon: ListPlus,
+  },
+  {
     label: "Investing",
     href: "/investing",
     icon: ChartNoAxesCombined,

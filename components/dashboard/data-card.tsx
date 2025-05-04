@@ -11,86 +11,54 @@ import { IconType } from "react-icons/lib";
 import { CountUp } from "@/components/dashboard/count-up";
 import { Skeleton } from "../ui/skeleton";
 import { useTranslations } from "next-intl";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
-const boxVariant = cva("shrink-0 rounded-md p-3", {
-  variants: {
-    variant: {
-      default: "bg-secondary",
-      success: "bg-emerald-500/20",
-      danger: "bg-rose-500/20",
-      warning: "bg-yellow-500/20",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
-
-const iconVariant = cva("size-6", {
-  variants: {
-    variant: {
-      default: "fill-primary",
-      success: "fill-emerald-500",
-      danger: "fill-rose-500",
-      warning: "fill-yellow-500",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
-
-type BoxVariants = VariantProps<typeof boxVariant>;
-type IconVariants = VariantProps<typeof iconVariant>;
-
-interface DataCardProps extends BoxVariants, IconVariants {
+interface DataCardProps {
   title: string;
   value?: number;
   percentageChange?: number;
-  icon: IconType;
-  dateRange: string;
 }
 export const DataCard = ({
   title,
   value = 0,
-  variant,
   percentageChange = 0,
-  icon: Icon,
-  dateRange,
 }: DataCardProps) => {
   const t = useTranslations();
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-x-4">
-        <div className="space-y-2">
-          <CardTitle className="text-2xl line-clamp-1">{title}</CardTitle>
-          <CardDescription>{dateRange}</CardDescription>
-        </div>
-        <div className={cn(boxVariant({ variant }))}>
-          <Icon className={cn(iconVariant({ variant }))} />
-        </div>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium line-clamp-1">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <h1 className="font-bold text-2xl mb-2 line-clamp-1 break-all">
+        <div className="font-bold text-2xl mb-2 line-clamp-1 break-all">
           <CountUp
             preserveValue
-            start={0}
+            start={value / 2}
             end={value}
             decimals={2}
             decimalPlaces={2}
             formattingFn={formatCurrency}
           />
-        </h1>
-        <p
+        </div>
+        <div
           className={cn(
-            "text-muted-foreground text-sm line-clamp-1",
+            "flex items-center text-xs",
             percentageChange > 0 && "text-emerald-500",
             percentageChange < 0 && "text-rose-500"
           )}
         >
+          {percentageChange > 0 ? (
+            <ArrowUp className="mr-1 h-4 w-4" />
+          ) : (
+            <ArrowDown className="mr-1 h-4 w-4" />
+          )}
           {formatPercentage(percentageChange, { addPrefix: true })}{" "}
-          {t("OverviewPage.FromLastPeriod")}
-        </p>
+          <span className="ml-1 text-muted-foreground">
+            {t("OverviewPage.FromLastPeriod")}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );

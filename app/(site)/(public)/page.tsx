@@ -1,4 +1,7 @@
-import { LineChart, BarChart3, Newspaper } from "lucide-react";
+import { FinancialNews } from "@/components/homepage/financial-news";
+import GoldTable from "@/components/homepage/gold-table";
+import { MarketHeatmap } from "@/components/homepage/market-heatmap";
+import { MarketIndexes } from "@/components/homepage/market-indexes";
 import {
   Card,
   CardContent,
@@ -6,16 +9,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MarketIndexes } from "@/components/homepage/market-indexes";
-import { MarketHeatmap } from "@/components/homepage/market-heatmap";
-import { FinancialNews } from "@/components/homepage/financial-news";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getAllBlogs } from "@/lib/markdown";
 import { stringToDate } from "@/lib/utils";
+import { commodity } from "@/lib/vnstock";
+import {
+  BarChart3,
+  CircleDollarSignIcon,
+  LineChart,
+  Newspaper,
+} from "lucide-react";
+import { IGoldPriceV2 } from "vnstock-js";
 
 export default async function MarketDashboardPage() {
   const blogs = (await getAllBlogs()).sort(
     (a, b) => stringToDate(b.date).getTime() - stringToDate(a.date).getTime()
   );
+  const goldPrice = (await commodity.goldPriceV2()) as IGoldPriceV2[];
 
   return (
     <>
@@ -67,6 +84,21 @@ export default async function MarketDashboardPage() {
         </CardHeader>
         <CardContent>
           <MarketHeatmap />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="text-base font-medium">
+              Giá Vàng Trong Nước
+            </CardTitle>
+            <CardDescription>Nguồn giavang.net</CardDescription>
+          </div>
+          <CircleDollarSignIcon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <GoldTable data={goldPrice} />
         </CardContent>
       </Card>
     </>

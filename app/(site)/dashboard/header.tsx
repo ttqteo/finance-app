@@ -2,6 +2,7 @@
 
 import { Filters } from "@/components/dashboard/filters";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Input } from "@/components/ui/input";
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import { setCookie } from "@/lib/utils";
 import { Search } from "lucide-react";
@@ -24,14 +25,7 @@ const Header = () => {
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b px-4 lg:px-6">
       <div className="w-full flex-1">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder="Search transactions..."
-            className="w-full rounded-lg border bg-background px-8 py-2 text-sm"
-          />
-        </div>
+        <Input type="search" placeholder="Search transactions..." />
       </div>
       <ModeToggle />
       <Filters disabled={disabled} />

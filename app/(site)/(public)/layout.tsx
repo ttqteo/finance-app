@@ -1,4 +1,4 @@
-import Navigation from "@/components/navigation";
+import Navigation from "@/app/(site)/(public)/navigation";
 
 const LandingLayout = ({ children }: { children: React.ReactNode }) => {
   return (

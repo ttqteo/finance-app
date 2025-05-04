@@ -1,5 +1,5 @@
 import { Vnstock } from "vnstock-js";
 
-const { stock: vnstock } = new Vnstock();
+const { stock: vnstock, commodity } = new Vnstock();
 
-export default vnstock;
+export { vnstock, commodity };

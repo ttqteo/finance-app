@@ -1,5 +1,5 @@
 "use client";
-import { AccountSummary } from "@/components/dashboard/overview/account-summary";
+
 import { AssetAllocation } from "@/components/dashboard/overview/asset-allocation";
 import { ChatAssistant } from "@/components/dashboard/overview/chat-assistant";
 import { ExpenseChart } from "@/components/dashboard/overview/expense-chart";
@@ -23,33 +23,6 @@ import { ChevronDown, Plus } from "lucide-react";
 const NewOverview = () => {
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <AccountSummary
-          title="Total Balance"
-          value="$24,563.00"
-          change="+2.5%"
-          trend="up"
-        />
-        <AccountSummary
-          title="Monthly Income"
-          value="$8,350.00"
-          change="+4.3%"
-          trend="up"
-        />
-        <AccountSummary
-          title="Monthly Expenses"
-          value="$5,240.00"
-          change="-1.2%"
-          trend="down"
-        />
-        <AccountSummary
-          title="Investments"
-          value="$12,580.00"
-          change="+8.7%"
-          trend="up"
-        />
-      </div>
-
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>

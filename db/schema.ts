@@ -1,5 +1,5 @@
-import { relations, sql } from "drizzle-orm";
-import { bigint, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { bigint, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -71,3 +71,34 @@ export const userSettings = pgTable("user_settings", {
 });
 
 export const insertUserSettingsSchema = createInsertSchema(userSettings);
+
+export const subscriptions = pgTable("subscriptions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  amount: bigint("amount", { mode: "number" }).notNull(),
+  frequency: text("frequency").notNull(), // e.g., 'monthly', 'yearly'
+  renewalDate: timestamp("renewal_date", { mode: "date" }).notNull(),
+  categoryId: text("category_id").references(() => categories.id, {
+    onDelete: "set null",
+  }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  category: one(categories, {
+    fields: [subscriptions.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+export const insertSubscriptionSchema = createInsertSchema(subscriptions, {
+  renewalDate: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+});
