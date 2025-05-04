@@ -32,7 +32,6 @@ export const PUBLIC_ROUTES: Route[] = [
   { href: "/stocks", label: "Stocks" },
   { href: "/chart", label: "Chart" },
   { href: "/economic-events", label: "Events" },
-  { href: "/hot-news", label: "Điểm Tin 24/7" },
   { href: "/news", label: "News" },
   { href: "/blogs", label: "Blog" },
 ];
