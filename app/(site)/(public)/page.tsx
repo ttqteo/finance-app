@@ -12,12 +12,7 @@ import {
 import { getAllBlogs } from "@/lib/markdown";
 import { stringToDate } from "@/lib/utils";
 import { commodity } from "@/lib/vnstock";
-import {
-  BarChart3,
-  CircleDollarSignIcon,
-  LineChart,
-  Newspaper,
-} from "lucide-react";
+import { BarChart3, LineChart, Newspaper } from "lucide-react";
 import { IGoldPriceV2 } from "vnstock-js";
 
 const WORLD_TYPE = ["XAUUSD", "USDX"];

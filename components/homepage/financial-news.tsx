@@ -100,6 +100,11 @@ const marketInsights = [
   },
 ];
 
+function parseDMY(dateStr: string) {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function FinancialNews({
   blogs,
 }: {
@@ -192,18 +197,28 @@ export function FinancialNews({
               </Button>
             </div>
           ))} */}
-          {blogs.map((blog) => (
-            <div key={blog.title} className="border rounded-lg p-4 space-y-2">
-              <Link href={`/blogs/${blog.slug}`} target="_blank">
-                <h3 className="font-medium">{blog.title}</h3>
-              </Link>
-              <div className="text-xs text-muted-foreground">
-                {formatDate2(blog.date)}
-              </div>
+          {blogs.map((blog) => {
+            const isNew =
+              new Date().getTime() - parseDMY(blog.date).getTime() <
+              7 * 24 * 60 * 60 * 1000;
 
-              <p className="text-sm">{blog.description}</p>
-            </div>
-          ))}
+            return (
+              <div key={blog.title} className="border rounded-lg p-4 space-y-2">
+                <Link href={`/blogs/${blog.slug}`} target="_blank">
+                  <h3 className="font-medium">
+                    {blog.title}
+                    {"  "}
+                    {isNew && <Badge>New</Badge>}
+                  </h3>
+                </Link>
+                <div className="text-xs text-muted-foreground">
+                  {formatDate2(blog.date)}
+                </div>
+
+                <p className="text-sm">{blog.description}</p>
+              </div>
+            );
+          })}
         </div>
       </TabsContent>
     </Tabs>

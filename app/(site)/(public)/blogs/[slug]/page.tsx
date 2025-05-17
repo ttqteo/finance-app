@@ -74,15 +74,17 @@ export default async function BlogPage(props: PageProps) {
         </div>
       </div>
       <div className="!w-full mb-24">
-        <div className="w-full mb-7">
-          <Image
-            src={res.frontmatter.cover}
-            alt="cover"
-            width={700}
-            height={400}
-            className="w-full h-[400px] rounded-lg border object-cover"
-          />
-        </div>
+        {res.frontmatter.cover && (
+          <div className="w-full mb-7">
+            <Image
+              src={res.frontmatter.cover}
+              alt="cover"
+              width={700}
+              height={400}
+              className="w-full h-[400px] rounded-lg border object-cover"
+            />
+          </div>
+        )}
         <Typography>{res.content}</Typography>
       </div>
     </div>
