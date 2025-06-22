@@ -1,11 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import {
-  AdvancedRealTimeChart,
-  FundamentalData,
-  TechnicalAnalysis,
-} from "react-ts-tradingview-widgets";
+import AdvancedRealTimeChartWidget from "../widget/advanced-realtime-chart";
+import FundamentalDataWidget from "../widget/fundamental-data";
+import TechnicalAnalysisWidget from "../widget/technical-analysis";
 
 const DEFAULT_SYMBOL = "HNX:MBS";
 
@@ -23,36 +21,13 @@ export default function ChartPage() {
       </div>
 
       <div className="col-span-7">
-        <AdvancedRealTimeChart
-          theme="dark"
-          interval="D"
-          width="100%"
-          height={600}
-          symbol={symbol ?? DEFAULT_SYMBOL}
-          hotlist
-          locale="vi_VN"
-          timezone="Asia/Ho_Chi_Minh"
-          save_image={false}
-        />
+        <AdvancedRealTimeChartWidget symbol={symbol ?? DEFAULT_SYMBOL} />
       </div>
       <div className="col-span-5">
-        <FundamentalData
-          colorTheme="dark"
-          height={600}
-          width="100%"
-          symbol={symbol ?? DEFAULT_SYMBOL}
-          locale="vi_VN"
-        ></FundamentalData>
+        <FundamentalDataWidget symbol={symbol ?? DEFAULT_SYMBOL} />
       </div>
       <div className="col-span-2">
-        <TechnicalAnalysis
-          colorTheme="dark"
-          width="100%"
-          interval="1D"
-          height={600}
-          symbol={symbol ?? DEFAULT_SYMBOL}
-          locale="vi_VN"
-        />
+        <TechnicalAnalysisWidget symbol={symbol ?? DEFAULT_SYMBOL} />
       </div>
     </div>
   );

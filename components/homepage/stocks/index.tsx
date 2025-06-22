@@ -5,12 +5,13 @@ import { format } from "date-fns";
 
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { MarketOverview, StockMarket } from "react-ts-tradingview-widgets";
+import MarketOverviewWidget from "../widget/market-overview";
+import StockMarketWidget from "../widget/stock-market";
 import ComfortableDisplay from "./comfortable-display";
 import FullDisplay from "./full-display";
 import MinimalDisplay from "./minimal-display";
-import { Separator } from "@/components/ui/separator";
 
 const StockPage = ({ data }: { data: any }) => {
   const now = new Date();
@@ -67,20 +68,14 @@ const StockPage = ({ data }: { data: any }) => {
       {displayRadio === "minimal" && <MinimalDisplay data={data} />}
 
       <Separator className="mt-10" />
-      <h1>Thị trường Mỹ</h1>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <h2>Tổng Quan Thị Trường</h2>
-          <MarketOverview
-            colorTheme="dark"
-            height={400}
-            width="100%"
-            showFloatingTooltip
-          />
+          <p className="mb-2">Tổng Quan Thị Trường Mỹ</p>
+          <MarketOverviewWidget />
         </div>
         <div>
-          <h2>Thị Trường</h2>
-          <StockMarket colorTheme="dark" height={400} width="100%" />
+          <p className="mb-2">Thị Trường</p>
+          <StockMarketWidget />
         </div>
       </div>
     </div>
