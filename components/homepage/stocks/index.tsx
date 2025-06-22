@@ -6,9 +6,11 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useEffect, useState } from "react";
+import { MarketOverview, StockMarket } from "react-ts-tradingview-widgets";
 import ComfortableDisplay from "./comfortable-display";
 import FullDisplay from "./full-display";
 import MinimalDisplay from "./minimal-display";
+import { Separator } from "@/components/ui/separator";
 
 const StockPage = ({ data }: { data: any }) => {
   const now = new Date();
@@ -63,6 +65,24 @@ const StockPage = ({ data }: { data: any }) => {
       {displayRadio === "comfortable" && <ComfortableDisplay data={data} />}
       {displayRadio === "full" && <FullDisplay data={data} />}
       {displayRadio === "minimal" && <MinimalDisplay data={data} />}
+
+      <Separator className="mt-10" />
+      <h1>Thị trường Mỹ</h1>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h2>Tổng Quan Thị Trường</h2>
+          <MarketOverview
+            colorTheme="dark"
+            height={400}
+            width="100%"
+            showFloatingTooltip
+          />
+        </div>
+        <div>
+          <h2>Thị Trường</h2>
+          <StockMarket colorTheme="dark" height={400} width="100%" />
+        </div>
+      </div>
     </div>
   );
 };

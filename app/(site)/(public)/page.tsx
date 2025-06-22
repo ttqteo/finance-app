@@ -1,7 +1,9 @@
 import { FinancialNews } from "@/components/homepage/financial-news";
 import { GoldPriceDataTable } from "@/components/homepage/gold-price-table";
-import { MarketHeatmap } from "@/components/homepage/market-heatmap";
-import { MarketIndexes } from "@/components/homepage/market-indexes";
+import CryptoHeatmapWidget from "@/components/homepage/widget/crypto-heatmap";
+import StockHeatmapWidget from "@/components/homepage/widget/stock-heatmap";
+import TickerWidget from "@/components/homepage/widget/ticker";
+import TimelineWidget from "@/components/homepage/widget/timeline";
 import {
   Card,
   CardContent,
@@ -11,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { getAllBlogs } from "@/lib/markdown";
 import { stringToDate } from "@/lib/utils";
-import { BarChart3, LineChart, Newspaper } from "lucide-react";
+import { Newspaper } from "lucide-react";
 import { commodity, types } from "vnstock-js";
 
 const WORLD_TYPE = ["XAUUSD", "USDX"];
@@ -60,8 +62,23 @@ export default async function MarketDashboardPage() {
         </Card>
       </div>
 
+      <div className="grid gap-4 grid-cols-7">
+        <div className="col-span-7">
+          <TickerWidget />
+        </div>
+        <div className="col-span-4">
+          <p className="mb-2">Thị trường Mỹ</p>
+          <TimelineWidget market="stock" />
+          <StockHeatmapWidget />
+        </div>
+        <div className="col-span-3">
+          <p className="mb-2">Thị trường tiền mã hoá</p>
+          <TimelineWidget market="crypto" />
+          <CryptoHeatmapWidget />
+        </div>
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+        {/* <Card className="col-span-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
               <CardTitle className="text-base font-medium">
@@ -93,7 +110,7 @@ export default async function MarketDashboardPage() {
           <CardContent>
             <MarketHeatmap />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </>
   );

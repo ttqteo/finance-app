@@ -25,7 +25,7 @@ import {
 } from "@tanstack/react-table";
 import { Clock, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { IGoldPriceV2 } from "vnstock-js";
+import { types } from "vnstock-js";
 
 const GOLD_TYPE_MAP: Record<string, string> = {
   BTSJC: "BTMC SJC",
@@ -74,7 +74,7 @@ const formatDateTime = (timestamp: number) => {
 };
 
 // Define columns for the data table
-const columns: ColumnDef<IGoldPriceV2>[] = [
+const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
   {
     accessorKey: "type_code",
     cell: ({ row }) => {
@@ -177,15 +177,14 @@ const columns: ColumnDef<IGoldPriceV2>[] = [
         yesterday.getMonth() + 1
       }-${yesterday.getDate()}`;
 
-      const grouped = histories.reduce<Record<string, IGoldPriceV2[]>>(
-        (acc, h) => {
-          const key = `${h.create_year}-${h.create_month}-${h.create_day}`;
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(h);
-          return acc;
-        },
-        {}
-      );
+      const grouped = histories.reduce<
+        Record<string, types.GoldPriceGiaVangNet[]>
+      >((acc, h) => {
+        const key = `${h.create_year}-${h.create_month}-${h.create_day}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(h);
+        return acc;
+      }, {});
 
       const latestToday = grouped[todayKey]?.reduce((a, b) =>
         a.update_time > b.update_time ? a : b
@@ -257,10 +256,10 @@ const columns: ColumnDef<IGoldPriceV2>[] = [
 export function GoldPriceDataTable({
   goldPrice,
 }: {
-  goldPrice: IGoldPriceV2[];
+  goldPrice: types.GoldPriceGiaVangNet[];
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [data] = useState<IGoldPriceV2[]>(goldPrice);
+  const [data] = useState<types.GoldPriceGiaVangNet[]>(goldPrice);
 
   const table = useReactTable({
     data,
