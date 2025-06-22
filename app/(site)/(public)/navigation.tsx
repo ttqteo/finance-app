@@ -19,7 +19,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import * as React from "react";
-import { Logo } from "../../../components/logo";
+import { Logo } from "@/components/logo";
+import { ModeToggle } from "@/components/mode-toggle";
 
 type Route = {
   href: string;
@@ -62,9 +63,17 @@ export default Navigation;
 const UserNav = () => {
   const { isSignedIn } = useUser();
   return (
-    <Link href="/dashboard">
-      {isSignedIn ? <Button>Go to Dashboard</Button> : <Button>Sign In</Button>}
-    </Link>
+    <>
+      <ModeToggle />
+
+      <Link href="/dashboard">
+        {isSignedIn ? (
+          <Button>Go to Dashboard</Button>
+        ) : (
+          <Button>Sign In</Button>
+        )}
+      </Link>
+    </>
   );
 };
 
