@@ -1,4 +1,4 @@
-import { vnstock } from "@/lib/vnstock";
+import vnstock, { types } from "vnstock-js";
 import StockPage from "@/components/homepage/stocks";
 import { Metadata } from "next";
 
@@ -20,7 +20,7 @@ const Page = async ({
     "TCB",
     "FPT",
   ];
-  const data = await vnstock.trading.priceBoard(shareList);
+  const data = await vnstock.stock.trading.priceBoard(shareList);
   return (
     <div className="max-w-screen-2xl mx-auto w-full">
       <StockPage data={data} />

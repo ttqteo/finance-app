@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/card";
 import { getAllBlogs } from "@/lib/markdown";
 import { stringToDate } from "@/lib/utils";
-import { commodity } from "@/lib/vnstock";
 import { BarChart3, LineChart, Newspaper } from "lucide-react";
-import { IGoldPriceV2 } from "vnstock-js";
+import { commodity, types } from "vnstock-js";
 
 const WORLD_TYPE = ["XAUUSD", "USDX"];
 
@@ -21,7 +20,8 @@ export default async function MarketDashboardPage() {
   const blogs = (await getAllBlogs()).sort(
     (a, b) => stringToDate(b.date).getTime() - stringToDate(a.date).getTime()
   );
-  const goldPrice = (await commodity.goldPriceV2()) as IGoldPriceV2[];
+  const goldPrice =
+    (await commodity.gold.priceGiaVangNet()) as types.GoldPriceGiaVangNet[];
   const VietNamGold = goldPrice.filter(
     (_) => !WORLD_TYPE.includes(_.type_code)
   );
