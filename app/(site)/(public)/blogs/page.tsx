@@ -44,16 +44,18 @@ function BlogCard({
       className="flex flex-col gap-2 items-start border rounded-none py-5 px-3 min-h-[400px]"
     >
       <h3 className="text-md font-semibold -mt-1 pr-7">{title}</h3>
-      <div className="w-full">
-        <Image
-          src={cover}
-          alt={title}
-          width={400}
-          height={150}
-          quality={80}
-          className="w-full rounded-md object-cover h-[180px] border"
-        />
-      </div>
+      {cover && (
+        <div className="w-full">
+          <Image
+            src={cover}
+            alt={title}
+            width={400}
+            height={150}
+            quality={80}
+            className="w-full rounded-md object-cover h-[180px] border"
+          />
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">{description}</p>
       <div className="flex items-center justify-between w-full mt-auto">
         <p className="text-[13px] text-muted-foreground">
