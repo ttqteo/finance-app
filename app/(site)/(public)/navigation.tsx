@@ -63,9 +63,8 @@ export default Navigation;
 const UserNav = () => {
   const { isSignedIn } = useUser();
   return (
-    <>
+    <div className="flex lg:flex-row flex-col gap-2">
       <ModeToggle />
-
       <Link href="/dashboard">
         {isSignedIn ? (
           <Button>Go to Dashboard</Button>
@@ -73,7 +72,7 @@ const UserNav = () => {
           <Button>Sign In</Button>
         )}
       </Link>
-    </>
+    </div>
   );
 };
 

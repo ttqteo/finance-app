@@ -31,8 +31,8 @@ export default async function MarketDashboardPage() {
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-7 lg:gap-4">
+        <Card className="lg:col-span-4 col-span-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
               <CardTitle className="text-base font-medium">
@@ -46,7 +46,7 @@ export default async function MarketDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card className="lg:col-span-3 col-span-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
               <CardTitle className="text-base font-medium">
@@ -62,16 +62,16 @@ export default async function MarketDashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 grid-cols-7">
-        <div className="col-span-7">
+      <div className="grid grid-cols-1 lg:grid-cols-7 lg:gap-4">
+        <div className="lg:col-span-7 col-span-full">
           <TickerWidget />
         </div>
-        <div className="col-span-4">
+        <div className="lg:col-span-4 col-span-full">
           <p className="mb-2">Thị trường Mỹ</p>
           <TimelineWidget market="stock" />
           <StockHeatmapWidget />
         </div>
-        <div className="col-span-3">
+        <div className="lg:col-span-3 col-span-full">
           <p className="mb-2">Thị trường tiền mã hoá</p>
           <TimelineWidget market="crypto" />
           <CryptoHeatmapWidget />
