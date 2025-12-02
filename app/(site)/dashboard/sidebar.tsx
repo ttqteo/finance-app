@@ -21,6 +21,7 @@ import {
   ListPlus,
   Loader2Icon,
   NotebookPen,
+  Sparkles,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -59,7 +60,7 @@ const PROTECTED_ROUTES: Route[] = [
   {
     label: "Subscriptions",
     href: "/subscriptions",
-    icon: ListPlus,
+    icon: Sparkles,
   },
   {
     label: "Investing",

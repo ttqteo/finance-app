@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { bigint, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { bigint, pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -78,7 +78,9 @@ export const subscriptions = pgTable("subscriptions", {
   name: text("name").notNull(),
   amount: bigint("amount", { mode: "number" }).notNull(),
   frequency: text("frequency").notNull(), // e.g., 'monthly', 'yearly'
-  renewalDate: timestamp("renewal_date", { mode: "date" }).notNull(),
+  startDate: timestamp("start_date", { mode: "date" }).notNull(),
+  currency: text("currency").default("VND").notNull(),
+  hasFreeTrial: boolean("has_free_trial").default(false),
   categoryId: text("category_id").references(() => categories.id, {
     onDelete: "set null",
   }),
@@ -98,7 +100,42 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
 }));
 
 export const insertSubscriptionSchema = createInsertSchema(subscriptions, {
-  renewalDate: z.coerce.date(),
+  startDate: z.coerce.date(),
+  hasFreeTrial: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });
+
+export const userSubscriptions = pgTable("user_subscriptions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().unique(), // One subscription per user
+  plan: text("plan").notNull(), // 'FREE', 'PREMIUM'
+  status: text("status").notNull(), // 'ACTIVE', 'CANCELLED', 'EXPIRED'
+  startDate: timestamp("start_date", { mode: "date" }).notNull(),
+  endDate: timestamp("end_date", { mode: "date" }), // Null for lifetime or auto-renewing indefinite? Better to have renewal date.
+  renewalDate: timestamp("renewal_date", { mode: "date" }),
+  frequency: text("frequency"), // 'MONTHLY', 'YEARLY'
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripePriceId: text("stripe_price_id"),
+  stripeCurrentPeriodEnd: timestamp("stripe_current_period_end", {
+    mode: "date",
+  }),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const insertUserSubscriptionSchema = createInsertSchema(
+  userSubscriptions,
+  {
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    renewalDate: z.coerce.date().optional(),
+    createdAt: z.coerce.date().optional(),
+    updatedAt: z.coerce.date().optional(),
+  }
+);
