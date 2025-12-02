@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
 
@@ -31,102 +31,92 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { AddStockDialog } from "@/components/stocks/add-stock-dialog";
+import { getCurrentPrice } from "@/actions/stock-data";
 
-// Mock data for stocks
-const stocks = [
-  {
-    id: "1",
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    quantity: 10,
-    avgPrice: 150.25,
-    currentPrice: 175.5,
-    value: 1755.0,
-    profitLoss: 252.5,
-    profitLossPercent: 16.8,
-    sector: "Technology",
-  },
-  {
-    id: "2",
-    symbol: "MSFT",
-    name: "Microsoft Corporation",
-    quantity: 5,
-    avgPrice: 240.1,
-    currentPrice: 290.35,
-    value: 1451.75,
-    profitLoss: 251.25,
-    profitLossPercent: 20.9,
-    sector: "Technology",
-  },
-  {
-    id: "3",
-    symbol: "AMZN",
-    name: "Amazon.com Inc.",
-    quantity: 3,
-    avgPrice: 3100.5,
-    currentPrice: 3200.75,
-    value: 9602.25,
-    profitLoss: 300.75,
-    profitLossPercent: 3.2,
-    sector: "Consumer Cyclical",
-  },
-  {
-    id: "4",
-    symbol: "GOOGL",
-    name: "Alphabet Inc.",
-    quantity: 2,
-    avgPrice: 2500.0,
-    currentPrice: 2750.25,
-    value: 5500.5,
-    profitLoss: 500.5,
-    profitLossPercent: 10.0,
-    sector: "Communication Services",
-  },
-  {
-    id: "5",
-    symbol: "TSLA",
-    name: "Tesla, Inc.",
-    quantity: 8,
-    avgPrice: 700.5,
-    currentPrice: 650.25,
-    value: 5202.0,
-    profitLoss: -402.0,
-    profitLossPercent: -7.2,
-    sector: "Consumer Cyclical",
-  },
-  {
-    id: "6",
-    symbol: "NFLX",
-    name: "Netflix, Inc.",
-    quantity: 4,
-    avgPrice: 520.75,
-    currentPrice: 580.5,
-    value: 2322.0,
-    profitLoss: 239.0,
-    profitLossPercent: 11.5,
-    sector: "Communication Services",
-  },
-  {
-    id: "7",
-    symbol: "FB",
-    name: "Meta Platforms, Inc.",
-    quantity: 6,
-    avgPrice: 330.25,
-    currentPrice: 310.75,
-    value: 1864.5,
-    profitLoss: -117.0,
-    profitLossPercent: -5.9,
-    sector: "Communication Services",
-  },
-];
+interface StockHolding {
+  id: string;
+  symbol: string;
+  name: string; // We might not get name from vnstock easily, so maybe use symbol or fetch it
+  quantity: number;
+  avgPrice: number;
+  currentPrice: number;
+  value: number;
+  profitLoss: number;
+  profitLossPercent: number;
+  sector: string;
+}
 
 export default function StocksPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortColumn, setSortColumn] = useState("symbol");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [holdings, setHoldings] = useState<StockHolding[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Initial seed data or empty
+  useEffect(() => {
+    // We can seed with some data if needed, or start empty.
+    // For now, let's start empty or with one example if user wants.
+    // User said "user only enters initial positions", so start empty.
+  }, []);
+
+  const handleAddStock = async (newStock: {
+    symbol: string;
+    quantity: number;
+    avgPrice: number;
+  }) => {
+    const stock: StockHolding = {
+      id: Math.random().toString(36).substr(2, 9),
+      symbol: newStock.symbol,
+      name: newStock.symbol, // Placeholder
+      quantity: newStock.quantity,
+      avgPrice: newStock.avgPrice,
+      currentPrice: 0, // Will fetch
+      value: 0,
+      profitLoss: 0,
+      profitLossPercent: 0,
+      sector: "Unknown",
+    };
+
+    setHoldings((prev) => [...prev, stock]);
+    fetchPriceForStock(stock);
+  };
+
+  const fetchPriceForStock = async (stock: StockHolding) => {
+    try {
+      const data = await getCurrentPrice(stock.symbol);
+      console.log(`Price data for ${stock.symbol}:`, data);
+
+      if (data && typeof data.close === "number") {
+        updateStockPrice(stock.id, data.close);
+      }
+    } catch (error) {
+      console.error("Failed to fetch price", error);
+    }
+  };
+
+  const updateStockPrice = (id: string, price: number) => {
+    setHoldings((prev) =>
+      prev.map((h) => {
+        if (h.id !== id) return h;
+        const value = price * h.quantity;
+        const profitLoss = value - h.avgPrice * h.quantity;
+        const profitLossPercent =
+          h.avgPrice > 0 ? (profitLoss / (h.avgPrice * h.quantity)) * 100 : 0;
+        return {
+          ...h,
+          currentPrice: price,
+          value,
+          profitLoss,
+          profitLossPercent,
+        };
+      })
+    );
+  };
 
   // Filter stocks based on search query
-  const filteredStocks = stocks.filter(
+  const filteredStocks = holdings.filter(
     (stock) =>
       stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
       stock.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -167,12 +157,7 @@ export default function StocksPage() {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Stocks</h2>
           <div className="flex items-center space-x-2">
-            <Link href="/stocks/add">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Stock
-              </Button>
-            </Link>
+            <AddStockDialog onAdd={handleAddStock} />
           </div>
         </div>
         <Card>
@@ -292,77 +277,85 @@ export default function StocksPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedStocks.map((stock) => (
-                    <TableRow key={stock.id}>
-                      <TableCell className="font-medium">
-                        <Link
-                          href={`/stocks/${stock.symbol}`}
-                          className="hover:underline"
-                        >
-                          {stock.symbol}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{stock.name}</TableCell>
-                      <TableCell className="text-right">
-                        {stock.quantity}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        ${stock.avgPrice.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        ${stock.currentPrice.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        ${stock.value.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge
-                          className={
-                            stock.profitLossPercent >= 0
-                              ? "bg-emerald-500 hover:bg-emerald-600"
-                              : "bg-rose-500 hover:bg-rose-600"
-                          }
-                        >
-                          {stock.profitLossPercent >= 0 ? "+" : ""}
-                          {stock.profitLossPercent.toFixed(2)}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
-                              <Link
-                                href={`/stocks/${stock.symbol}`}
-                                className="flex w-full"
-                              >
-                                View Details
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Link
-                                href={`/transactions/add?symbol=${stock.symbol}`}
-                                className="flex w-full"
-                              >
-                                Add Transaction
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-rose-500">
-                              Remove
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                  {sortedStocks.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="h-24 text-center">
+                        No stocks found. Add one to get started.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    sortedStocks.map((stock) => (
+                      <TableRow key={stock.id}>
+                        <TableCell className="font-medium">
+                          <Link
+                            href={`/stocks/${stock.symbol}`}
+                            className="hover:underline"
+                          >
+                            {stock.symbol}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{stock.name}</TableCell>
+                        <TableCell className="text-right">
+                          {stock.quantity}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${stock.avgPrice.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${stock.currentPrice.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${stock.value.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge
+                            className={
+                              stock.profitLossPercent >= 0
+                                ? "bg-emerald-500 hover:bg-emerald-600"
+                                : "bg-rose-500 hover:bg-rose-600"
+                            }
+                          >
+                            {stock.profitLossPercent >= 0 ? "+" : ""}
+                            {stock.profitLossPercent.toFixed(2)}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem>
+                                <Link
+                                  href={`/stocks/${stock.symbol}`}
+                                  className="flex w-full"
+                                >
+                                  View Details
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Link
+                                  href={`/transactions/add?symbol=${stock.symbol}`}
+                                  className="flex w-full"
+                                >
+                                  Add Transaction
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem className="text-rose-500">
+                                Remove
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
