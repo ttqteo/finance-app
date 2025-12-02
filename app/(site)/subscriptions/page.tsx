@@ -242,8 +242,8 @@ export default function SubscriptionsPage() {
                       Upgrade Yearly ($90/yr)
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">
-                      Includes 7-day free trial. You won't be charged until the
-                      trial ends.
+                      Includes 7-day free trial. You won&apos;t be charged until
+                      the trial ends.
                     </p>
                   </div>
                 ) : (
@@ -261,10 +261,7 @@ export default function SubscriptionsPage() {
                         </div>
                         <Button
                           className="w-full"
-                          onClick={() => renewMutation.mutate()} // Re-using renew for resume? Or create resume endpoint?
-                          // For now, let's assume renew handles it or we need a resume endpoint.
-                          // Actually, let's just use upgrade to re-activate?
-                          // Let's use renew for now as it sets status to ACTIVE.
+                          onClick={() => renewMutation.mutate()}
                           disabled={renewMutation.isPending}
                         >
                           {renewMutation.isPending && (
