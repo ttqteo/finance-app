@@ -1,0 +1,6 @@
+allowBuilds:
+  '@clerk/shared': true
+  esbuild: true
+  rehype-code-titles: true
+  sharp: true
+  unrs-resolver: true
