@@ -598,6 +598,12 @@ Gỡ khỏi JSX: `<AssetAllocation />` (dòng 56 và 202), `<StockTable />` (dò
 
 Kiểm tra lại layout grid sau khi gỡ: các ô còn lại phải lấp đầy chỗ trống, không để lỗ hổng.
 
+**Dọn nốt ba chỗ chưa nhất quán do làm rải rác qua nhiều nhóm:**
+
+1. `expense-chart.tsx` là widget duy nhất **chưa có nhánh `isError`**, và chữ empty state của nó (`NoTransactions12m`) không nêu khoảng thời gian trong khi hai widget kia đã nêu. Sửa hai widget mà bỏ cái thứ ba thì chính việc sửa lại tạo ra sự thiếu nhất quán.
+2. `AlertTriangleIcon` ở cả hai widget đang dùng `text-muted-foreground` — trùng màu với icon của empty state. Phân biệt được bằng chữ nhưng liếc qua thì giống hệt. Đổi sang `text-destructive` để kênh màu cũng mang thông tin.
+3. `index.tsx:107-109` ghép `<CardTitle>Spending Breakdown</CardTitle>` tiếng Anh viết cứng với phần mô tả đã dịch — bản vi thành card nửa Anh nửa Việt. Đưa nốt tiêu đề qua next-intl.
+
 **Commit:** `refactor: remove dashboard widgets that have no data source`
 
 ---
@@ -630,6 +636,13 @@ Expected: chỉ còn kết quả ở `asset-allocation.tsx`, `stock-table.tsx`, 
 | Tháng trống bị bỏ khỏi trục X thay vì điền 0 | `lib/dashboard/aggregate-by-month.ts` | Jan/Feb/May sẽ hiện cách đều nhau như ba tháng liên tiếp. Đáng sửa nhưng đổi hợp đồng đang có test |
 | Nhãn tháng luôn tiếng Anh | `lib/dashboard/aggregate-by-month.ts` | `getLocale()` đã có sẵn; cách sạch là trả về `month` rồi để component tự dịch — cũng đổi hợp đồng đang có test |
 | `messages/en.json` thiếu newline cuối file; `ExpensesDesc` có double space ở cả hai locale | `messages/*.json` | Công cụ nào format lại sẽ tạo diff nhiễu |
+| **Biểu đồ danh mục loại bỏ giao dịch chưa phân loại, còn ô KPI phía trên thì tính** — `innerJoin` với bảng `categories` bỏ qua 63/68 dòng, nên tổng các cột nhỏ hơn hẳn số Expenses ngay bên trên cùng trang | `summary.ts` (`categories` vs `expensesAmount`) | Nằm trong `app/api/`. **Đây là món nợ duy nhất không nên để lâu** — sau khi copy card đã ghi trung thực "kỳ đã chọn", đây là thứ gây hiểu nhầm cuối cùng còn lại trên card đó |
+| Nhãn bucket `"Other"` viết cứng tiếng Anh, hiện nguyên tiếng Anh trong bản vi | `summary.ts:124` | Nằm trong `app/api/`; map ở component sẽ phải bám vào magic string |
+| Không có cột `icon`/`color` cho `categories` — mọi bản đồ tên→icon viết cứng đều vỡ vì tên danh mục do người dùng tự đặt | `db/schema.ts` | Cần đổi schema và `app/api/`; để làm cùng đợt migrate Supabase |
+| `PALETTE` trùng ý đồ với `COLORS` trong `pie-variant.tsx`, và bộ token `--chart-1…5` trong `globals.css` **không nơi nào dùng** | `spending-breakdown.tsx`, `pie-variant.tsx:12`, `globals.css:33-37` | Gom một lượt ở đợt Material 3, vì đợt đó vốn đã sửa markup mấy file này. Lưu ý: hex cố định không đổi theo theme, `--chart-N` thì có |
+| Cookie `currency` ghi trong `useEffect` sau khi `useGetSettings()` xong, còn `formatCurrency` đọc đồng bộ lúc render và ghi cookie không kích hoạt re-render → số tiền có thể hiện USD rồi **không bao giờ tự sửa** | `header.tsx` + `lib/utils.ts:35` | Lỗi có sẵn toàn repo (`columns.tsx`, data grid), không phải do plan này |
+| `getLocale()`/`formatDateRange()` chỉ chạy được ở browser. Hiện an toàn nhờ **hai** điều kiện cùng lúc: repo không có `prefetchQuery`/`HydrationBoundary` nào, **và** TanStack bật `isFetching` trong SSR qua đường optimistic result (`useBaseQuery.js:43` không có guard `isServer`) | `transaction-list.tsx`, `spending-breakdown.tsx` | Chưa vỡ. Nhưng thêm SSR prefetch cho dashboard — bước tối ưu tự nhiên tiếp theo — là **vỡ ngay**. `date-filter.tsx:80` đã phải có cờ `mounted` đúng vì lý do này |
+| Khối dựng khoảng thời gian bị lặp 3 lần và cả 3 cùng sai giống nhau: `new Date("2025-05-13")` parse thành nửa đêm UTC nên người ở phía tây UTC thấy lùi một ngày | `date-filter.tsx:39-44`, `transaction-list.tsx:47-52`, `spending-breakdown.tsx:55-60` | Sai giống hệt nhau nên chip và chữ vẫn khớp. **Đừng sửa lẻ một bản** — tách helper rồi sửa cả ba cùng lúc |
 
 ## Thứ tự so với các đợt việc khác
 
