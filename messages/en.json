@@ -77,7 +77,10 @@
     "FromLastPeriod": "from last period",
     "NoData": "No data for this period",
     "NoTransactions12m": "No transactions in the last 12 months",
-    "NoTransactions": "No transactions for this period",
+    "NoTransactions": "No transactions between {range}",
+    "NoSpending": "No spending between {range}",
+    "LoadFailed": "Couldn't load data",
+    "SpendingByCategoryDesc": "Spending by category for the selected period",
     "Uncategorized": "Uncategorized",
     "Amount": "Amount"
   },

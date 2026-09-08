@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const NewOverview = () => {
+  const t = useTranslations("OverviewPage");
+
   return (
     <>
       <Tabs defaultValue="overview" className="space-y-4">
@@ -103,7 +106,7 @@ const NewOverview = () => {
               <CardHeader>
                 <CardTitle>Spending Breakdown</CardTitle>
                 <CardDescription>
-                  This month spending by category
+                  {t("SpendingByCategoryDesc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>

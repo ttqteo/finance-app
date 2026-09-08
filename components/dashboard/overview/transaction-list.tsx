@@ -1,33 +1,18 @@
 "use client";
 
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import {
+  AlertTriangleIcon,
+  ArrowDownRight,
   ArrowUpRight,
-  Car,
-  CreditCard,
   FileSearchIcon,
-  Home,
-  Utensils,
-  Wifi,
-  Zap,
-  type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetTransactions } from "@/features/transactions/api/use-get-transtractions";
-import { formatCurrency } from "@/lib/utils";
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  Food: Utensils,
-  Transport: Car,
-  Housing: Home,
-  Utilities: Zap,
-  Internet: Wifi,
-};
-
-const iconFor = (category: string | null) =>
-  CATEGORY_ICONS[category ?? ""] ?? CreditCard;
+import { formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 interface TransactionListProps {
   extended?: boolean;
@@ -39,7 +24,8 @@ export function TransactionList({
   limit = 5,
 }: TransactionListProps) {
   const t = useTranslations("OverviewPage");
-  const { data: transactions, isLoading } = useGetTransactions();
+  const params = useSearchParams();
+  const { data: transactions, isLoading, isError } = useGetTransactions();
 
   // Limit the number of transactions shown unless extended view
   const displayTransactions = extended
@@ -50,20 +36,45 @@ export function TransactionList({
     return <Skeleton className="h-[300px] w-full" />;
   }
 
-  if (displayTransactions.length === 0) {
+  if (isError) {
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
-        <FileSearchIcon className="size-6 text-muted-foreground" />
-        <p className="text-muted-foreground text-sm">{t("NoTransactions")}</p>
+        <AlertTriangleIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
       </div>
     );
   }
+
+  if (displayTransactions.length === 0) {
+    // Mirrors the range the DateFilter chip shows, so the empty copy names the
+    // exact window the user is looking at.
+    const from = params.get("from");
+    const to = params.get("to");
+    const defaultTo = new Date();
+    const defaultFrom = subDays(defaultTo, 30);
+
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">
+          {t("NoTransactions", {
+            range: formatDateRange({
+              from: from ? new Date(from) : defaultFrom,
+              to: to ? new Date(to) : defaultTo,
+            }),
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  const { locale, formatNormal } = getLocale();
 
   return (
     <div className="space-y-4">
       {displayTransactions.map((transaction) => {
         const isIncome = transaction.amount >= 0;
-        const Icon = isIncome ? ArrowUpRight : iconFor(transaction.category);
+        const Icon = isIncome ? ArrowUpRight : ArrowDownRight;
 
         return (
           <div key={transaction.id} className="flex items-center gap-4">
@@ -82,7 +93,7 @@ export function TransactionList({
               </p>
               <p className="text-sm text-muted-foreground">
                 {transaction.account} •{" "}
-                {format(new Date(transaction.date), "MMM d, yyyy")}
+                {format(new Date(transaction.date), formatNormal, { locale })}
               </p>
             </div>
             <div className="text-right">

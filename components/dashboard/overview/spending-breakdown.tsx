@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { FileSearchIcon } from "lucide-react";
+import { subDays } from "date-fns";
+import { AlertTriangleIcon, FileSearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import {
   BarChart,
   Bar,
@@ -16,22 +18,17 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDateRange } from "@/lib/utils";
 
-const PALETTE = [
-  "#8b5cf6",
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#ec4899",
-  "#14b8a6",
-  "#6b7280",
-];
+// The summary endpoint returns at most four slices (top three categories plus
+// an "Other" bucket); the modulo below is kept as cheap defence in case that
+// changes.
+const PALETTE = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 export function SpendingBreakdown() {
   const t = useTranslations("OverviewPage");
-  const { data: summary, isLoading } = useGetSummary();
+  const params = useSearchParams();
+  const { data: summary, isLoading, isError } = useGetSummary();
 
   const spendingData = useMemo(
     () =>
@@ -47,11 +44,34 @@ export function SpendingBreakdown() {
     return <Skeleton className="h-[300px] w-full" />;
   }
 
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <AlertTriangleIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
   if (spendingData.length === 0) {
+    // Mirrors the range the DateFilter chip shows, so the empty copy names the
+    // exact window the user is looking at.
+    const from = params.get("from");
+    const to = params.get("to");
+    const defaultTo = new Date();
+    const defaultFrom = subDays(defaultTo, 30);
+
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
         <FileSearchIcon className="size-6 text-muted-foreground" />
-        <p className="text-muted-foreground text-sm">{t("NoData")}</p>
+        <p className="text-muted-foreground text-sm">
+          {t("NoSpending", {
+            range: formatDateRange({
+              from: from ? new Date(from) : defaultFrom,
+              to: to ? new Date(to) : defaultTo,
+            }),
+          })}
+        </p>
       </div>
     );
   }
