@@ -1,5 +1,7 @@
 "use client";
 import { useMemo } from "react";
+import { FileSearchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   BarChart,
   Bar,
@@ -14,8 +16,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetTransactionsRange } from "@/features/transactions/api/use-get-transactions-range";
 import { aggregateByMonth } from "@/lib/dashboard/aggregate-by-month";
+import { formatCurrency } from "@/lib/utils";
 
 export function ExpenseChart() {
+  const t = useTranslations("OverviewPage");
   const { data: transactions, isLoading } = useGetTransactionsRange(12);
   const data = useMemo(() => aggregateByMonth(transactions ?? []), [transactions]);
 
@@ -25,8 +29,9 @@ export function ExpenseChart() {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
-        Chưa có giao dịch nào trong 12 tháng qua
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">{t("NoTransactions12m")}</p>
       </div>
     );
   }
@@ -53,7 +58,7 @@ export function ExpenseChart() {
                 name === "Expenses" ||
                 name === "Savings"
               ) {
-                return [`$${value}`, name];
+                return [formatCurrency(Number(value)), name];
               }
               return [value, name];
             }}

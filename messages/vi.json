@@ -75,7 +75,8 @@
     "Income": "Thu Nhập",
     "Expenses": "Chi Tiêu",
     "FromLastPeriod": "từ kỳ trước",
-    "NoData": "Không có dữ liệu cho kỳ này"
+    "NoData": "Không có dữ liệu cho kỳ này",
+    "NoTransactions12m": "Chưa có giao dịch nào trong 12 tháng qua"
   },
   "TransactionsPage": {
     "Header": "Giao Dịch",

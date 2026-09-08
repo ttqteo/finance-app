@@ -75,7 +75,8 @@
     "Income": "Income",
     "Expenses": "Expenses",
     "FromLastPeriod": "from last period",
-    "NoData": "No data for this period"
+    "NoData": "No data for this period",
+    "NoTransactions12m": "No transactions in the last 12 months"
   },
   "TransactionsPage": {
     "Header": "Transactions",

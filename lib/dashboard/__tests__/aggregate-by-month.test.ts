@@ -19,6 +19,14 @@ describe("aggregateByMonth", () => {
     expect(aggregateByMonth([])).toEqual([]);
   });
 
+  // Bucketing is viewer-local by design (see aggregate-by-month.ts). A row stored
+  // as 2025-05-31T17:00:00Z is 1 June in UTC+7 but 31 May for a viewer in UTC or
+  // UTC-5, so the same transaction lands in a different month depending on who
+  // is looking. Pinning this needs a fixed application time zone.
+  it.todo(
+    "gộp giao dịch sát ranh giới tháng vào cùng một tháng cho người xem ngoài UTC+7"
+  );
+
   it("sắp xếp theo tháng tăng dần bất kể thứ tự đầu vào", () => {
     const result = aggregateByMonth([
       { date: "2026-03-01", amount: 100 },
