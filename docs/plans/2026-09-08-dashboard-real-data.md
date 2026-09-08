@@ -393,7 +393,11 @@ Thêm nhánh loading và rỗng như Task 3.
 
 **Step 2: Verify**
 
-Số trong biểu đồ phải khớp với `<DataChart />` phía trên cùng trang, vì cùng nguồn `/api/summary`. Đây là phép đối chứng tốt: hai khối lệch nhau nghĩa là biến đổi sai.
+Số trong biểu đồ nên gần khớp với `<DataChart />` phía trên cùng trang, vì cùng nguồn `/api/summary`.
+
+**Đừng coi `<DataChart />` là chuẩn đúng.** Bản plan đầu dùng phép đối chứng này làm tiêu chí đúng/sai; điều đó sai và đã được review bác bỏ. `summary.ts:143` gộp bằng `.groupBy(transactions.date)` — theo **timestamp đầy đủ**, không `date_trunc` — nên cùng một ngày lịch có thể sinh nhiều dòng (import CSV cho `00:00:00Z`, date picker cho `17:00:00Z`). Sau đó `fillMissingDays` (`lib/utils.ts:65-88`) khớp bằng `.find()`, lấy dòng đầu và **âm thầm bỏ phần còn lại**. Đó là mất dữ liệu thật, không phải giả thuyết.
+
+Nên hai khối lệch nhau **không** chứng minh biến đổi của bạn sai — có thể `<DataChart />` mới là bên sai. Dùng nó như một tín hiệu để đi tìm hiểu, không phải như bằng chứng.
 
 **Step 3: Commit**
 
@@ -590,6 +594,8 @@ Gỡ khỏi JSX: `<AssetAllocation />` (dòng 56 và 202), `<StockTable />` (dò
 
 **Không xoá file component** — chúng sẽ dùng lại khi làm phần investing. Việc gỡ chỉ nhằm đảm bảo mọi con số người dùng nhìn thấy trên `/dashboard` đều là số thật.
 
+**Thêm một việc nữa: `<ExpenseChart />` đang được render hai lần.** Ở `index.tsx:47` dưới mục "Cash Flow" — đúng chỗ. Nhưng còn ở `index.tsx:191` dưới mục **"Portfolio Performance / Your investment growth over time"** — sai hoàn toàn: đó là biểu đồ thu-chi, không phải hiệu suất đầu tư. Hồi cả hai còn mock thì cùng vô nghĩa như nhau nên không ai để ý; sau Task 3 nó thành dữ liệu thật bị gắn nhãn sai, và sẽ hiện "chưa có giao dịch nào trong 12 tháng" ngay dưới tiêu đề danh mục đầu tư. Gỡ lần render ở dòng 191 cùng với ba component kia.
+
 Kiểm tra lại layout grid sau khi gỡ: các ô còn lại phải lấp đầy chỗ trống, không để lỗ hổng.
 
 **Commit:** `refactor: remove dashboard widgets that have no data source`
@@ -607,10 +613,23 @@ grep -rniE "mock|dummy|fake" components/dashboard/overview/
 Expected: chỉ còn kết quả ở `asset-allocation.tsx`, `stock-table.tsx`, `chat-assistant.tsx` — 3 file đã gỡ khỏi overview, giữ lại cho phần investing.
 
 **Step 2:** Run `pnpm test` → toàn bộ PASS
-**Step 3:** Run `pnpm build` → build thành công, không lỗi type
+**Step 3:** Run `npx tsc --noEmit` → phải ra **đúng 11 lỗi**, toàn bộ nằm ở `app/(site)/(public)/page.tsx`, `app/(site)/(public)/stocks/page.tsx` và `components/homepage/gold-price-table.tsx`. Không được có lỗi nào trong file plan này đụng tới.
+
+> Bản plan đầu ghi "`pnpm build` không lỗi". Tiêu chí đó **không thể đạt** trên repo này: 11 lỗi type nói trên đã tồn tại từ trước (mảng `vnstock-js`), và `next.config.mjs` không bật `typescript.ignoreBuildErrors`, nên build fail bất kể plan này làm gì. Sửa chúng nằm ngoài phạm vi. Vì vậy cổng kiểm tra là "không phát sinh lỗi mới", không phải "build sạch".
 **Step 4: Commit** — `chore: clean up dashboard mock data remnants`
 
 ---
+
+## Nợ kỹ thuật phát hiện trong lúc làm — không xử lý ở plan này
+
+| Vấn đề | Vị trí | Vì sao hoãn |
+|---|---|---|
+| Gộp tháng theo giờ máy người xem | `lib/dashboard/aggregate-by-month.ts` | Hiện **đúng** vì đường ghi lưu nửa đêm giờ UTC+7. Sửa thật cần timezone cố định (`date-fns-tz`) hoặc đổi cột sang `date`, tức đụng đường ghi/schema — vượt ranh giới plan |
+| `.find()` làm mất dòng trùng ngày | `lib/utils.ts:65-88` + `summary.ts:143` | Mất dữ liệu thật, nhưng nằm trong `app/api/` |
+| `outputFormat = "yyyyy-MM-dd"` (5 chữ y) → `"02025-02-03"`; `"HH:mm:sss"` thừa một `s` | `components/dashboard/transactions/import-card.tsx:8-9` | Bug có sẵn ở luồng import CSV, không liên quan overview |
+| Tháng trống bị bỏ khỏi trục X thay vì điền 0 | `lib/dashboard/aggregate-by-month.ts` | Jan/Feb/May sẽ hiện cách đều nhau như ba tháng liên tiếp. Đáng sửa nhưng đổi hợp đồng đang có test |
+| Nhãn tháng luôn tiếng Anh | `lib/dashboard/aggregate-by-month.ts` | `getLocale()` đã có sẵn; cách sạch là trả về `month` rồi để component tự dịch — cũng đổi hợp đồng đang có test |
+| `messages/en.json` thiếu newline cuối file; `ExpensesDesc` có double space ở cả hai locale | `messages/*.json` | Công cụ nào format lại sẽ tạo diff nhiễu |
 
 ## Thứ tự so với các đợt việc khác
 
@@ -625,6 +644,6 @@ Plan này chỉ đổi **luồng dữ liệu**, đợt M3 đổi **markup**. Là
 
 - [ ] `/dashboard` không còn con số bịa nào
 - [ ] `pnpm test` xanh, tối thiểu 9 test cho 2 pure function
-- [ ] `pnpm build` không lỗi
-- [ ] Mỗi khối đều có trạng thái loading và trạng thái rỗng đúng nghĩa
-- [ ] Số ở `<SpendingBreakdown />` khớp `<DataChart />` cùng trang
+- [ ] `npx tsc --noEmit` vẫn đúng 11 lỗi có sẵn, không phát sinh lỗi mới
+- [ ] Mỗi khối đều có trạng thái loading và trạng thái rỗng đúng nghĩa, chữ lấy từ `messages/en.json` và `vi.json` chứ không hardcode
+- [ ] Mọi số tiền hiển thị qua `formatCurrency`, không hardcode ký hiệu tiền tệ
