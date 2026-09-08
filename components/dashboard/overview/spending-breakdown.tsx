@@ -1,5 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
+import { FileSearchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   BarChart,
   Bar,
@@ -11,19 +14,48 @@ import {
   Cell,
 } from "recharts";
 
-// Mock spending data by category
-const spendingData = [
-  { category: "Housing", amount: 1500, color: "#8b5cf6" },
-  { category: "Food", amount: 850, color: "#3b82f6" },
-  { category: "Transport", amount: 320, color: "#10b981" },
-  { category: "Utilities", amount: 280, color: "#f59e0b" },
-  { category: "Entertainment", amount: 220, color: "#ef4444" },
-  { category: "Shopping", amount: 380, color: "#ec4899" },
-  { category: "Health", amount: 150, color: "#14b8a6" },
-  { category: "Other", amount: 180, color: "#6b7280" },
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { formatCurrency } from "@/lib/utils";
+
+const PALETTE = [
+  "#8b5cf6",
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#ec4899",
+  "#14b8a6",
+  "#6b7280",
 ];
 
 export function SpendingBreakdown() {
+  const t = useTranslations("OverviewPage");
+  const { data: summary, isLoading } = useGetSummary();
+
+  const spendingData = useMemo(
+    () =>
+      (summary?.categories ?? []).map((c, i) => ({
+        category: c.name,
+        amount: Math.abs(c.value),
+        color: PALETTE[i % PALETTE.length],
+      })),
+    [summary]
+  );
+
+  if (isLoading) {
+    return <Skeleton className="h-[300px] w-full" />;
+  }
+
+  if (spendingData.length === 0) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">{t("NoData")}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -42,10 +74,15 @@ export function SpendingBreakdown() {
             horizontal={true}
             vertical={false}
           />
-          <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+          <XAxis
+            type="number"
+            tickFormatter={(value) =>
+              formatCurrency(Number(value), undefined, false)
+            }
+          />
           <YAxis type="category" dataKey="category" width={80} />
           <Tooltip
-            formatter={(value) => [`$${value}`, "Amount"]}
+            formatter={(value) => [formatCurrency(Number(value)), t("Amount")]}
             contentStyle={{
               backgroundColor: "hsl(var(--background))",
               borderColor: "hsl(var(--border))",
