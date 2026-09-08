@@ -88,24 +88,26 @@ Chỗ TDD là các **pure function biến đổi dữ liệu**, đó mới là n
 
 ```bash
 cd D:/ttqspace/finance-app
-pnpm add -D vitest @vitejs/plugin-react
+pnpm add -D vitest
 ```
+
+Không cài `@vitejs/plugin-react`: `environment` là `node`, glob chỉ khớp `.test.ts`, và plan này không test component React nên plugin không có việc gì để làm.
 
 **Step 2: Tạo `vitest.config.ts`**
 
+Giữ đuôi `.ts` — đừng đổi sang `.mts`, vì `include` trong `tsconfig.json` là `**/*.ts` nên `.mts` sẽ lặng lẽ rơi ra ngoài phạm vi type-check.
+
 ```ts
-import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [react()],
   test: {
     environment: "node",
     include: ["**/__tests__/**/*.test.ts"],
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./") },
+    alias: { "@": path.resolve(import.meta.dirname, "./") },
   },
 });
 ```
@@ -116,6 +118,16 @@ export default defineConfig({
 "test": "vitest run",
 "test:watch": "vitest"
 ```
+
+Đồng thời khai báo sàn Node — `vitest@5` yêu cầu `^22.12.0 || ^24.0.0 || >=26.0.0` mà repo chưa khai báo gì:
+
+```json
+"engines": { "node": ">=22.12" }
+```
+
+Và tạo `.nvmrc` chứa đúng một dòng `24` (Node đang dùng là v24.19.0).
+
+`vitest@5` cũng khai peer `@types/node: "^22.0.0 || >=24.0.0"`, trong khi repo ghim `^20`. Nâng `@types/node` lên `^24` để lockfile không ghi nhận vi phạm peer. Chạy `npx tsc --noEmit` trước và sau khi nâng: baseline là 11 lỗi có sẵn (trong `app/` và `components/homepage/gold-price-table.tsx`). Nếu số lỗi tăng thì hoàn tác việc nâng và báo lại, đừng sửa các lỗi đó — chúng ngoài phạm vi.
 
 **Step 4: Test khói để xác nhận hạ tầng chạy**
 
@@ -139,9 +151,11 @@ Expected: PASS, 1 test.
 **Step 6: Commit**
 
 ```bash
-git add package.json pnpm-lock.yaml vitest.config.ts lib/dashboard/__tests__/setup.test.ts
+git add package.json pnpm-lock.yaml .nvmrc vitest.config.ts lib/dashboard/__tests__/setup.test.ts
 git commit -m "chore: add vitest for dashboard data transforms"
 ```
+
+> Test khói này chỉ là cổng kiểm tra hạ tầng. Task 1 sẽ xoá nó ngay khi có test thật.
 
 ---
 
@@ -238,7 +252,18 @@ export function aggregateByMonth(transactions: Input[]): MonthlyPoint[] {
 Run: `pnpm test aggregate-by-month`
 Expected: PASS, 3 tests.
 
-**Step 5: Commit**
+**Step 5: Gỡ test khói của Task 0**
+
+`lib/dashboard/__tests__/setup.test.ts` chỉ khẳng định `1 + 1 === 2`. Nó là cổng hợp lệ để nghiệm thu hạ tầng ở Task 0, nhưng khi đã có test thật thì chỉ còn là nhiễu. Xoá và stage luôn:
+
+```bash
+git rm lib/dashboard/__tests__/setup.test.ts
+```
+
+Run: `pnpm test`
+Expected: PASS, 3 tests — chỉ còn `aggregate-by-month`.
+
+**Step 6: Commit**
 
 ```bash
 git add lib/dashboard/aggregate-by-month.ts lib/dashboard/__tests__/aggregate-by-month.test.ts

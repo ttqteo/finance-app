@@ -2,6 +2,9 @@
   "name": "finance-app",
   "version": "1.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
@@ -104,11 +107,10 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.14",
     "@types/d3-format": "^3.0.4",
-    "@types/node": "^20",
+    "@types/node": "^24.13.3",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/sanitize-html": "^2.13.0",
-    "@vitejs/plugin-react": "^6.1.1",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.28.1",
     "eslint": "^9.0.0",
