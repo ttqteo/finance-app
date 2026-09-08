@@ -77,6 +77,8 @@
     "FromLastPeriod": "from last period",
     "NoData": "No data for this period",
     "NoTransactions12m": "No transactions in the last 12 months",
+    "NoTransactions": "No transactions for this period",
+    "Uncategorized": "Uncategorized",
     "Amount": "Amount"
   },
   "TransactionsPage": {

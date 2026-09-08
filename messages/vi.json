@@ -77,6 +77,8 @@
     "FromLastPeriod": "từ kỳ trước",
     "NoData": "Không có dữ liệu cho kỳ này",
     "NoTransactions12m": "Chưa có giao dịch nào trong 12 tháng qua",
+    "NoTransactions": "Chưa có giao dịch nào trong kỳ này",
+    "Uncategorized": "Chưa Phân Loại",
     "Amount": "Số tiền"
   },
   "TransactionsPage": {
