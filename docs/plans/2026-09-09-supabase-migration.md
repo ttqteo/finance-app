@@ -40,17 +40,35 @@
 
 **Không có code.** Người dùng tự làm trên dashboard Supabase:
 
-1. Tạo project mới, ghi lại Project URL và `anon` key.
+1. Tạo project mới, ghi lại Project URL và **publishable key** (`sb_publishable_...`, kiểu key mới — không phải `anon` JWT `eyJ...` đời cũ).
 2. Authentication → Providers → bật **Email** (có confirm email) và **Google**.
    - Google cần OAuth client ở Google Cloud Console; callback URL dán vào là cái Supabase hiện sẵn trong ô provider.
 3. Authentication → URL Configuration → Site URL đặt `http://localhost:3000`, thêm redirect URL `http://localhost:3000/auth/callback`.
 4. Settings → Database → copy connection string (dùng **Session pooler**, không phải Transaction pooler — drizzle-kit cần prepared statement).
 
+**Trạng thái đã kiểm chứng (2026-09-09 16:20):**
+
+| Mục | Trạng thái |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ có trong `.env`, `/auth/v1/health` trả 200 |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅ `sb_publishable_...`, PostgREST nhận (404 "table not found" = qua được auth) |
+| Provider Email | ✅ bật, `mailer_autoconfirm: false` → có confirm email, đúng như Task 5 giả định |
+| Provider Google | ❌ **chưa bật** — `"google": false` trong `/auth/v1/settings` |
+| `DATABASE_URL` | ❌ vẫn trỏ Neon (đúng — Task 11 mới đổi) |
+
+**Google phải bật trước Task 4**, không thì nút "Continue with Google" bấm vào lỗi. Kiểm tra lại bằng:
+
+```bash
+curl -s "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/settings" \
+  -H "apikey: $NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" | grep -o '"google":[a-z]*'
+```
+Expected: `"google":true`
+
 **Thêm vào `.env`:**
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 ```
 
 `DATABASE_URL` **chưa đổi** — Task 10 mới đổi.
@@ -86,7 +104,7 @@ import { createBrowserClient } from "@supabase/ssr";
 export const createClient = () =>
   createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 ```
 
@@ -102,7 +120,7 @@ export const createClient = async () => {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
@@ -133,7 +151,7 @@ export const updateSession = async (request: NextRequest) => {
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll: () => request.cookies.getAll(),
@@ -412,7 +430,7 @@ export const getSupabase = (c: Context) => {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll: () =>
@@ -654,7 +672,7 @@ import { createClient } from "@supabase/supabase-js";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 // Test này cần một Supabase thật. Bỏ qua khi thiếu env, để `pnpm test` trên
 // máy chưa cấu hình vẫn xanh.
