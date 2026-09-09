@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { format, subDays } from "date-fns";
+import {
+  addMonths,
+  differenceInCalendarMonths,
+  format,
+  startOfMonth,
+  subDays,
+} from "date-fns";
 import {
   AlertTriangleIcon,
   ChevronLeft,
@@ -14,6 +20,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { dailyTotals, dayKey } from "@/lib/dashboard/daily-totals";
 import { cn, formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 // Weekday headings, not data: the summary endpoint has nothing to say about
@@ -22,57 +29,21 @@ const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const currentDate = new Date();
 const currentDay = currentDate.getDate();
 
-// `summary.days[].date` arrives as an ISO timestamp while the grid below is
-// built from local date parts, so the key has to be local too — keying off the
-// UTC parts would drop a charge into the neighbouring cell for anyone whose
-// offset crosses midnight. Same viewer-local convention as
-// `lib/dashboard/aggregate-by-month.ts`.
-const dayKey = (year: number, month: number, day: number) =>
-  `${year}-${month}-${day}`;
-
 export function MonthlyCalendar() {
   const t = useTranslations("OverviewPage");
   const params = useSearchParams();
   const { data: summary, isLoading, isError } = useGetSummary();
 
-  const [month, setMonth] = useState(currentDate.getMonth());
-  const [year, setYear] = useState(currentDate.getFullYear());
+  // Offset in months from the LAST month of the queried window: 0 is that
+  // month, -1 the one before it. Anchoring to the data rather than to today
+  // means a filter change cannot strand this state outside the window — the
+  // clamp below is computed from whatever `days[]` currently covers.
+  const [monthOffset, setMonthOffset] = useState(0);
 
-  const totalsByDay = useMemo(() => {
-    const map = new Map<string, { income: number; expenses: number }>();
-
-    for (const day of summary?.days ?? []) {
-      const date = new Date(day.date);
-      const key = dayKey(date.getFullYear(), date.getMonth(), date.getDate());
-      const bucket = map.get(key) ?? { income: 0, expenses: 0 };
-
-      // Accumulated rather than overwritten: `/api/summary` groups by full
-      // timestamp, so a calendar day is not guaranteed to arrive as one row.
-      bucket.income += day.income;
-      bucket.expenses += day.expenses;
-      map.set(key, bucket);
-    }
-
-    return map;
-  }, [summary]);
-
-  const handlePrevMonth = () => {
-    if (month === 0) {
-      setMonth(11);
-      setYear(year - 1);
-    } else {
-      setMonth(month - 1);
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (month === 11) {
-      setMonth(0);
-      setYear(year + 1);
-    } else {
-      setMonth(month + 1);
-    }
-  };
+  const { byDay, start, end } = useMemo(
+    () => dailyTotals(summary?.days ?? []),
+    [summary]
+  );
 
   if (isLoading) {
     return <Skeleton className="h-[300px] w-full" />;
@@ -87,7 +58,7 @@ export function MonthlyCalendar() {
     );
   }
 
-  if (totalsByDay.size === 0) {
+  if (byDay.size === 0 || !start || !end) {
     // `fillMissingDays` returns an empty array when the period has no
     // transactions at all, so an empty map means exactly that. Mirrors the
     // range the DateFilter chip shows, like the sibling widgets.
@@ -115,18 +86,52 @@ export function MonthlyCalendar() {
   // on this page.
   const { locale } = getLocale();
 
+  // Paging is bounded by the window `/api/summary` actually answered for.
+  // `useGetSummary` covers the dashboard's date filter and nothing else, so
+  // letting the user page past its edges would render months this widget never
+  // asked about as months in which nothing happened.
+  const firstMonth = startOfMonth(start);
+  const lastMonth = startOfMonth(end);
+  const monthSpan = differenceInCalendarMonths(lastMonth, firstMonth) + 1;
+
+  const offset = Math.min(0, Math.max(-(monthSpan - 1), monthOffset));
+  const visibleMonth = addMonths(lastMonth, offset);
+  const year = visibleMonth.getFullYear();
+  const month = visibleMonth.getMonth();
+
+  const canGoBack = offset > -(monthSpan - 1);
+  const canGoForward = offset < 0;
+
+  // Stepping from the clamped value, not from state, so a filter change that
+  // shrank the window cannot leave the buttons needing several clicks to have
+  // any visible effect.
+  const handlePrevMonth = () => setMonthOffset(offset - 1);
+  const handleNextMonth = () => setMonthOffset(offset + 1);
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const monthLabel = format(new Date(year, month, 1), "LLLL yyyy", { locale });
+  const monthLabel = format(visibleMonth, "LLLL yyyy", { locale });
 
   return (
     <div className="w-full">
       <div className="mb-4 flex items-center justify-between">
-        <Button variant="outline" size="icon" onClick={handlePrevMonth}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handlePrevMonth}
+          disabled={!canGoBack}
+          aria-label={t("PreviousMonth")}
+        >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h3 className="text-sm font-medium">{monthLabel}</h3>
-        <Button variant="outline" size="icon" onClick={handleNextMonth}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleNextMonth}
+          disabled={!canGoForward}
+          aria-label={t("NextMonth")}
+        >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
@@ -144,24 +149,35 @@ export function MonthlyCalendar() {
 
         {Array.from({ length: daysInMonth }).map((_, index) => {
           const day = index + 1;
-          const isToday =
-            day === currentDay &&
-            month === currentDate.getMonth() &&
-            year === currentDate.getFullYear();
 
-          const totals = totalsByDay.get(dayKey(year, month, day));
+          // Present in the map iff the day fell inside the queried window. A
+          // day the filter excluded is dimmed and labelled, never drawn as a
+          // quiet day — those are different facts.
+          const totals = byDay.get(dayKey(year, month, day));
+          const inWindow = totals !== undefined;
+
           const income = totals?.income ?? 0;
           const expenses = totals?.expenses ?? 0;
           const hasIncome = income > 0;
           const hasExpenses = expenses > 0;
           const hasActivity = hasIncome || hasExpenses;
 
-          const title = [
-            hasIncome ? `${t("Income")}: ${formatCurrency(income)}` : null,
-            hasExpenses ? `${t("Expenses")}: ${formatCurrency(expenses)}` : null,
-          ]
-            .filter(Boolean)
-            .join(" · ");
+          const isToday =
+            inWindow &&
+            day === currentDay &&
+            month === currentDate.getMonth() &&
+            year === currentDate.getFullYear();
+
+          const title = inWindow
+            ? [
+                hasIncome ? `${t("Income")}: ${formatCurrency(income)}` : null,
+                hasExpenses
+                  ? `${t("Expenses")}: ${formatCurrency(expenses)}`
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : t("NotInPeriod");
 
           return (
             <div
@@ -172,7 +188,8 @@ export function MonthlyCalendar() {
                   ? "bg-primary text-primary-foreground"
                   : hasActivity
                   ? "bg-muted"
-                  : ""
+                  : "",
+                !inWindow && "text-muted-foreground/40"
               )}
               title={title}
             >
