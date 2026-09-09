@@ -692,8 +692,31 @@ Plan này chỉ đổi **luồng dữ liệu**, đợt M3 đổi **markup**. Là
 
 ## Định nghĩa hoàn thành
 
-- [ ] `/dashboard` không còn con số bịa nào
+- [x] **Tab Overview** của `/dashboard` không còn con số bịa nào — 6/6 widget đọc dữ liệu thật
+- [ ] ~~Toàn bộ `/dashboard` không còn con số bịa~~ — **CHƯA ĐẠT, cố ý**
 - [ ] `pnpm test` xanh, tối thiểu 9 test cho 2 pure function
 - [ ] `npx tsc --noEmit` vẫn đúng 11 lỗi có sẵn, không phát sinh lỗi mới
 - [ ] Mỗi khối đều có trạng thái loading và trạng thái rỗng đúng nghĩa, chữ lấy từ `messages/en.json` và `vi.json` chứ không hardcode
 - [ ] Mọi số tiền hiển thị qua `formatCurrency`, không hardcode ký hiệu tiền tệ
+
+### Vì sao ô thứ hai không tick được
+
+Plan này phạm vi hoá quanh 9 widget của **tab Overview**, và không ai kiểm tra các tab còn lại cho tới tận nhóm cuối. `components/dashboard/overview/index.tsx` vẫn render bốn tab nữa, cách một cú bấm trên chính `/dashboard`:
+
+| Tab | Thực trạng | Có trang thật không |
+|---|---|---|
+| **Budget** | Số bịa hoàn toàn: `$1,500 / $1,500`, `$420 / $500`, thanh tiến độ giả | **Không** — schema chưa có bảng budget nào |
+| **Settings** | Ô nhập điền sẵn `John Doe` / `john.doe@example.com`, hai công tắc giả, dropdown tiền tệ chào cả GBP (mà `currencyConfig` không định nghĩa), và **nút "Save Changes" bấm vào không làm gì** | Có, `/dashboard/settings` |
+| **Accounts** | `$8,245.32`, `Chase Checking`, `$4,317.68` | Có, `/dashboard/accounts` |
+| **Categories** | Danh mục bịa | Có, `/dashboard/categories` |
+
+Tab Settings đáng lưu ý riêng: nó không chỉ hiện số sai mà là **giao diện điều khiển giả** — người dùng gõ vào ô, bấm Save, và tin rằng mình vừa đổi được gì đó.
+
+**Đề xuất khi làm tiếp:** gỡ tab Budget và Settings (cùng lý do đã gỡ tab Investments — không có gì thật để đặt vào), biến Accounts/Categories thành link tới trang thật đã tồn tại. Đó là cùng một quyết định nhánh này đã ra ba lần, không phải quyết định mới.
+
+Ô này để trống có chủ đích. Commit `850746b` mang tiêu đề "clean up dashboard mock data remnants" — **tiêu đề đó nói quá so với thực tế**, và ghi chú này tồn tại để không ai đọc lịch sử git rồi tưởng `/dashboard` đã sạch hoàn toàn.
+
+### Hai việc một dòng nên làm sớm
+
+- `components/ui/progress.tsx` — cân nhắc `variant` ngữ nghĩa thay cho `bg-red-500`/`bg-orange-500`/`bg-green-500` truyền tay, để màu theo được theme
+- `monthly-calendar.tsx` — ngày ngoài kỳ đang dùng `text-muted-foreground/40`. Ở dark mode độ tương phản có thể tụt dưới ngưỡng WCAG 1.4.11, khiến dấu hiệu duy nhất phân biệt "đã hỏi, không có gì" với "chưa hỏi tới" trở nên vô hình. Nếu vậy nên dùng dấu hiệu **cấu trúc** (viền đứt, gạch chéo) thay vì sắc độ — thứ sống sót qua tương phản thấp, dark mode và ảnh xám
