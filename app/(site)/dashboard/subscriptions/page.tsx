@@ -42,8 +42,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, addMonths, addYears } from "date-fns";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { Edit, Loader2, Plus, Trash2, CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,6 +58,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
+import { useGetSubscriptions } from "@/features/subscriptions/api/use-get-subscriptions";
+import { isYearly, nextPaymentDate } from "@/lib/dashboard/next-payment-date";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -69,16 +71,11 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
-type Subscription = {
-  id: string;
-  name: string;
-  amount: number;
-  currency: string;
-  frequency: string;
-  startDate: string;
-  hasFreeTrial: boolean;
-  notes?: string;
-};
+// Derived from the shared hook rather than restated, so this page cannot drift
+// from the shape that actually lands in the ["subscriptions"] cache entry.
+type Subscription = NonNullable<
+  ReturnType<typeof useGetSubscriptions>["data"]
+>[number];
 
 export default function SubscriptionManagerPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -97,14 +94,11 @@ export default function SubscriptionManagerPage() {
     },
   });
 
-  const { data: subscriptions = [], isLoading } = useQuery<Subscription[]>({
-    queryKey: ["subscriptions"],
-    queryFn: async () => {
-      const res = await fetch("/api/subscriptions");
-      if (!res.ok) throw new Error("Failed to fetch subscriptions");
-      return res.json();
-    },
-  });
+  // The overview widgets read the same ["subscriptions"] key. Two query
+  // functions writing one cache entry means whichever fetched last decides the
+  // shape, so this page uses the shared hook. Like the old inline queryFn, it
+  // does NOT divide by 1000: subscription amounts are not stored in miliunits.
+  const { data: subscriptions = [], isLoading } = useGetSubscriptions();
 
   const createMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -176,7 +170,8 @@ export default function SubscriptionManagerPage() {
       currency: sub.currency as "VND" | "USD",
       frequency: sub.frequency as "MONTHLY" | "YEARLY",
       startDate: new Date(sub.startDate),
-      hasFreeTrial: sub.hasFreeTrial,
+      // The column is nullable in the schema, and the checkbox is not.
+      hasFreeTrial: sub.hasFreeTrial ?? false,
       notes: sub.notes || "",
     });
     setIsDialogOpen(true);
@@ -195,36 +190,21 @@ export default function SubscriptionManagerPage() {
     setIsDialogOpen(true);
   };
 
-  const calculateNextRenewal = (startDate: string, frequency: string) => {
-    const start = new Date(startDate);
-    const now = new Date();
-    let nextDate = start;
+  // `isYearly` is the fallback the overview widgets already use: anything
+  // unrecognised counts as monthly. The reducer this replaces had a third
+  // answer — it dropped such a row from the total altogether, while the
+  // deleted `calculateNextRenewal` billed it yearly.
+  const monthlyCostIn = (currency: string) =>
+    subscriptions
+      .filter((sub) => sub.currency === currency)
+      .reduce(
+        (acc, sub) =>
+          acc + (isYearly(sub.frequency) ? sub.amount / 12 : sub.amount),
+        0
+      );
 
-    while (nextDate <= now) {
-      if (frequency === "MONTHLY") {
-        nextDate = addMonths(nextDate, 1);
-      } else {
-        nextDate = addYears(nextDate, 1);
-      }
-    }
-    return nextDate;
-  };
-
-  const totalMonthlyCostVND = subscriptions
-    .filter((sub) => sub.currency === "VND")
-    .reduce((acc, sub) => {
-      if (sub.frequency === "MONTHLY") return acc + sub.amount;
-      if (sub.frequency === "YEARLY") return acc + sub.amount / 12;
-      return acc;
-    }, 0);
-
-  const totalMonthlyCostUSD = subscriptions
-    .filter((sub) => sub.currency === "USD")
-    .reduce((acc, sub) => {
-      if (sub.frequency === "MONTHLY") return acc + sub.amount;
-      if (sub.frequency === "YEARLY") return acc + sub.amount / 12;
-      return acc;
-    }, 0);
+  const totalMonthlyCostVND = monthlyCostIn("VND");
+  const totalMonthlyCostUSD = monthlyCostIn("USD");
 
   if (isLoading) {
     return (
@@ -316,7 +296,7 @@ export default function SubscriptionManagerPage() {
                   </TableCell>
                   <TableCell>
                     {format(
-                      calculateNextRenewal(sub.startDate, sub.frequency),
+                      nextPaymentDate(new Date(sub.startDate), sub.frequency),
                       "PPP"
                     )}
                   </TableCell>
