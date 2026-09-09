@@ -90,7 +90,10 @@
     "FreeTrial": "Dùng thử",
     "ManageSubscriptions": "Quản lý gói đăng ký",
     "PerMonth": "mỗi tháng",
-    "PerYear": "mỗi năm"
+    "PerYear": "mỗi năm",
+    "NoUpcomingPayments": "Không có khoản thanh toán nào sắp tới",
+    "TotalUpcoming": "Tổng sắp tới",
+    "DaysLeft": "{days, plural, =0 {Đến hạn hôm nay} other {Còn # ngày}}"
   },
   "TransactionsPage": {
     "Header": "Giao Dịch",
