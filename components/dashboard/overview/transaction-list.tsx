@@ -1,6 +1,6 @@
 "use client";
 
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 import {
   AlertTriangleIcon,
   ArrowDownRight,
@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetTransactions } from "@/features/transactions/api/use-get-transtractions";
+import { filterPeriod } from "@/lib/dashboard/filter-period";
 import { formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 interface TransactionListProps {
@@ -48,21 +49,11 @@ export function TransactionList({
   if (displayTransactions.length === 0) {
     // Mirrors the range the DateFilter chip shows, so the empty copy names the
     // exact window the user is looking at.
-    const from = params.get("from");
-    const to = params.get("to");
-    const defaultTo = new Date();
-    const defaultFrom = subDays(defaultTo, 30);
-
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
         <FileSearchIcon className="size-6 text-muted-foreground" />
         <p className="text-muted-foreground text-sm">
-          {t("NoTransactions", {
-            range: formatDateRange({
-              from: from ? new Date(from) : defaultFrom,
-              to: to ? new Date(to) : defaultTo,
-            }),
-          })}
+          {t("NoTransactions", { range: formatDateRange(filterPeriod(params)) })}
         </p>
       </div>
     );

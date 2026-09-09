@@ -6,7 +6,6 @@ import {
   differenceInCalendarMonths,
   format,
   startOfMonth,
-  subDays,
 } from "date-fns";
 import {
   AlertTriangleIcon,
@@ -21,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { dailyTotals, dayKey } from "@/lib/dashboard/daily-totals";
+import { filterPeriod } from "@/lib/dashboard/filter-period";
 import { cn, formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 // Weekday headings, not data: the summary endpoint has nothing to say about
@@ -62,21 +62,11 @@ export function MonthlyCalendar() {
     // `fillMissingDays` returns an empty array when the period has no
     // transactions at all, so an empty map means exactly that. Mirrors the
     // range the DateFilter chip shows, like the sibling widgets.
-    const from = params.get("from");
-    const to = params.get("to");
-    const defaultTo = new Date();
-    const defaultFrom = subDays(defaultTo, 30);
-
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
         <FileSearchIcon className="size-6 text-muted-foreground" />
         <p className="text-muted-foreground text-sm">
-          {t("NoTransactions", {
-            range: formatDateRange({
-              from: from ? new Date(from) : defaultFrom,
-              to: to ? new Date(to) : defaultTo,
-            }),
-          })}
+          {t("NoTransactions", { range: formatDateRange(filterPeriod(params)) })}
         </p>
       </div>
     );

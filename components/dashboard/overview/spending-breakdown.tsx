@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { subDays } from "date-fns";
 import { AlertTriangleIcon, FileSearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -18,6 +17,7 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { filterPeriod } from "@/lib/dashboard/filter-period";
 import { formatCurrency, formatDateRange } from "@/lib/utils";
 
 // The summary endpoint returns at most four slices (top three categories plus
@@ -56,21 +56,11 @@ export function SpendingBreakdown() {
   if (spendingData.length === 0) {
     // Mirrors the range the DateFilter chip shows, so the empty copy names the
     // exact window the user is looking at.
-    const from = params.get("from");
-    const to = params.get("to");
-    const defaultTo = new Date();
-    const defaultFrom = subDays(defaultTo, 30);
-
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
         <FileSearchIcon className="size-6 text-muted-foreground" />
         <p className="text-muted-foreground text-sm">
-          {t("NoSpending", {
-            range: formatDateRange({
-              from: from ? new Date(from) : defaultFrom,
-              to: to ? new Date(to) : defaultTo,
-            }),
-          })}
+          {t("NoSpending", { range: formatDateRange(filterPeriod(params)) })}
         </p>
       </div>
     );
