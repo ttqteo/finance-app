@@ -1,10 +1,36 @@
 import { describe, expect, it } from "vitest";
 import { nextPaymentDate } from "@/lib/dashboard/next-payment-date";
 
+// Mọi `startDate` dưới đây mang 12:00Z chứ không phải chuỗi chỉ có ngày.
+//
+// `next-payment-date.ts` đã cảnh báo đúng chuyện này nhưng chính file test lại
+// chưa áp dụng. `new Date("2026-01-15")` là nửa đêm UTC, không có khoảng đệm
+// lùi. Hàm bước theo GIỜ ĐỊA PHƯƠNG (cố ý — xem chú thích ở đó), nên tại vùng
+// có offset LỚN HƠN ở kết quả so với lúc bắt đầu, tức mùa xuân đổi giờ bán cầu
+// bắc, giờ treo tường được giữ nguyên nên thời điểm lùi một tiếng, vượt ngược
+// qua nửa đêm UTC, và `toISOString()` đọc ra sớm một ngày.
+//
+// Đã đo bằng cách chạy cả suite qua PowerShell với `TZ`:
+//
+//   UTC, Asia/Saigon, Australia/Sydney,
+//   Pacific/Kiritimati, Pacific/Midway      → 14 passed
+//   Europe/London, America/New_York,
+//   America/Los_Angeles                     →  1 failed | 13 passed
+//     ("giữ nguyên ngày 31…" bên dưới vốn đã có 12:00Z nên không nằm trong số đó)
+//
+// Không phải cứ ở phía tây UTC là hỏng: Midway (UTC-11) xanh vì không đổi giờ,
+// Sydney lùi giờ trong cùng khoảng nên cũng xanh. Đúng như file nguồn dự đoán.
+// Dời fixture ra giữa ngày làm cả tám vùng xanh mà KHÔNG đổi giá trị kỳ vọng
+// nào — 12:00Z cách mốc nửa đêm UTC 12 tiếng, thừa sức chịu một tiếng lệch.
+//
+// Chỉ `startDate` cần đệm vì nó là toán hạng bị `addMonths`/`addYears` bước
+// qua. `now` chỉ đem đi so sánh nên giữ nguyên nửa đêm UTC.
+//
+// Dữ liệu thật không dính lỗi này: date picker lưu nửa đêm GIỜ ĐỊA PHƯƠNG.
 describe("nextPaymentDate", () => {
   it("cộng tháng cho gói monthly cho tới khi vượt mốc hiện tại", () => {
     const result = nextPaymentDate(
-      new Date("2026-01-15"),
+      new Date("2026-01-15T12:00:00Z"),
       "monthly",
       new Date("2026-03-20")
     );
@@ -13,7 +39,7 @@ describe("nextPaymentDate", () => {
 
   it("cộng năm cho gói yearly", () => {
     const result = nextPaymentDate(
-      new Date("2024-06-10"),
+      new Date("2024-06-10T12:00:00Z"),
       "yearly",
       new Date("2026-03-20")
     );
@@ -22,7 +48,7 @@ describe("nextPaymentDate", () => {
 
   it("trả chính startDate khi kỳ đầu còn ở tương lai", () => {
     const result = nextPaymentDate(
-      new Date("2026-12-01"),
+      new Date("2026-12-01T12:00:00Z"),
       "monthly",
       new Date("2026-03-20")
     );
@@ -45,7 +71,7 @@ describe("nextPaymentDate", () => {
   // dashboard mâu thuẫn với con số đó, nên sai sót đi thẳng ra màn hình.
   it("coi 'YEARLY' viết hoa là gói năm thay vì rơi về nhánh monthly", () => {
     const result = nextPaymentDate(
-      new Date("2025-10-14"),
+      new Date("2025-10-14T12:00:00Z"),
       "YEARLY",
       new Date("2026-09-09")
     );
@@ -60,11 +86,9 @@ describe("nextPaymentDate", () => {
   // ngày thu phí và trôi dần về sớm hơn. Đếm số kỳ rồi cộng một lần vào
   // `startDate` gốc cho ra 2026-05-31.
   //
-  // `startDate` cố ý mang 12:00Z thay vì nửa đêm UTC: nửa đêm UTC không có
-  // khoảng đệm lùi, nên fixture kiểu đó vỡ ở vùng đổi giờ mùa xuân
-  // (America/New_York, Europe/London) vì lý do chẳng liên quan gì tới điều
-  // test này đang chốt. Dữ liệu thật lưu nửa đêm GIỜ ĐỊA PHƯƠNG, cách mốc UTC
-  // vài tiếng, nên không dính.
+  // `startDate` mang 12:00Z theo quy ước nêu ở đầu file — đây là test duy nhất
+  // vốn đã làm đúng, và cũng là test duy nhất xanh ở mọi múi giờ trước lần sửa
+  // này.
   it("giữ nguyên ngày 31 khi kỳ hạn đi qua tháng ngắn", () => {
     const result = nextPaymentDate(
       new Date("2026-01-31T12:00:00Z"),
