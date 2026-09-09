@@ -1,6 +1,7 @@
-import { ClerkLoaded, ClerkLoading, SignIn } from "@clerk/nextjs";
+import { SignInForm } from "@/features/auth/components/sign-in-form";
 import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
+import { Suspense } from "react";
 
 const SignInPage = () => {
   return (
@@ -12,13 +13,16 @@ const SignInPage = () => {
         <p className="text-base text-[#7E8CA0]">
           Login or Create account to get back to your dashboard!
         </p>
-        <div className="flex items-center justify-center mt-8">
-          <ClerkLoaded>
-            <SignIn path="/sign-in" />
-          </ClerkLoaded>
-          <ClerkLoading>
-            <Loader2Icon className="animate-spin text-muted-foreground" />
-          </ClerkLoading>
+        <div className="flex items-center justify-center mt-8 w-full">
+          {/* SignInForm đọc useSearchParams nên phải có Suspense bao ngoài, nếu
+              không `next build` sẽ báo lỗi khi prerender trang này. */}
+          <Suspense
+            fallback={
+              <Loader2Icon className="animate-spin text-muted-foreground" />
+            }
+          >
+            <SignInForm />
+          </Suspense>
         </div>
       </div>
       <div className="h-full bg-black hidden lg:flex items-center justify-center">
