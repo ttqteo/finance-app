@@ -602,7 +602,8 @@ Kiểm tra lại layout grid sau khi gỡ: các ô còn lại phải lấp đầ
 
 1. `expense-chart.tsx` là widget duy nhất **chưa có nhánh `isError`**, và chữ empty state của nó (`NoTransactions12m`) không nêu khoảng thời gian trong khi hai widget kia đã nêu. Sửa hai widget mà bỏ cái thứ ba thì chính việc sửa lại tạo ra sự thiếu nhất quán.
 2. `AlertTriangleIcon` ở cả hai widget đang dùng `text-muted-foreground` — trùng màu với icon của empty state. Phân biệt được bằng chữ nhưng liếc qua thì giống hệt. Đổi sang `text-destructive` để kênh màu cũng mang thông tin.
-3. `index.tsx:107-109` ghép `<CardTitle>Spending Breakdown</CardTitle>` tiếng Anh viết cứng với phần mô tả đã dịch — bản vi thành card nửa Anh nửa Việt. Đưa nốt tiêu đề qua next-intl.
+3. **Tiêu đề card còn viết cứng tiếng Anh ở nhiều chỗ**, không chỉ một: `index.tsx:107-109` (`Spending Breakdown` ghép với mô tả đã dịch → card nửa Anh nửa Việt), và `:121` `Active Subscriptions`, `:132` `Coming Up`, `:133` `Upcoming bills and payments`. Đưa hết qua next-intl.
+4. `components/ui/progress.tsx` gắn `className` lên `Root` còn indicator thì hardcode `bg-primary`. Nên `bg-green-500` ở `upcoming-payments.tsx` **tô rãnh nền chứ không tô phần fill**: với gói cách 35 ngày, `value` clamp về 0, indicator dịch hết ra ngoài, kết quả là một viên thuốc xanh đặc kín không có fill — đọc ra thành "đã trả xong", ngược hẳn ý định. Cần một prop cho class ở tầng indicator. Đây là sửa component dùng chung nên kiểm tra mọi nơi đang dùng `Progress` trước khi đổi.
 
 **Commit:** `refactor: remove dashboard widgets that have no data source`
 
@@ -626,6 +627,38 @@ Expected: chỉ còn kết quả ở `asset-allocation.tsx`, `stock-table.tsx`, 
 
 ---
 
+### Task 13: Gộp một mối logic tính kỳ thanh toán
+
+**Files:**
+- Modify: `app/(site)/dashboard/subscriptions/page.tsx`
+
+Task 7 đã tạo `nextPaymentDate` tính đúng bằng phép số học. Nhưng trang quản lý vẫn giữ `calculateNextRenewal` riêng ở dòng 198, và bản đó **vẫn cộng dồn** — tức là vẫn trôi ngày với gói bắt đầu ngày 29-31.
+
+**Vì sao việc này không hoãn được, dù nó nằm ngoài phạm vi ban đầu:** trước Task 7, cả hai bản đều sai **giống hệt nhau nên chúng khớp**. Sau Task 7, overview đúng còn trang quản lý sai — cùng một gói hiện **hai ngày trừ tiền khác nhau ở hai trang** (`2026-05-31` với `2026-05-28` cho gói bắt đầu 31/01). Mâu thuẫn này do chính việc sửa một nửa gây ra, nên nó là trách nhiệm của plan này chứ không phải nợ có sẵn.
+
+Hai bản còn **fallback ngược nhau**: `calculateNextRenewal` cho giá trị lạ rơi về YEARLY (nhánh `else`), còn `isYearly()` cho rơi về monthly.
+
+**Việc cần làm:** xoá `calculateNextRenewal`, cho trang quản lý dùng `nextPaymentDate` và `isYearly` từ `lib/dashboard/next-payment-date.ts`. Đồng thời trang này còn `useQuery` riêng trên đúng key `["subscriptions"]` — chuyển sang `useGetSubscriptions()` để chỉ còn một queryFn, tránh hai bản khác nhau cùng ghi vào một ô cache.
+
+Kiểm tra kỹ: trang quản lý đọc `amount` **không** qua `convertAmountFromMiliunits` (đúng), nên hook dùng chung phải giữ nguyên hành vi đó.
+
+**Commit:** `refactor: single source of truth for billing period math`
+
+---
+
+## Ghi chú môi trường
+
+**Thí nghiệm phụ thuộc múi giờ phải chạy qua PowerShell, không qua Bash tool.** MSYS nuốt biến môi trường có dấu `/`, nên `TZ="America/New_York"` không bao giờ tới được Node và nó lặng lẽ rơi về múi hệ thống — cho ra một loạt PASS giả. Đã kiểm chứng:
+
+```
+qua Bash tool  → TZ = undefined            resolved = Asia/Saigon        offset = -420
+qua PowerShell → TZ = "America/New_York"   resolved = America/New_York   offset = 300
+```
+
+Luôn in `Intl.DateTimeFormat().resolvedOptions().timeZone` và từ chối tin một lần chạy không phản hồi đúng múi giờ đã đặt.
+
+---
+
 ## Nợ kỹ thuật phát hiện trong lúc làm — không xử lý ở plan này
 
 | Vấn đề | Vị trí | Vì sao hoãn |
@@ -642,6 +675,10 @@ Expected: chỉ còn kết quả ở `asset-allocation.tsx`, `stock-table.tsx`, 
 | `PALETTE` trùng ý đồ với `COLORS` trong `pie-variant.tsx`, và bộ token `--chart-1…5` trong `globals.css` **không nơi nào dùng** | `spending-breakdown.tsx`, `pie-variant.tsx:12`, `globals.css:33-37` | Gom một lượt ở đợt Material 3, vì đợt đó vốn đã sửa markup mấy file này. Lưu ý: hex cố định không đổi theo theme, `--chart-N` thì có |
 | Cookie `currency` ghi trong `useEffect` sau khi `useGetSettings()` xong, còn `formatCurrency` đọc đồng bộ lúc render và ghi cookie không kích hoạt re-render → số tiền có thể hiện USD rồi **không bao giờ tự sửa** | `header.tsx` + `lib/utils.ts:35` | Lỗi có sẵn toàn repo (`columns.tsx`, data grid), không phải do plan này |
 | `getLocale()`/`formatDateRange()` chỉ chạy được ở browser. Hiện an toàn nhờ **hai** điều kiện cùng lúc: repo không có `prefetchQuery`/`HydrationBoundary` nào, **và** TanStack bật `isFetching` trong SSR qua đường optimistic result (`useBaseQuery.js:43` không có guard `isServer`) | `transaction-list.tsx`, `spending-breakdown.tsx` | Chưa vỡ. Nhưng thêm SSR prefetch cho dashboard — bước tối ưu tự nhiên tiếp theo — là **vỡ ngay**. `date-filter.tsx:80` đã phải có cờ `mounted` đúng vì lý do này |
+| `formatCurrency` sẽ **ném lỗi** với mã tiền tệ lạ: `currencyConfig[currency].locale` không có guard, mà `currency` là `text` tự do trong schema | `lib/utils.ts:41` | Hiện an toàn vì nơi ghi duy nhất dùng `z.enum(["VND","USD"])`. Nhưng đây là code đầu tiên truyền giá trị theo từng dòng vào hàm đó |
+| `frequency` lạ bị **âm thầm** gắn nhãn "mỗi tháng" và tính đủ trọng số vào tổng hàng tháng | `subscription-list.tsx` | Hướng fallback thì hợp lý; vấn đề là nó im lặng, không cảnh báo gì |
+| `HORIZON_DAYS` chỉ điều khiển thanh bar, **không lọc danh sách** — gói năm cách 340 ngày vẫn nằm trong mục "Sắp tới" với thanh 0% | `upcoming-payments.tsx` | Quyết định sản phẩm: lọc lại, hay nới horizon cho gói năm có nghĩa |
+| Trang `app/(site)/subscriptions/page.tsx` (khác trang trong dashboard) **hỏng hoàn toàn**: mong `/api/subscriptions` trả object `{plan, status,...}` và gọi `/api/subscriptions/cancel`, `/renew` — **hai endpoint không tồn tại** trong route Hono | `app/(site)/subscriptions/page.tsx` | Hỏng sẵn từ trước, không liên quan overview. Nhưng là trang chết chứ không phải trang lỗi nhẹ |
 | Khối dựng khoảng thời gian bị lặp 3 lần và cả 3 cùng sai giống nhau: `new Date("2025-05-13")` parse thành nửa đêm UTC nên người ở phía tây UTC thấy lùi một ngày | `date-filter.tsx:39-44`, `transaction-list.tsx:47-52`, `spending-breakdown.tsx:55-60` | Sai giống hệt nhau nên chip và chữ vẫn khớp. **Đừng sửa lẻ một bản** — tách helper rồi sửa cả ba cùng lúc |
 
 ## Thứ tự so với các đợt việc khác
