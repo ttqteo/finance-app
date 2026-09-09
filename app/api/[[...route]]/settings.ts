@@ -1,27 +1,27 @@
 import { db } from "@/db/drizze";
 import { insertUserSettingsSchema, userSettings } from "@/db/schema";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { getUser } from "@/lib/supabase/hono";
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 
 const app = new Hono()
-  .get("/", clerkMiddleware(), async (c) => {
-    const auth = getAuth(c);
+  .get("/", async (c) => {
+    const user = await getUser(c);
 
-    if (!auth?.userId) {
+    if (!user) {
       return c.json({ error: "Unauthorized!" }, 401);
     }
 
     const [data] = await db
       .select()
       .from(userSettings)
-      .where(eq(userSettings.userId, auth.userId));
+      .where(eq(userSettings.userId, user.id));
 
     if (!data) {
       const [newData] = await db
         .insert(userSettings)
-        .values({ userId: auth.userId })
+        .values({ userId: user.id })
         .returning();
       return c.json({ data: newData });
     }
@@ -30,7 +30,6 @@ const app = new Hono()
   })
   .patch(
     "/",
-    clerkMiddleware(),
     zValidator(
       "json",
       insertUserSettingsSchema.pick({
@@ -39,17 +38,17 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
       const [data] = await db
         .update(userSettings)
         .set(values)
-        .where(eq(userSettings.userId, auth.userId))
+        .where(eq(userSettings.userId, user.id))
         .returning();
 
       return c.json({ data });

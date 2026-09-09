@@ -1,6 +1,6 @@
 import { db } from "@/db/drizze";
 import { subscriptions, insertSubscriptionSchema } from "@/db/schema";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { getUser } from "@/lib/supabase/hono";
 import { and, eq, desc } from "drizzle-orm";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
@@ -8,23 +8,22 @@ import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 
 const app = new Hono()
-  .get("/", clerkMiddleware(), async (c) => {
-    const auth = getAuth(c);
-    if (!auth?.userId) {
+  .get("/", async (c) => {
+    const user = await getUser(c);
+    if (!user) {
       return c.json({ error: "Unauthorized!" }, 401);
     }
 
     const data = await db
       .select()
       .from(subscriptions)
-      .where(eq(subscriptions.userId, auth.userId))
+      .where(eq(subscriptions.userId, user.id))
       .orderBy(desc(subscriptions.createdAt));
 
     return c.json(data);
   })
   .post(
     "/",
-    clerkMiddleware(),
     zValidator(
       "json",
       insertSubscriptionSchema.omit({
@@ -35,10 +34,10 @@ const app = new Hono()
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -46,7 +45,7 @@ const app = new Hono()
         .insert(subscriptions)
         .values({
           id: createId(),
-          userId: auth.userId,
+          userId: user.id,
           ...values,
         })
         .returning();
@@ -56,7 +55,6 @@ const app = new Hono()
   )
   .patch(
     "/:id",
-    clerkMiddleware(),
     zValidator("param", z.object({ id: z.string().optional() })),
     zValidator(
       "json",
@@ -65,7 +63,7 @@ const app = new Hono()
         .partial()
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { id } = c.req.valid("param");
       const values = c.req.valid("json");
 
@@ -73,7 +71,7 @@ const app = new Hono()
         return c.json({ error: "Missing id" }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -84,7 +82,7 @@ const app = new Hono()
           updatedAt: new Date(),
         })
         .where(
-          and(eq(subscriptions.userId, auth.userId), eq(subscriptions.id, id))
+          and(eq(subscriptions.userId, user.id), eq(subscriptions.id, id))
         )
         .returning();
 
@@ -97,24 +95,23 @@ const app = new Hono()
   )
   .delete(
     "/:id",
-    clerkMiddleware(),
     zValidator("param", z.object({ id: z.string().optional() })),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { id } = c.req.valid("param");
 
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
       const [data] = await db
         .delete(subscriptions)
         .where(
-          and(eq(subscriptions.userId, auth.userId), eq(subscriptions.id, id))
+          and(eq(subscriptions.userId, user.id), eq(subscriptions.id, id))
         )
         .returning();
 

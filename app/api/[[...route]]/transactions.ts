@@ -5,7 +5,7 @@ import {
   insertTransactionSchema,
   transactions,
 } from "@/db/schema";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { getUser } from "@/lib/supabase/hono";
 import { zValidator } from "@hono/zod-validator";
 import { createId } from "@paralleldrive/cuid2";
 import { parse, subDays } from "date-fns";
@@ -24,12 +24,11 @@ const app = new Hono()
         accountId: z.string().optional(),
       })
     ),
-    clerkMiddleware(),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { from, to, accountId } = c.req.valid("query");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -59,7 +58,7 @@ const app = new Hono()
         .where(
           and(
             accountId ? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, auth.userId),
+            eq(accounts.userId, user.id),
             gte(transactions.date, startDate),
             lte(transactions.date, endDate)
           )
@@ -72,16 +71,15 @@ const app = new Hono()
   .get(
     "/:id",
     zValidator("param", z.object({ id: z.string().optional() })),
-    clerkMiddleware(),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { id } = c.req.valid("param");
 
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -97,7 +95,7 @@ const app = new Hono()
         })
         .from(transactions)
         .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)));
+        .where(and(eq(transactions.id, id), eq(accounts.userId, user.id)));
 
       if (!data) {
         return c.json({ error: "Not found" }, 400);
@@ -107,13 +105,12 @@ const app = new Hono()
   )
   .post(
     "/",
-    clerkMiddleware(),
     zValidator("json", insertTransactionSchema.omit({ id: true })),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -129,13 +126,12 @@ const app = new Hono()
   )
   .post(
     "/bulk-create",
-    clerkMiddleware(),
     zValidator("json", z.array(insertTransactionSchema.omit({ id: true }))),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -148,13 +144,12 @@ const app = new Hono()
   )
   .post(
     "/bulk-delete",
-    clerkMiddleware(),
     zValidator("json", z.object({ ids: z.array(z.string()) })),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -166,7 +161,7 @@ const app = new Hono()
           .where(
             and(
               inArray(transactions.id, values.ids),
-              eq(accounts.userId, auth.userId)
+              eq(accounts.userId, user.id)
             )
           )
       );
@@ -187,11 +182,10 @@ const app = new Hono()
   )
   .patch(
     "/:id",
-    clerkMiddleware(),
     zValidator("param", z.object({ id: z.string().optional() })),
     zValidator("json", insertTransactionSchema.omit({ id: true })),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { id } = c.req.valid("param");
       const values = c.req.valid("json");
 
@@ -199,7 +193,7 @@ const app = new Hono()
         return c.json({ error: "Missing id" }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -208,7 +202,7 @@ const app = new Hono()
           .select({ id: transactions.id })
           .from(transactions)
           .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-          .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)))
+          .where(and(eq(transactions.id, id), eq(accounts.userId, user.id)))
       );
 
       const [data] = await db
@@ -231,17 +225,16 @@ const app = new Hono()
   )
   .delete(
     "/:id",
-    clerkMiddleware(),
     zValidator("param", z.object({ id: z.string().optional() })),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const { id } = c.req.valid("param");
 
       if (!id) {
         return c.json({ error: "Missing id" }, 400);
       }
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
@@ -250,7 +243,7 @@ const app = new Hono()
           .select({ id: transactions.id })
           .from(transactions)
           .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-          .where(and(eq(transactions.id, id), eq(accounts.userId, auth.userId)))
+          .where(and(eq(transactions.id, id), eq(accounts.userId, user.id)))
       );
 
       const [data] = await db
