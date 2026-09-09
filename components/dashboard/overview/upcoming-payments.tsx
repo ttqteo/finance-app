@@ -11,10 +11,19 @@ import { useGetSubscriptions } from "@/features/subscriptions/api/use-get-subscr
 import { nextPaymentDate } from "@/lib/dashboard/next-payment-date";
 import { cn, formatCurrency, getLocale } from "@/lib/utils";
 
-// The urgency bar covers a 30-day horizon: a charge further out than that reads
-// as 0% and one due today as 100%. Yearly plans sit at 0 for most of the year,
-// which is the intended meaning — the colour thresholds below use the same
-// scale, so bar and colour never disagree.
+// `value` is an urgency reading on a 30-day horizon: a charge further out than
+// that is 0, one due today is 100.
+//
+// KNOWN DEFECT, tracked as a Task 11 item — the fix belongs in the shared
+// component, so do not patch around it here. `components/ui/progress.tsx`
+// spreads `className` onto `ProgressPrimitive.Root` and hardcodes the indicator
+// as `bg-primary`. The colour classes below therefore tint the EMPTY TRACK, not
+// the fill, and the two are not on the same element — they cannot agree or
+// disagree. Worse at the low end: at value 0 the indicator is translated fully
+// out of view, so the real row (a yearly plan 35 days out) renders as a solid
+// full-width green pill, which reads as "paid" — the inverse of the intended
+// signal. Colouring the fill requires an indicator-level class inside
+// `progress.tsx`.
 const HORIZON_DAYS = 30;
 
 export function UpcomingPayments() {
@@ -44,7 +53,10 @@ export function UpcomingPayments() {
       byCurrency.set(p.currency, (byCurrency.get(p.currency) ?? 0) + p.amount);
     }
 
-    return [...byCurrency.entries()];
+    // Sorted by currency code: Map iteration follows insertion order, which
+    // here is due-date order, so a new subscription would otherwise silently
+    // reshuffle the totals.
+    return [...byCurrency.entries()].sort(([a], [b]) => a.localeCompare(b));
   }, [upcoming]);
 
   if (isLoading) {

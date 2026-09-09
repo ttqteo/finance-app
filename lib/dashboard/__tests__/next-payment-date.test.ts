@@ -51,4 +51,26 @@ describe("nextPaymentDate", () => {
     );
     expect(result.toISOString().slice(0, 10)).toBe("2026-10-14");
   });
+
+  // Chốt cách tính theo SỐ KỲ, không cộng dồn từ kết quả trước.
+  //
+  // `addMonths` kẹp tháng ngắn: 2026-01-31 cộng một tháng ra 2026-02-28. Nếu
+  // lặp và cộng tiếp từ KẾT QUẢ TRƯỚC thì ngày 28 bị mang theo mãi — bốn bước
+  // cho ra 2026-05-28, tức mọi gói bắt đầu ngày 29-31 sẽ vĩnh viễn hiện sai
+  // ngày thu phí và trôi dần về sớm hơn. Đếm số kỳ rồi cộng một lần vào
+  // `startDate` gốc cho ra 2026-05-31.
+  //
+  // `startDate` cố ý mang 12:00Z thay vì nửa đêm UTC: nửa đêm UTC không có
+  // khoảng đệm lùi, nên fixture kiểu đó vỡ ở vùng đổi giờ mùa xuân
+  // (America/New_York, Europe/London) vì lý do chẳng liên quan gì tới điều
+  // test này đang chốt. Dữ liệu thật lưu nửa đêm GIỜ ĐỊA PHƯƠNG, cách mốc UTC
+  // vài tiếng, nên không dính.
+  it("giữ nguyên ngày 31 khi kỳ hạn đi qua tháng ngắn", () => {
+    const result = nextPaymentDate(
+      new Date("2026-01-31T12:00:00Z"),
+      "monthly",
+      new Date("2026-05-10")
+    );
+    expect(result.toISOString().slice(0, 10)).toBe("2026-05-31");
+  });
 });

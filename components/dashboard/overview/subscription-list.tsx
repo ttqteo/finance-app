@@ -35,7 +35,10 @@ export function SubscriptionList() {
       totals.set(s.currency, (totals.get(s.currency) ?? 0) + perMonth);
     }
 
-    return [...totals.entries()];
+    // Sorted by currency code: Map iteration follows insertion order, which
+    // here is the endpoint's `orderBy(desc(createdAt))`, so adding a
+    // subscription would otherwise silently reshuffle the totals.
+    return [...totals.entries()].sort(([a], [b]) => a.localeCompare(b));
   }, [subscriptions]);
 
   if (isLoading) {
