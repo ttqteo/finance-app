@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useUser } from "@clerk/nextjs";
-import { MenuIcon } from "lucide-react";
-import Link from "next/link";
+import { useUser } from "@/features/auth/hooks/use-user";
+import { Loader2, MenuIcon } from "lucide-react";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMedia } from "react-use";
@@ -60,17 +60,29 @@ const Navigation = () => {
 
 export default Navigation;
 
+// `/dashboard`'s own loading.tsx lives *inside* the dashboard layout, so it
+// cannot paint until that layout's payload has already arrived — which is the
+// whole window the user was staring at an unchanged homepage. `useLinkStatus`
+// reports the pending navigation from the link itself, so the click gets
+// feedback immediately instead of after the round-trip.
+const DashboardLinkButton = ({ label }: { label: string }) => {
+  const { pending } = useLinkStatus();
+
+  return (
+    <Button aria-busy={pending}>
+      {pending && <Loader2 className="mr-2 size-4 animate-spin" />}
+      {label}
+    </Button>
+  );
+};
+
 const UserNav = () => {
   const { isSignedIn } = useUser();
   return (
     <div className="flex lg:flex-row flex-col gap-2">
       <ModeToggle />
-      <Link href="/dashboard">
-        {isSignedIn ? (
-          <Button>Go to Dashboard</Button>
-        ) : (
-          <Button>Sign In</Button>
-        )}
+      <Link href="/dashboard" prefetch>
+        <DashboardLinkButton label={isSignedIn ? "Go to Dashboard" : "Sign In"} />
       </Link>
     </div>
   );
