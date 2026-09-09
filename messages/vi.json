@@ -82,7 +82,15 @@
     "LoadFailed": "Không tải được dữ liệu",
     "SpendingByCategoryDesc": "Chi tiêu theo danh mục trong kỳ đã chọn",
     "Uncategorized": "Chưa Phân Loại",
-    "Amount": "Số tiền"
+    "Amount": "Số tiền",
+    "NoSubscriptions": "Bạn chưa thêm gói đăng ký nào",
+    "TotalMonthlyCost": "Tổng chi phí hàng tháng",
+    "Name": "Tên",
+    "NextBilling": "Kỳ thu phí kế tiếp",
+    "FreeTrial": "Dùng thử",
+    "ManageSubscriptions": "Quản lý gói đăng ký",
+    "PerMonth": "mỗi tháng",
+    "PerYear": "mỗi năm"
   },
   "TransactionsPage": {
     "Header": "Giao Dịch",

@@ -82,7 +82,15 @@
     "LoadFailed": "Couldn't load data",
     "SpendingByCategoryDesc": "Spending by category for the selected period",
     "Uncategorized": "Uncategorized",
-    "Amount": "Amount"
+    "Amount": "Amount",
+    "NoSubscriptions": "You haven't added any subscriptions yet",
+    "TotalMonthlyCost": "Total monthly cost",
+    "Name": "Name",
+    "NextBilling": "Next billing",
+    "FreeTrial": "Trial",
+    "ManageSubscriptions": "Manage subscriptions",
+    "PerMonth": "per month",
+    "PerYear": "per year"
   },
   "TransactionsPage": {
     "Header": "Transactions",
