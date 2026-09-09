@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { UserButton } from "@clerk/nextjs";
+import { UserMenu } from "@/features/auth/components/user-menu";
 
 // Menu items.
 const items = [
@@ -66,7 +66,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenuButton>
-          <UserButton /> Username
+          <UserMenu /> Username
         </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>

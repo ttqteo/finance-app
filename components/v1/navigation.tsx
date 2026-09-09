@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/features/auth/hooks/use-user";
 import { Spinner } from "../spinner";
 
 const Navigation = () => {

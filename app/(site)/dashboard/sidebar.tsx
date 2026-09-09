@@ -9,7 +9,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ClerkLoaded, ClerkLoading, useAuth, UserButton } from "@clerk/nextjs";
+import { UserMenu } from "@/features/auth/components/user-menu";
+import { useUser } from "@/features/auth/hooks/use-user";
 import {
   BarChart3,
   ChartArea,
@@ -19,7 +20,6 @@ import {
   FileText,
   IconNode,
   ListPlus,
-  Loader2Icon,
   NotebookPen,
   Sparkles,
   Users,
@@ -84,7 +84,7 @@ const PROTECTED_ROUTES: Route[] = [
 ];
 
 export function Sidebar() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useUser();
   const pathname = usePathname();
 
   if (isLoaded && !isSignedIn) {
@@ -130,12 +130,7 @@ export function Sidebar() {
       </div>
 
       <div className="flex flex-col items-center justify-center mb-4">
-        <ClerkLoaded>
-          <UserButton />
-        </ClerkLoaded>
-        <ClerkLoading>
-          <Loader2Icon className="size-8 animate-spin text-slate-400" />
-        </ClerkLoading>
+        <UserMenu />
       </div>
     </div>
   );
