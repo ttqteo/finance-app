@@ -9,21 +9,12 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSubscriptions } from "@/features/subscriptions/api/use-get-subscriptions";
 import { nextPaymentDate } from "@/lib/dashboard/next-payment-date";
-import { cn, formatCurrency, getLocale } from "@/lib/utils";
+import { formatCurrency, getLocale } from "@/lib/utils";
 
 // `value` is an urgency reading on a 30-day horizon: a charge further out than
-// that is 0, one due today is 100.
-//
-// KNOWN DEFECT, tracked as a Task 11 item — the fix belongs in the shared
-// component, so do not patch around it here. `components/ui/progress.tsx`
-// spreads `className` onto `ProgressPrimitive.Root` and hardcodes the indicator
-// as `bg-primary`. The colour classes below therefore tint the EMPTY TRACK, not
-// the fill, and the two are not on the same element — they cannot agree or
-// disagree. Worse at the low end: at value 0 the indicator is translated fully
-// out of view, so the real row (a yearly plan 35 days out) renders as a solid
-// full-width green pill, which reads as "paid" — the inverse of the intended
-// signal. Colouring the fill requires an indicator-level class inside
-// `progress.tsx`.
+// that is 0, one due today is 100. The colour classes go on
+// `indicatorClassName` — `className` would tint the empty track instead of the
+// fill, which at value 0 paints a solid pill that reads as "paid".
 const HORIZON_DAYS = 30;
 
 export function UpcomingPayments() {
@@ -144,14 +135,14 @@ export function UpcomingPayments() {
 
               <Progress
                 value={elapsed}
-                className={cn(
-                  "h-1",
+                className="h-1"
+                indicatorClassName={
                   daysLeft <= 3
                     ? "bg-red-500"
                     : daysLeft <= 7
                     ? "bg-orange-500"
                     : "bg-green-500"
-                )}
+                }
               />
             </div>
           );

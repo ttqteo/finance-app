@@ -47,7 +47,7 @@ export function SpendingBreakdown() {
   if (isError) {
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
-        <AlertTriangleIcon className="size-6 text-muted-foreground" />
+        <AlertTriangleIcon className="size-6 text-destructive" />
         <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
       </div>
     );

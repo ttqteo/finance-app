@@ -1,11 +1,12 @@
 "use client";
 
-import { AssetAllocation } from "@/components/dashboard/overview/asset-allocation";
-import { ChatAssistant } from "@/components/dashboard/overview/chat-assistant";
+// `asset-allocation.tsx`, `stock-table.tsx` and `chat-assistant.tsx` are no
+// longer rendered here: they are still hardcoded mock, and nothing in the
+// schema (accounts, categories, transactions, subscriptions, user_settings)
+// can back them. The files stay on disk for the investing work.
 import { ExpenseChart } from "@/components/dashboard/overview/expense-chart";
 import { MonthlyCalendar } from "@/components/dashboard/overview/monthly-calendar";
 import { SpendingBreakdown } from "@/components/dashboard/overview/spending-breakdown";
-import { StockTable } from "@/components/dashboard/overview/stock-table";
 import { SubscriptionList } from "@/components/dashboard/overview/subscription-list";
 import { TransactionList } from "@/components/dashboard/overview/transaction-list";
 import { UpcomingPayments } from "@/components/dashboard/overview/upcoming-payments";
@@ -32,19 +33,19 @@ const NewOverview = () => {
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="accounts">Accounts</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="investments">Investments</TabsTrigger>
           <TabsTrigger value="budget">Budget</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
+        {/* Three rows of 4 + 3 columns. Dropping the four mock-backed cards
+            left holes in the old layout, so SpendingBreakdown moved up into
+            the slot the AssetAllocation card used to hold. */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="lg:col-span-4">
               <CardHeader>
-                <CardTitle>Cash Flow</CardTitle>
-                <CardDescription>
-                  Your income and expenses over time
-                </CardDescription>
+                <CardTitle>{t("CashFlow")}</CardTitle>
+                <CardDescription>{t("CashFlowDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ExpenseChart />
@@ -52,59 +53,7 @@ const NewOverview = () => {
             </Card>
             <Card className="lg:col-span-3">
               <CardHeader>
-                <CardTitle>Spending Categories</CardTitle>
-                <CardDescription>Where your money is going</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AssetAllocation />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="lg:col-span-4">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Recent Transactions</CardTitle>
-                  <CardDescription>
-                    Your latest financial activity
-                  </CardDescription>
-                </div>
-                <Button variant="outline" size="sm">
-                  View All
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <TransactionList />
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Monthly Calendar</CardTitle>
-                <CardDescription>Upcoming bills and payments</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <MonthlyCalendar />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Financial Assistant</CardTitle>
-                <CardDescription>
-                  Ask questions about your finances
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChatAssistant />
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-4">
-              <CardHeader>
-                <CardTitle>Spending Breakdown</CardTitle>
+                <CardTitle>{t("SpendingBreakdown")}</CardTitle>
                 <CardDescription>
                   {t("SpendingByCategoryDesc")}
                 </CardDescription>
@@ -117,10 +66,39 @@ const NewOverview = () => {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="lg:col-span-4">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>{t("RecentTransactions")}</CardTitle>
+                  <CardDescription>
+                    {t("RecentTransactionsDesc")}
+                  </CardDescription>
+                </div>
+                <Button variant="outline" size="sm">
+                  {t("ViewAll")}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <TransactionList />
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-3">
               <CardHeader>
-                <CardTitle>Active Subscriptions</CardTitle>
+                <CardTitle>{t("MonthlyCalendar")}</CardTitle>
+                <CardDescription>{t("MonthlyCalendarDesc")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <MonthlyCalendar />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle>{t("ActiveSubscriptions")}</CardTitle>
                 <CardDescription>
-                  Your recurring monthly payments
+                  {t("ActiveSubscriptionsDesc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -129,8 +107,8 @@ const NewOverview = () => {
             </Card>
             <Card className="lg:col-span-3">
               <CardHeader>
-                <CardTitle>Coming Up</CardTitle>
-                <CardDescription>Upcoming bills and payments</CardDescription>
+                <CardTitle>{t("ComingUp")}</CardTitle>
+                <CardDescription>{t("ComingUpDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <UpcomingPayments />
@@ -181,42 +159,13 @@ const NewOverview = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="investments" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="lg:col-span-4">
-              <CardHeader>
-                <CardTitle>Portfolio Performance</CardTitle>
-                <CardDescription>
-                  Your investment growth over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ExpenseChart />
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Asset Allocation</CardTitle>
-                <CardDescription>
-                  How your investments are distributed
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AssetAllocation />
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Stock Holdings</CardTitle>
-              <CardDescription>Your current stock portfolio</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <StockTable />
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* The "investments" tab is gone with its three cards. "Portfolio
+            Performance" rendered a second <ExpenseChart />, i.e. an
+            income/expense chart under an investment heading — harmless while
+            it was mock, actively false once it showed real transactions. The
+            other two were AssetAllocation and StockTable, which have no table
+            to read from. Nothing was left to put in the tab, so the trigger
+            went too rather than leading to a blank panel. */}
 
         <TabsContent value="budget" className="space-y-4">
           <Card>

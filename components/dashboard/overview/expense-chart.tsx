@@ -1,6 +1,7 @@
 "use client";
 import { useMemo } from "react";
-import { FileSearchIcon } from "lucide-react";
+import { format } from "date-fns";
+import { AlertTriangleIcon, FileSearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   BarChart,
@@ -14,24 +15,57 @@ import {
 } from "recharts";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetTransactionsRange } from "@/features/transactions/api/use-get-transactions-range";
+import {
+  transactionsRangeFor,
+  useGetTransactionsRange,
+} from "@/features/transactions/api/use-get-transactions-range";
 import { aggregateByMonth } from "@/lib/dashboard/aggregate-by-month";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getLocale } from "@/lib/utils";
+
+const MONTHS = 12;
 
 export function ExpenseChart() {
   const t = useTranslations("OverviewPage");
-  const { data: transactions, isLoading } = useGetTransactionsRange(12);
+  const { data: transactions, isLoading, isError } =
+    useGetTransactionsRange(MONTHS);
   const data = useMemo(() => aggregateByMonth(transactions ?? []), [transactions]);
 
   if (isLoading) {
     return <Skeleton className="h-[300px] w-full" />;
   }
 
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <AlertTriangleIcon className="size-6 text-destructive" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
   if (data.length === 0) {
+    // Names the window the chart actually queried, like the sibling widgets
+    // name theirs. `getLocale` reads cookies, so it stays below the early
+    // returns above.
+    //
+    // Built here rather than with `formatDateRange`, which prints the year on
+    // the end date only. That is fine for the 30-day filter the other widgets
+    // report, but this window always crosses a year boundary, so
+    // "Oct 01 - Sep 09, 2026" would read as an impossible range.
+    const { locale, formatStringFull } = getLocale();
+    const { from, to } = transactionsRangeFor(MONTHS);
+    const range = `${format(from, formatStringFull, { locale })} - ${format(
+      to,
+      formatStringFull,
+      { locale }
+    )}`;
+
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
         <FileSearchIcon className="size-6 text-muted-foreground" />
-        <p className="text-muted-foreground text-sm">{t("NoTransactions12m")}</p>
+        <p className="text-muted-foreground text-sm">
+          {t("NoTransactions", { range })}
+        </p>
       </div>
     );
   }

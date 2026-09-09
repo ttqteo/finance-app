@@ -4,6 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { format, startOfMonth, subMonths } from "date-fns";
 import { useSearchParams } from "next/navigation";
 
+/**
+ * The window this hook queries, exported so a caller can name the exact period
+ * in its empty-state copy without restating the arithmetic.
+ */
+export const transactionsRangeFor = (months = 12) => {
+  const to = new Date();
+  const from = startOfMonth(subMonths(to, months - 1));
+  return { from, to };
+};
+
 export const useGetTransactionsRange = (months = 12) => {
   // The date range is intentionally independent of the URL `from`/`to` filters:
   // this hook always covers the last `months` months. The `accountId` filter is
@@ -11,8 +21,7 @@ export const useGetTransactionsRange = (months = 12) => {
   const params = useSearchParams();
   const accountId = params.get("accountId") || "";
 
-  const to = new Date();
-  const from = startOfMonth(subMonths(to, months - 1));
+  const { from, to } = transactionsRangeFor(months);
 
   const fromStr = format(from, "yyyy-MM-dd");
   const toStr = format(to, "yyyy-MM-dd");
