@@ -53,16 +53,36 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ có trong `.env`, `/auth/v1/health` trả 200 |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅ `sb_publishable_...`, PostgREST nhận (404 "table not found" = qua được auth) |
 | Provider Email | ✅ bật, `mailer_autoconfirm: false` → có confirm email, đúng như Task 5 giả định |
-| Provider Google | ❌ **chưa bật** — `"google": false` trong `/auth/v1/settings` |
+| Provider Google | ✅ bật rồi — `"google": true` (kiểm lúc 16:45) |
 | `DATABASE_URL` | ❌ vẫn trỏ Neon (đúng — Task 11 mới đổi) |
 
-**Google phải bật trước Task 4**, không thì nút "Continue with Google" bấm vào lỗi. Kiểm tra lại bằng:
+Kiểm lại bất cứ lúc nào:
 
 ```bash
 curl -s "$NEXT_PUBLIC_SUPABASE_URL/auth/v1/settings" \
   -H "apikey: $NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" | grep -o '"google":[a-z]*'
 ```
-Expected: `"google":true`
+
+**Bên Google Cloud Console chỉ cần ĐÚNG MỘT redirect URI:**
+`https://<ref>.supabase.co/auth/v1/callback`.
+
+Luồng là browser → Google → **Supabase** → app, nên Google không bao giờ redirect
+thẳng về app. Thêm `http://localhost:<port>/auth/v1/callback` vào đó là thừa và
+sai đường dẫn (`/auth/v1/**` là hình dạng URL của Supabase, còn app phục vụ
+`/auth/callback`). Authorized JavaScript origins để trống được — nó chỉ dùng cho
+Google Identity/One Tap chạy trong browser.
+
+**Chỗ khai báo localhost là Supabase**, không phải Google: Authentication → URL
+Configuration → Redirect URLs. Khai **cả hai cổng**, vì `next dev` hay rơi về
+3001 khi 3000 còn bị giữ:
+
+```
+http://localhost:3000/auth/callback
+http://localhost:3001/auth/callback
+```
+
+Code không phụ thuộc cổng: Task 3 lấy `origin` từ request, Task 4 lấy
+`window.location.origin` — không đọc `NEXT_PUBLIC_APP_URL`.
 
 **Thêm vào `.env`:**
 
