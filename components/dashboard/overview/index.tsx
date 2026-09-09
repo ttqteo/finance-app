@@ -37,9 +37,9 @@ const NewOverview = () => {
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
-        {/* Three rows of 4 + 3 columns. Dropping the four mock-backed cards
-            left holes in the old layout, so SpendingBreakdown moved up into
-            the slot the AssetAllocation card used to hold. */}
+        {/* Three rows of 4 + 3 columns. Removing the four cards that had no
+            data source left holes in the old layout, so SpendingBreakdown
+            moved up into the slot AssetAllocation used to hold. */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="lg:col-span-4">
