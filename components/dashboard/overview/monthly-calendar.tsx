@@ -1,12 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  addMonths,
-  differenceInCalendarMonths,
-  format,
-  startOfMonth,
-} from "date-fns";
+import { format } from "date-fns";
 import {
   AlertTriangleIcon,
   ChevronLeft,
@@ -19,15 +14,14 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
-import { dailyTotals, dayKey } from "@/lib/dashboard/daily-totals";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { dailyTotals, dayKey, dayPartsInTz } from "@/lib/dashboard/daily-totals";
 import { filterPeriod } from "@/lib/dashboard/filter-period";
 import { cn, formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 // Weekday headings, not data: the summary endpoint has nothing to say about
 // these, so they stay hardcoded.
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-const currentDate = new Date();
-const currentDay = currentDate.getDate();
 
 export function MonthlyCalendar() {
   const t = useTranslations("OverviewPage");
@@ -40,9 +34,11 @@ export function MonthlyCalendar() {
   // clamp below is computed from whatever `days[]` currently covers.
   const [monthOffset, setMonthOffset] = useState(0);
 
+  const timezone = useTimezone();
+
   const { byDay, start, end } = useMemo(
-    () => dailyTotals(summary?.days ?? []),
-    [summary]
+    () => dailyTotals(summary?.days ?? [], timezone),
+    [summary, timezone]
   );
 
   if (isLoading) {
@@ -80,14 +76,21 @@ export function MonthlyCalendar() {
   // `useGetSummary` covers the dashboard's date filter and nothing else, so
   // letting the user page past its edges would render months this widget never
   // asked about as months in which nothing happened.
-  const firstMonth = startOfMonth(start);
-  const lastMonth = startOfMonth(end);
-  const monthSpan = differenceInCalendarMonths(lastMonth, firstMonth) + 1;
+  // Phép tính tháng làm bằng số nguyên TRONG MÚI GIỜ người dùng, không dùng
+  // `startOfMonth`/`addMonths` của date-fns — mấy hàm đó chạy theo giờ máy, mà
+  // `byDay` lại gom nhóm theo múi giờ đã chọn. Hai bên lệch nhau là ô lịch tra
+  // trượt khoá và ngày có giao dịch hiện ra như ngày trống.
+  const firstParts = dayPartsInTz(start, timezone);
+  const lastParts = dayPartsInTz(end, timezone);
+
+  const firstMonthIndex = firstParts.year * 12 + firstParts.month;
+  const lastMonthIndex = lastParts.year * 12 + lastParts.month;
+  const monthSpan = lastMonthIndex - firstMonthIndex + 1;
 
   const offset = Math.min(0, Math.max(-(monthSpan - 1), monthOffset));
-  const visibleMonth = addMonths(lastMonth, offset);
-  const year = visibleMonth.getFullYear();
-  const month = visibleMonth.getMonth();
+  const visibleIndex = lastMonthIndex + offset;
+  const year = Math.floor(visibleIndex / 12);
+  const month = visibleIndex % 12;
 
   const canGoBack = offset > -(monthSpan - 1);
   const canGoForward = offset < 0;
@@ -100,7 +103,13 @@ export function MonthlyCalendar() {
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const monthLabel = format(visibleMonth, "LLLL yyyy", { locale });
+  // `year`/`month` đã là số đúng theo múi giờ người dùng, nên dựng một Date
+  // cục bộ chỉ để lấy nhãn là an toàn — không có phép quy đổi nào nữa ở đây.
+  const monthLabel = format(new Date(year, month, 1), "LLLL yyyy", { locale });
+
+  // "Hôm nay" cũng phải tính theo múi giờ đã chọn: ở UTC+7 lúc 06:00 sáng thì
+  // theo giờ UTC vẫn là hôm qua, và ô sáng lên sẽ là ô sai.
+  const today = dayPartsInTz(new Date(), timezone);
 
   return (
     <div className="w-full">
@@ -154,9 +163,9 @@ export function MonthlyCalendar() {
 
           const isToday =
             inWindow &&
-            day === currentDay &&
-            month === currentDate.getMonth() &&
-            year === currentDate.getFullYear();
+            day === today.day &&
+            month === today.month &&
+            year === today.year;
 
           const title = inWindow
             ? [

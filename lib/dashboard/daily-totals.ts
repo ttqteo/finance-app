@@ -1,3 +1,5 @@
+import { formatInTimeZone } from "date-fns-tz";
+
 export type DailySummaryRow = {
   date: string | Date;
   income: number;
@@ -21,21 +23,36 @@ export type DailyTotals = {
 };
 
 /**
- * Local calendar key. `summary.days[].date` arrives as an ISO timestamp while a
- * calendar grid is built from local date parts, so the key has to be local too
- * — keying off the UTC parts would drop a charge into the neighbouring cell for
- * anyone whose offset crosses midnight. Same viewer-local convention as
- * `lib/dashboard/aggregate-by-month.ts`.
+ * Khoá theo ngày lịch. `summary.days[].date` về dưới dạng mốc thời gian ISO,
+ * còn lưới lịch dựng từ số ngày/tháng/năm, nên khoá phải tính theo cùng một
+ * múi giờ với lưới — lệch múi là một khoản chi rơi sang ô bên cạnh.
  *
- * `month` is 0-based, matching `Date.getMonth()`. The three parts are joined
- * with a separator that cannot appear inside them, so the key is collision-free
- * without zero-padding.
+ * `month` đếm từ 0 cho khớp `Date.getMonth()`. Ba phần nối bằng ký tự không
+ * thể xuất hiện bên trong chúng nên khoá không đụng nhau dù không đệm số 0.
  */
 export const dayKey = (year: number, month: number, day: number) =>
   `${year}-${month}-${day}`;
 
-const keyOf = (date: Date) =>
-  dayKey(date.getFullYear(), date.getMonth(), date.getDate());
+/**
+ * Ngày/tháng/năm của một mốc thời gian TRONG MÚI GIỜ chỉ định.
+ *
+ * Trước đây chỗ này dùng `getFullYear/getMonth/getDate`, tức giờ của MÁY đang
+ * render. Người dùng ở UTC+7 xem trên server đặt UTC là giao dịch lúc 06:30
+ * sáng bị xếp vào hôm trước. Giờ nó phụ thuộc lựa chọn trong Settings chứ
+ * không phụ thuộc máy nào chạy.
+ */
+export const dayPartsInTz = (date: Date, timeZone: string) => {
+  const [year, month, day] = formatInTimeZone(date, timeZone, "yyyy-M-d")
+    .split("-")
+    .map(Number);
+
+  return { year, month: month - 1, day };
+};
+
+const keyOf = (date: Date, timeZone: string) => {
+  const { year, month, day } = dayPartsInTz(date, timeZone);
+  return dayKey(year, month, day);
+};
 
 /**
  * Folds `/api/summary`'s `days[]` into per-calendar-day totals plus the bounds
@@ -51,7 +68,10 @@ const keyOf = (date: Date) =>
  * Both figures are already non-negative: the endpoint applies `ABS()` to the
  * expense sum.
  */
-export function dailyTotals(rows: DailySummaryRow[]): DailyTotals {
+export function dailyTotals(
+  rows: DailySummaryRow[],
+  timeZone: string
+): DailyTotals {
   const byDay = new Map<string, DayTotals>();
   let start: Date | null = null;
   let end: Date | null = null;
@@ -66,7 +86,7 @@ export function dailyTotals(rows: DailySummaryRow[]): DailyTotals {
     // as a RangeError with no error boundary above the widget.
     if (Number.isNaN(date.getTime())) continue;
 
-    const key = keyOf(date);
+    const key = keyOf(date, timeZone);
     const bucket = byDay.get(key) ?? { income: 0, expenses: 0 };
     bucket.income += row.income;
     bucket.expenses += row.expenses;
