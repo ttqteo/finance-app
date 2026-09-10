@@ -8,7 +8,7 @@ type SettingsRow = {
   user_id: string;
   language: string;
   currency: string;
-  timezone: string;
+  timezone: string | null;
   updated_at: string;
 };
 

@@ -101,9 +101,12 @@ export const userSettings = pgTable("user_settings", {
   currency: text("currency").notNull().default("USD"),
   // Múi giờ HIỂN THỊ, dạng IANA ("Asia/Ho_Chi_Minh"). Mọi mốc thời gian trong
   // database là `timestamptz`, tức luôn lưu theo UTC; cột này chỉ quyết định
-  // quy đổi ra giờ nào lúc hiện lên màn hình. Tách bạch hai thứ đó là điều
-  // giữ cho một giao dịch không đổi ngày khi người dùng đi công tác.
-  timezone: text("timezone").notNull().default("UTC"),
+  // quy đổi ra giờ nào lúc hiện lên màn hình.
+  //
+  // CHO PHÉP NULL và không có default, một cách cố ý: NULL nghĩa là "chưa chọn
+  // bao giờ", khác hẳn với "đã chọn UTC". Nhờ vậy người mới thấy giờ máy mình
+  // (hành vi cũ, hợp trực giác) còn ai cố tình chọn UTC thì vẫn được tôn trọng.
+  timezone: text("timezone"),
   updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date())

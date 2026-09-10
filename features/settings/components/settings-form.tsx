@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { insertUserSettingsSchema } from "@/db/schema";
-import { timezoneLabel, timezoneOptions } from "@/lib/timezones";
+import { detectTimezone, timezoneLabel, timezoneOptions } from "@/lib/timezones";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -122,7 +122,7 @@ const SettingsForm = ({ defaultValues, onSubmit, disabled }: Props) => {
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value || "UTC"}
+                  defaultValue={field.value || detectTimezone()}
                 >
                   <FormControl>
                     <SelectTrigger>

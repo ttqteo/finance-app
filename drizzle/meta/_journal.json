@@ -99,6 +99,13 @@
       "when": 1789013798535,
       "tag": "0013_summary_timestamptz",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1789015498531,
+      "tag": "0014_timezone_nullable",
+      "breakpoints": true
     }
   ]
 }
