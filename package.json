@@ -6,7 +6,7 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev -p 3001 --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "next lint",
@@ -21,7 +21,6 @@
     "@ai-sdk/google": "^1.2.12",
     "@hono/zod-validator": "^0.4.1",
     "@hookform/resolvers": "^3.9.1",
-    "@neondatabase/serverless": "^0.10.4",
     "@paralleldrive/cuid2": "^2.2.2",
     "@radix-ui/react-accordion": "^1.2.8",
     "@radix-ui/react-alert-dialog": "^1.1.11",
