@@ -57,7 +57,10 @@ const app = new Hono().get(
       p_to: endDate.toISOString(),
       p_last_from: lastPeriodStart.toISOString(),
       p_last_to: lastPeriodEnd.toISOString(),
-      p_account_id: accountId ?? null,
+      // `||` chứ không phải `??`: chưa chọn account thì client gửi
+      // `accountId=` (chuỗi rỗng), mà `summary()` chỉ bỏ lọc khi gặp NULL —
+      // `''` lọt xuống thành `account_id = ''` và mọi con số về 0.
+      p_account_id: accountId || null,
     });
 
     if (error || !data) {
