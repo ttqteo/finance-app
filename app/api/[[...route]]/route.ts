@@ -7,7 +7,14 @@ import summary from "./summary";
 import transactions from "./transactions";
 import subscriptions from "./subscriptions";
 
-export const runtime = "edge";
+// Đổi sang "nodejs" hồi còn dùng postgres-js, vì nó nói TCP nên không chạy
+// được trên edge (`neon-http` trước đó đi bằng fetch nên chạy được).
+//
+// Giờ `db/drizze.ts` đã xoá và mọi handler dùng supabase-js — cũng đi bằng
+// fetch — nên VỀ NGUYÊN TẮC trả lại "edge" được. Vẫn để "nodejs" vì chưa chạy
+// thật lần nào để kiểm chứng: đổi mò mà hỏng thì hỏng cả tầng API mà không lộ
+// nguyên nhân, trong khi để nguyên thì chẳng mất gì.
+export const runtime = "nodejs";
 
 const app = new Hono().basePath("/api");
 

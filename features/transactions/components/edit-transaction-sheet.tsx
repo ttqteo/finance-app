@@ -20,8 +20,10 @@ import { z } from "zod";
 import TransactionForm from "./transaction-form";
 import { useTranslations } from "next-intl";
 
+// userId không nằm trong hợp đồng của client — server lấy từ session.
 const formSchema = insertTransactionSchema.omit({
   id: true,
+  userId: true,
 });
 
 type FormValues = z.input<typeof formSchema>;

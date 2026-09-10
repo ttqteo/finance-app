@@ -1,10 +1,12 @@
-import { format } from "date-fns";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 export const CustomTooltip = ({ active, payload }: any) => {
   const t = useTranslations("OverviewPage");
+  const timezone = useTimezone();
   if (!active) return null;
 
   const date = payload[0].payload.date;
@@ -14,7 +16,7 @@ export const CustomTooltip = ({ active, payload }: any) => {
   return (
     <div className="rounded-sm bg-white shadow-sm border overflow-hidden">
       <div className="text-sm p-2 px-3 bg-muted text-muted-foreground">
-        {format(date, "MMM dd, yyy")}
+        {formatInTz(date, "MMM dd, yyy", timezone)}
       </div>
       <Separator />
       <div className="p-2 px-3 space-y-1">

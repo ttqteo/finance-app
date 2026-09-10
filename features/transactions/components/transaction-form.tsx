@@ -29,7 +29,8 @@ const formSchema = z.object({
   notes: z.string().nullable().optional(),
 });
 
-const apiSchema = insertTransactionSchema.omit({ id: true });
+// userId cố tình không có trong hợp đồng của client: server tự lấy từ session.
+const apiSchema = insertTransactionSchema.omit({ id: true, userId: true });
 
 type FormValues = z.input<typeof formSchema>;
 type ApiFormValues = z.input<typeof apiSchema>;

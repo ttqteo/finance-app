@@ -14,7 +14,7 @@ import {
 import { getAllBlogs } from "@/lib/markdown";
 import { stringToDate } from "@/lib/utils";
 import { Newspaper } from "lucide-react";
-import { commodity, types } from "vnstock-js";
+import { commodity, VnstockTypes } from "vnstock-js";
 
 const WORLD_TYPE = ["XAUUSD", "USDX"];
 
@@ -23,11 +23,11 @@ export default async function MarketDashboardPage() {
     (a, b) => stringToDate(b.date).getTime() - stringToDate(a.date).getTime()
   );
   const goldPrice =
-    (await commodity.gold.priceGiaVangNet()) as types.GoldPriceGiaVangNet[];
+    (await commodity.gold.priceGiaVangNet()) as VnstockTypes.GoldPriceGiaVang[];
   const VietNamGold = goldPrice.filter(
-    (_) => !WORLD_TYPE.includes(_.type_code)
+    (_) => !WORLD_TYPE.includes(_.code)
   );
-  const WorldGold = goldPrice.filter((_) => WORLD_TYPE.includes(_.type_code));
+  const WorldGold = goldPrice.filter((_) => WORLD_TYPE.includes(_.code));
 
   return (
     <>

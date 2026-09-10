@@ -1,4 +1,7 @@
-import { format } from "date-fns";
+"use client";
+
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
 import {
   AreaChart,
   Area,
@@ -9,6 +12,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { CustomTooltip } from "@/components/dashboard/custom-tooltip";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
 
 type Props = {
   data: {
@@ -19,25 +23,27 @@ type Props = {
 };
 
 export const AreaVariant = ({ data }: Props) => {
+  const timezone = useTimezone();
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <defs>
           <linearGradient id="income" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="2%" stopColor="#3d82f6" stopOpacity={0.8} />
-            <stop offset="98%" stopColor="#3d82f6" stopOpacity={0} />
+            <stop offset="2%" stopColor={CHART_SERIES.income} stopOpacity={0.8} />
+            <stop offset="98%" stopColor={CHART_SERIES.income} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="expenses" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="2%" stopColor="#f42f5e" stopOpacity={0.8} />
-            <stop offset="98%" stopColor="#f42f5e" stopOpacity={0} />
+            <stop offset="2%" stopColor={CHART_SERIES.expenses} stopOpacity={0.8} />
+            <stop offset="98%" stopColor={CHART_SERIES.expenses} stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis
           axisLine={false}
           tickLine={false}
           dataKey="date"
-          tickFormatter={(value) => format(value, "dd MMM")}
+          tickFormatter={(value) => formatInTz(value, "dd MMM", timezone)}
           style={{ fontSize: "12px" }}
           tickMargin={16}
         />
@@ -46,7 +52,7 @@ export const AreaVariant = ({ data }: Props) => {
           dataKey="income"
           stackId={"income"}
           strokeWidth={2}
-          stroke="#3d82f6"
+          stroke={CHART_SERIES.income}
           fill="url(#income)"
           className="drop-shadow-sm"
         />
@@ -56,7 +62,7 @@ export const AreaVariant = ({ data }: Props) => {
           dataKey="expenses"
           stackId={"expenses"}
           strokeWidth={2}
-          stroke="#f42f5e"
+          stroke={CHART_SERIES.expenses}
           fill="url(#expenses)"
           className="drop-shadow-sm"
         />

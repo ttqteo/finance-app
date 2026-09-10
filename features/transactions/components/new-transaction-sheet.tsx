@@ -17,8 +17,10 @@ import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 
+// userId không nằm trong hợp đồng của client — server lấy từ session.
 const formSchema = insertTransactionSchema.omit({
   id: true,
+  userId: true,
 });
 
 type FormValues = z.input<typeof formSchema>;

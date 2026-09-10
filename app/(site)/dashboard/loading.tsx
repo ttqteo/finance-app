@@ -1,9 +1,10 @@
-import { Loader2 } from "lucide-react";
+import { TablePageSkeleton } from "@/components/dashboard/skeletons";
 
+/**
+ * Fallback for dashboard segments without a loading.tsx of their own — the
+ * investing routes. A card-shaped skeleton is a closer guess at any of them
+ * than the centred spinner this replaced.
+ */
 export default function DashboardLoading() {
-  return (
-    <div className="flex h-full w-full items-center justify-center min-h-[50vh]">
-      <Loader2 className="size-8 animate-spin text-muted-foreground" />
-    </div>
-  );
+  return <TablePageSkeleton rows={6} />;
 }

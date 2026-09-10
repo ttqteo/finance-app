@@ -68,6 +68,8 @@
     "RadarChart": "Biểu Đồ Radar",
     "RadialChart": "Biểu Đồ Hình Tròn",
     "Transactions": "Giao Dịch",
+    "AllTransactions": "Tất Cả Giao Dịch",
+    "AllTransactionsDesc": "Toàn bộ lịch sử hoạt động tài chính của bạn",
     "AreaChart": "Biểu Đồ Khu Vực",
     "LineChart": "Biểu Đồ Đường",
     "BarChart": "Biểu Đồ Cột",
@@ -75,7 +77,40 @@
     "Income": "Thu Nhập",
     "Expenses": "Chi Tiêu",
     "FromLastPeriod": "từ kỳ trước",
-    "NoData": "Không có dữ liệu cho kỳ này"
+    "NoData": "Không có dữ liệu cho kỳ này",
+    "NoTransactions": "Không có giao dịch nào trong khoảng {range}",
+    "NoSpending": "Không có chi tiêu nào trong khoảng {range}",
+    "LoadFailed": "Không tải được dữ liệu",
+    "CashFlow": "Dòng Tiền",
+    "CashFlowDesc": "Thu nhập và chi tiêu của bạn theo thời gian",
+    "SpendingBreakdown": "Phân Tích Chi Tiêu",
+    "SpendingByCategoryDesc": "Chi tiêu theo danh mục trong kỳ đã chọn",
+    "RecentTransactions": "Giao Dịch Gần Đây",
+    "RecentTransactionsDesc": "Hoạt động tài chính mới nhất của bạn",
+    "ViewAll": "Xem tất cả",
+    "MonthlyCalendar": "Lịch Theo Tháng",
+    "MonthlyCalendarDesc": "Thu chi từng ngày trong kỳ đã chọn",
+    "NotInPeriod": "Ngoài kỳ đã chọn",
+    "PreviousMonth": "Tháng trước",
+    "NextMonth": "Tháng sau",
+    "ActiveSubscriptions": "Gói Đăng Ký Đang Dùng",
+    "ActiveSubscriptionsDesc": "Các khoản thanh toán định kỳ hàng tháng của bạn",
+    "ComingUp": "Sắp Tới",
+    "ComingUpDesc": "Hóa đơn và khoản thanh toán sắp tới",
+    "Uncategorized": "Chưa Phân Loại",
+    "Other": "Khác",
+    "Amount": "Số tiền",
+    "NoSubscriptions": "Bạn chưa thêm gói đăng ký nào",
+    "TotalMonthlyCost": "Tổng chi phí hàng tháng",
+    "Name": "Tên",
+    "NextBilling": "Kỳ thu phí kế tiếp",
+    "FreeTrial": "Dùng thử",
+    "ManageSubscriptions": "Quản lý gói đăng ký",
+    "PerMonth": "mỗi tháng",
+    "PerYear": "mỗi năm",
+    "NoUpcomingPayments": "Không có khoản thanh toán nào sắp tới",
+    "TotalUpcoming": "Tổng sắp tới",
+    "DaysLeft": "{days, plural, =0 {Đến hạn hôm nay} other {Còn # ngày}}"
   },
   "TransactionsPage": {
     "Header": "Giao Dịch",
@@ -101,7 +136,7 @@
       "Amount": "Số tiền",
       "TooltipDesc": "Dùng [+] cho thu nhập và [-] cho chi phí",
       "IncomeDesc": "Cái này sẽ tính là thu nhập.",
-      "ExpensesDesc":  "Cái này sẽ tính là chi phí.",
+      "ExpensesDesc": "Cái này sẽ tính là chi phí.",
       "Note": "Ghi chú",
       "NotePlaceholder": "Ghi chú tùy chọn"
     }
@@ -147,7 +182,17 @@
       },
       "Currency": {
         "Label": "Tiền tệ"
+      },
+      "Timezone": {
+        "Label": "Múi giờ",
+        "Description": "Mốc thời gian lưu theo UTC và hiển thị theo múi giờ này."
       }
+    },
+    "Theme": {
+      "Label": "Giao diện",
+      "Light": "Sáng",
+      "Dark": "Tối",
+      "Description": "Áp dụng ngay trên thiết bị này, không cần lưu."
     },
     "Version": "Phiên bản {version}"
   }

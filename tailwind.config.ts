@@ -78,6 +78,9 @@ const config: Config = {
       fontFamily: {
         code: ["var(--font-geist-mono)"],
         regular: ["var(--font-geist-sans)"],
+        // Midday sets its one editorial moment — the greeting — in a serif
+        // against otherwise flat UI sans. Everything else stays sans.
+        display: ["var(--font-display)", "Georgia", "serif"],
       },
       keyframes: {
         "accordion-down": {

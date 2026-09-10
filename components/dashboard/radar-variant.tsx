@@ -6,6 +6,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
 
 type Props = {
   data: {
@@ -23,7 +24,7 @@ export const RadarVariant = ({ data = [] }: Props) => {
         <PolarRadiusAxis style={{ fontSize: "12px" }} />
         <Radar
           dataKey={"value"}
-          stroke="#3b82f6"
+          stroke={CHART_SERIES.income}
           fill="3b82f6"
           fillOpacity={0.6}
         />

@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { columns } from "./columns";
 import ImportCard from "./import-card";
 import UploadButton from "./upload-button";
+import { TablePageSkeleton } from "@/components/dashboard/skeletons";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
 
 enum VARIANTS {
   LIST = "LIST",
@@ -30,6 +32,7 @@ const INITIAL_IMPORT_RESULTS = {
 
 const TransactionsPage = () => {
   const t = useTranslations();
+  const timezone = useTimezone();
 
   const [AccountDialog, confirm] = useSelectAccount();
   const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
@@ -56,16 +59,7 @@ const TransactionsPage = () => {
 
   if (transactionsQuery.isLoading) {
     return (
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader>
-          <Skeleton className="h-8 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-[500px] w-full flex items-center justify-center">
-            <Loader2Icon className="size-6 text-slate-300 animate-spin" />
-          </div>
-        </CardContent>
-      </Card>
+      <TablePageSkeleton />
     );
   }
 
@@ -103,7 +97,7 @@ const TransactionsPage = () => {
   }
 
   return (
-    <Card className="border-none drop-shadow-sm">
+    <Card>
       <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
         <CardTitle className="text-xl line-clamp-1">
           {t("Common.Page.Header", { key: t("TransactionsPage.Header") })}
@@ -122,7 +116,7 @@ const TransactionsPage = () => {
       </CardHeader>
       <CardContent>
         <DataTable
-          columns={columns(t)}
+          columns={columns(t, timezone)}
           data={transactions}
           filterKey="payee"
           filterKeyTranslate={t("TransactionsPage.Column.Payee")}

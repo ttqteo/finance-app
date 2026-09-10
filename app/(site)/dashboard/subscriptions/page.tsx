@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -42,9 +41,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, addMonths, addYears } from "date-fns";
-import { Edit, Loader2, Plus, Trash2, CalendarIcon } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import {
+  CalendarIcon,
+  Edit,
+  Loader2,
+  Plus,
+  Repeat,
+  Trash2,
+  Wallet,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -58,6 +66,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
+import { useGetSubscriptions } from "@/features/subscriptions/api/use-get-subscriptions";
+import { isYearly, nextPaymentDate } from "@/lib/dashboard/next-payment-date";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -69,16 +79,15 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
-type Subscription = {
-  id: string;
-  name: string;
-  amount: number;
-  currency: string;
-  frequency: string;
-  startDate: string;
-  hasFreeTrial: boolean;
-  notes?: string;
-};
+// Derived from the shared hook rather than restated, so this page cannot drift
+// from the shape that actually lands in the ["subscriptions"] cache entry.
+type Subscription = NonNullable<
+  ReturnType<typeof useGetSubscriptions>["data"]
+>[number];
+
+/** Renders the stored enum as a word rather than shouting `YEARLY`. */
+const frequencyLabel = (frequency: string) =>
+  isYearly(frequency) ? "Yearly" : "Monthly";
 
 export default function SubscriptionManagerPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -97,14 +106,11 @@ export default function SubscriptionManagerPage() {
     },
   });
 
-  const { data: subscriptions = [], isLoading } = useQuery<Subscription[]>({
-    queryKey: ["subscriptions"],
-    queryFn: async () => {
-      const res = await fetch("/api/subscriptions");
-      if (!res.ok) throw new Error("Failed to fetch subscriptions");
-      return res.json();
-    },
-  });
+  // The overview widgets read the same ["subscriptions"] key. Two query
+  // functions writing one cache entry means whichever fetched last decides the
+  // shape, so this page uses the shared hook. Like the old inline queryFn, it
+  // does NOT divide by 1000: subscription amounts are not stored in miliunits.
+  const { data: subscriptions = [], isLoading } = useGetSubscriptions();
 
   const createMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -176,7 +182,8 @@ export default function SubscriptionManagerPage() {
       currency: sub.currency as "VND" | "USD",
       frequency: sub.frequency as "MONTHLY" | "YEARLY",
       startDate: new Date(sub.startDate),
-      hasFreeTrial: sub.hasFreeTrial,
+      // The column is nullable in the schema, and the checkbox is not.
+      hasFreeTrial: sub.hasFreeTrial ?? false,
       notes: sub.notes || "",
     });
     setIsDialogOpen(true);
@@ -195,36 +202,21 @@ export default function SubscriptionManagerPage() {
     setIsDialogOpen(true);
   };
 
-  const calculateNextRenewal = (startDate: string, frequency: string) => {
-    const start = new Date(startDate);
-    const now = new Date();
-    let nextDate = start;
+  // `isYearly` is the fallback the overview widgets already use: anything
+  // unrecognised counts as monthly. The reducer this replaces had a third
+  // answer — it dropped such a row from the total altogether, while the
+  // deleted `calculateNextRenewal` billed it yearly.
+  const monthlyCostIn = (currency: string) =>
+    subscriptions
+      .filter((sub) => sub.currency === currency)
+      .reduce(
+        (acc, sub) =>
+          acc + (isYearly(sub.frequency) ? sub.amount / 12 : sub.amount),
+        0
+      );
 
-    while (nextDate <= now) {
-      if (frequency === "MONTHLY") {
-        nextDate = addMonths(nextDate, 1);
-      } else {
-        nextDate = addYears(nextDate, 1);
-      }
-    }
-    return nextDate;
-  };
-
-  const totalMonthlyCostVND = subscriptions
-    .filter((sub) => sub.currency === "VND")
-    .reduce((acc, sub) => {
-      if (sub.frequency === "MONTHLY") return acc + sub.amount;
-      if (sub.frequency === "YEARLY") return acc + sub.amount / 12;
-      return acc;
-    }, 0);
-
-  const totalMonthlyCostUSD = subscriptions
-    .filter((sub) => sub.currency === "USD")
-    .reduce((acc, sub) => {
-      if (sub.frequency === "MONTHLY") return acc + sub.amount;
-      if (sub.frequency === "YEARLY") return acc + sub.amount / 12;
-      return acc;
-    }, 0);
+  const totalMonthlyCostVND = monthlyCostIn("VND");
+  const totalMonthlyCostUSD = monthlyCostIn("USD");
 
   if (isLoading) {
     return (
@@ -235,38 +227,49 @@ export default function SubscriptionManagerPage() {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
-      <Card className="border-none drop-shadow-sm mb-8">
-        <CardHeader>
-          <CardTitle>Subscription Summary</CardTitle>
-          <CardDescription>Overview of your recurring expenses</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-primary/10 p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground">
-                Total Monthly Cost
-              </div>
-              <div className="text-2xl font-bold text-primary flex flex-col">
-                <span>{formatCurrency(totalMonthlyCostVND, "VND")}</span>
-                {totalMonthlyCostUSD > 0 && (
-                  <span>+ {formatCurrency(totalMonthlyCostUSD, "USD")}</span>
-                )}
-              </div>
-            </div>
-            <div className="bg-primary/10 p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground">
-                Active Subscriptions
-              </div>
-              <div className="text-2xl font-bold text-primary">
-                {subscriptions.length}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="max-w-screen-2xl mx-auto w-full pb-10">
+      <div className="mb-8 space-y-1">
+        <h1 className="text-2xl font-medium tracking-tight">
+          Subscription Summary
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Overview of your recurring expenses
+        </p>
+      </div>
 
-      <Card className="border-none drop-shadow-sm">
+      {/* Was a card-inside-a-card: two `bg-primary/10` filled blocks nested in
+          a third card. Now the same bordered tiles the overview KPIs use, so
+          the two pages read as one product. */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="flex min-h-[130px] flex-col justify-between p-5">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Wallet className="size-3.5 shrink-0" strokeWidth={1.75} />
+            <span className="text-xs font-medium">Total Monthly Cost</span>
+          </div>
+          <div className="mt-4 flex flex-col tabular-nums tracking-tight">
+            <span className="text-3xl font-normal">
+              {formatCurrency(totalMonthlyCostVND, "VND")}
+            </span>
+            {totalMonthlyCostUSD > 0 && (
+              <span className="text-base text-muted-foreground">
+                + {formatCurrency(totalMonthlyCostUSD, "USD")}
+              </span>
+            )}
+          </div>
+        </Card>
+
+        <Card className="flex min-h-[130px] flex-col justify-between p-5">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Repeat className="size-3.5 shrink-0" strokeWidth={1.75} />
+            <span className="text-xs font-medium">Active Subscriptions</span>
+          </div>
+          <div className="mt-4 text-3xl font-normal tabular-nums tracking-tight">
+            {subscriptions.length}
+          </div>
+        </Card>
+      </div>
+
+      <Card>
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">Subscriptions</CardTitle>
           <Button onClick={handleAddNew} size="sm">
@@ -302,21 +305,23 @@ export default function SubscriptionManagerPage() {
                   <TableCell className="font-medium">
                     {sub.name}
                     {sub.hasFreeTrial && (
-                      <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                      <Badge variant="secondary" className="ml-2 font-normal">
                         Trial
-                      </span>
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     {formatCurrency(sub.amount, sub.currency)}
                   </TableCell>
-                  <TableCell>{sub.frequency}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {frequencyLabel(sub.frequency)}
+                  </TableCell>
                   <TableCell>
                     {format(new Date(sub.startDate), "PPP")}
                   </TableCell>
                   <TableCell>
                     {format(
-                      calculateNextRenewal(sub.startDate, sub.frequency),
+                      nextPaymentDate(new Date(sub.startDate), sub.frequency),
                       "PPP"
                     )}
                   </TableCell>

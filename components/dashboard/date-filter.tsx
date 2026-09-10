@@ -10,7 +10,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
+import { defaultPeriod, filterPeriod } from "@/lib/dashboard/filter-period";
 import { formatDateRange } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 import { useEffect, useState } from "react";
@@ -33,23 +34,22 @@ export const DateFilter = ({ disabled }: Props) => {
 
   const params = useSearchParams();
   const accountId = params.get("accountId");
-  const from = params.get("from") || "";
-  const to = params.get("to") || "";
 
-  const defaultTo = new Date();
-  const defaultFrom = subDays(defaultTo, 30);
-
-  const paramState = {
-    from: from ? new Date(from) : defaultFrom,
-    to: to ? new Date(to) : defaultTo,
-  };
+  // Shared with the overview widgets that name this window in their empty
+  // states, so the chip and the copy underneath cannot drift apart. `{from:
+  // Date, to: Date}` satisfies `DateRange`, whose `to` is optional.
+  const paramState = filterPeriod(params);
 
   const [date, setDate] = useState<DateRange | undefined>(paramState);
 
   const pushToUrl = (dateRange: DateRange | undefined) => {
+    // Resolved at click time rather than at render: a reset means "the last 30
+    // days", and the two differ if the tab was left open across midnight.
+    const fallback = defaultPeriod();
+
     const query = {
-      from: format(dateRange?.from || defaultFrom, "yyyy-MM-dd"),
-      to: format(dateRange?.to || defaultTo, "yyyy-MM-dd"),
+      from: format(dateRange?.from || fallback.from, "yyyy-MM-dd"),
+      to: format(dateRange?.to || fallback.to, "yyyy-MM-dd"),
       accountId,
     };
     const url = qs.stringifyUrl(

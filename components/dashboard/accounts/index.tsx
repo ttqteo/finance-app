@@ -10,6 +10,7 @@ import { useNewAccount } from "@/features/accounts/hooks/use-new-account";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { columns } from "./columns";
+import { TablePageSkeleton } from "@/components/dashboard/skeletons";
 
 const AccountsPage = () => {
   const t = useTranslations();
@@ -24,21 +25,12 @@ const AccountsPage = () => {
 
   if (isLoading) {
     return (
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader>
-          <Skeleton className="h-8 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-[500px] w-full flex items-center justify-center">
-            <Loader2Icon className="size-6 text-slate-300 animate-spin" />
-          </div>
-        </CardContent>
-      </Card>
+      <TablePageSkeleton />
     );
   }
 
   return (
-    <Card className="border-none drop-shadow-sm">
+    <Card>
       <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
         <CardTitle className="text-xl line-clamp-1">
           {t("Common.Page.Header", { key: t("AccountsPage.Header") })}

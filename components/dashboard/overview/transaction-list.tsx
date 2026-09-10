@@ -1,128 +1,20 @@
-import {
-  ArrowUpRight,
-  CreditCard,
-  DollarSign,
-  ShoppingBag,
-  Home,
-  Utensils,
-  Car,
-  Zap,
-  Wifi,
-} from "lucide-react";
+"use client";
 
-// Mock transaction data
-const transactions = [
-  {
-    id: 1,
-    type: "income",
-    icon: <ArrowUpRight className="h-5 w-5" />,
-    iconBg: "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400",
-    title: "Salary Deposit",
-    account: "Chase Bank",
-    date: "Apr 28, 2025",
-    amount: 3250.0,
-    category: "Income",
-  },
-  {
-    id: 2,
-    type: "expense",
-    icon: <ShoppingBag className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Whole Foods Market",
-    account: "Debit Card",
-    date: "Apr 27, 2025",
-    amount: 89.42,
-    category: "Groceries",
-  },
-  {
-    id: 3,
-    type: "expense",
-    icon: <ShoppingBag className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Amazon.com",
-    account: "Credit Card",
-    date: "Apr 26, 2025",
-    amount: 156.88,
-    category: "Shopping",
-  },
-  {
-    id: 4,
-    type: "expense",
-    icon: <CreditCard className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Netflix Subscription",
-    account: "Credit Card",
-    date: "Apr 24, 2025",
-    amount: 19.99,
-    category: "Entertainment",
-  },
-  {
-    id: 5,
-    type: "income",
-    icon: <DollarSign className="h-5 w-5" />,
-    iconBg: "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400",
-    title: "Stock Dividend",
-    account: "Brokerage",
-    date: "Apr 22, 2025",
-    amount: 42.5,
-    category: "Investment",
-  },
-  {
-    id: 6,
-    type: "expense",
-    icon: <Home className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Rent Payment",
-    account: "Checking Account",
-    date: "Apr 15, 2025",
-    amount: 1500.0,
-    category: "Housing",
-  },
-  {
-    id: 7,
-    type: "expense",
-    icon: <Utensils className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Cheesecake Factory",
-    account: "Credit Card",
-    date: "Apr 14, 2025",
-    amount: 78.45,
-    category: "Dining Out",
-  },
-  {
-    id: 8,
-    type: "expense",
-    icon: <Car className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Shell Gas Station",
-    account: "Credit Card",
-    date: "Apr 12, 2025",
-    amount: 45.67,
-    category: "Transportation",
-  },
-  {
-    id: 9,
-    type: "expense",
-    icon: <Zap className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Electric Company",
-    account: "Checking Account",
-    date: "Apr 10, 2025",
-    amount: 120.34,
-    category: "Utilities",
-  },
-  {
-    id: 10,
-    type: "expense",
-    icon: <Wifi className="h-5 w-5" />,
-    iconBg: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400",
-    title: "Internet Provider",
-    account: "Credit Card",
-    date: "Apr 8, 2025",
-    amount: 85.0,
-    category: "Utilities",
-  },
-];
+import {
+  AlertTriangleIcon,
+  ArrowDownRight,
+  ArrowUpRight,
+  FileSearchIcon,
+} from "lucide-react";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
+import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetTransactions } from "@/features/transactions/api/use-get-transtractions";
+import { filterPeriod } from "@/lib/dashboard/filter-period";
+import { formatCurrency, formatDateRange, getLocale } from "@/lib/utils";
 
 interface TransactionListProps {
   extended?: boolean;
@@ -133,47 +25,88 @@ export function TransactionList({
   extended = false,
   limit = 5,
 }: TransactionListProps) {
+  const t = useTranslations("OverviewPage");
+  const params = useSearchParams();
+  const timezone = useTimezone();
+  const { data: transactions, isLoading, isError } = useGetTransactions();
+
   // Limit the number of transactions shown unless extended view
   const displayTransactions = extended
-    ? transactions
-    : transactions.slice(0, limit);
+    ? transactions ?? []
+    : (transactions ?? []).slice(0, limit);
+
+  if (isLoading) {
+    return <Skeleton className="h-[300px] w-full" />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <AlertTriangleIcon className="size-6 text-destructive" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
+  if (displayTransactions.length === 0) {
+    // Mirrors the range the DateFilter chip shows, so the empty copy names the
+    // exact window the user is looking at.
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">
+          {t("NoTransactions", { range: formatDateRange(filterPeriod(params)) })}
+        </p>
+      </div>
+    );
+  }
+
+  const { locale, formatNormal } = getLocale();
 
   return (
     <div className="space-y-4">
-      {displayTransactions.map((transaction) => (
-        <div key={transaction.id} className="flex items-center gap-4">
-          <div
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${transaction.iconBg}`}
-          >
-            {transaction.icon}
-          </div>
-          <div className="flex-1 space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {transaction.title}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {transaction.account} • {transaction.date}
-            </p>
-          </div>
-          <div className="text-right">
-            <p
-              className={`text-sm font-medium leading-none ${
-                transaction.type === "income"
-                  ? "text-green-600"
-                  : "text-red-600"
+      {displayTransactions.map((transaction) => {
+        const isIncome = transaction.amount >= 0;
+        const Icon = isIncome ? ArrowUpRight : ArrowDownRight;
+
+        return (
+          <div key={transaction.id} className="flex items-center gap-4">
+            <div
+              className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                isIncome
+                  ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400"
+                  : "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400"
               }`}
             >
-              {transaction.type === "income" ? "+" : "-"}$
-              {transaction.amount.toFixed(2)}
-            </p>
-            {extended && (
-              <p className="text-sm text-muted-foreground">
-                {transaction.category}
+              <Icon className="h-5 w-5" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {transaction.payee}
               </p>
-            )}
+              <p className="text-sm text-muted-foreground">
+                {transaction.account} •{" "}
+                {formatInTz(transaction.date, formatNormal, timezone, locale)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p
+                className={`text-sm font-medium leading-none ${
+                  isIncome ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {isIncome ? "+" : "-"}
+                {formatCurrency(Math.abs(transaction.amount))}
+              </p>
+              {extended && (
+                <p className="text-sm text-muted-foreground">
+                  {transaction.category ?? t("Uncategorized")}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

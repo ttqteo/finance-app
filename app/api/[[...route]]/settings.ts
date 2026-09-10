@@ -1,58 +1,102 @@
-import { db } from "@/db/drizze";
-import { insertUserSettingsSchema, userSettings } from "@/db/schema";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { insertUserSettingsSchema } from "@/db/schema";
+import { getSupabase, getUser } from "@/lib/supabase/hono";
+import { pgTimestampToIso } from "@/lib/pg-date";
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 
-const app = new Hono()
-  .get("/", clerkMiddleware(), async (c) => {
-    const auth = getAuth(c);
+type SettingsRow = {
+  user_id: string;
+  language: string;
+  currency: string;
+  timezone: string | null;
+  updated_at: string;
+};
 
-    if (!auth?.userId) {
+/**
+ * supabase-js trả về đúng tên cột, còn Drizzle trả về tên thuộc tính camelCase.
+ * Ánh xạ lại cho khớp hình dạng cũ — đây chính là thứ giữ cho `AppType` và ~30
+ * hook TanStack Query phía client không phải sửa gì.
+ */
+const toSettings = (row: SettingsRow) => ({
+  userId: row.user_id,
+  language: row.language,
+  currency: row.currency,
+  timezone: row.timezone,
+  updatedAt: pgTimestampToIso(row.updated_at),
+});
+
+const app = new Hono()
+  .get("/", async (c) => {
+    const user = await getUser(c);
+
+    if (!user) {
       return c.json({ error: "Unauthorized!" }, 401);
     }
 
-    const [data] = await db
-      .select()
-      .from(userSettings)
-      .where(eq(userSettings.userId, auth.userId));
+    const supabase = getSupabase(c);
 
-    if (!data) {
-      const [newData] = await db
-        .insert(userSettings)
-        .values({ userId: auth.userId })
-        .returning();
-      return c.json({ data: newData });
+    // Không lọc `user_id` nữa: RLS đã quyết định. Hai nơi cùng quyết định thì
+    // có ngày bất đồng với nhau mà không ai biết.
+    const { data, error } = await supabase
+      .from("user_settings")
+      .select("*")
+      .maybeSingle();
+
+    if (error) {
+      return c.json({ error: error.message }, 500);
     }
 
-    return c.json({ data });
+    if (!data) {
+      const { data: created, error: insertError } = await supabase
+        .from("user_settings")
+        .insert({ user_id: user.id })
+        .select()
+        .single();
+
+      if (insertError || !created) {
+        return c.json(
+          { error: insertError?.message ?? "Failed to create settings" },
+          500
+        );
+      }
+
+      return c.json({ data: toSettings(created) });
+    }
+
+    return c.json({ data: toSettings(data) });
   })
   .patch(
     "/",
-    clerkMiddleware(),
     zValidator(
       "json",
       insertUserSettingsSchema.pick({
         language: true,
         currency: true,
+        timezone: true,
       })
     ),
     async (c) => {
-      const auth = getAuth(c);
+      const user = await getUser(c);
       const values = c.req.valid("json");
 
-      if (!auth?.userId) {
+      if (!user) {
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const [data] = await db
-        .update(userSettings)
-        .set(values)
-        .where(eq(userSettings.userId, auth.userId))
-        .returning();
+      const supabase = getSupabase(c);
 
-      return c.json({ data });
+      const { data, error } = await supabase
+        .from("user_settings")
+        .update(values)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (error || !data) {
+        return c.json({ error: error?.message ?? "Not found" }, 404);
+      }
+
+      return c.json({ data: toSettings(data) });
     }
   );
 

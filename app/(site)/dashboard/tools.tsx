@@ -14,8 +14,10 @@ const Tools = () => {
   const t = useTranslations("TransactionsPage");
   const newTransaction = useNewTransaction();
 
+  // Hidden on mobile: the bottom bar carries this action in its centre slot,
+  // and two + buttons on one screen is one too many.
   return (
-    <div className="fixed right-0 bottom-0 z-10 flex items-center justify-between m-4">
+    <div className="fixed right-0 bottom-0 z-10 hidden items-center justify-between m-4 md:flex">
       <div></div>
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>

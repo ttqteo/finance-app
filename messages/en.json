@@ -68,6 +68,8 @@
     "RadarChart": "Radar Chart",
     "RadialChart": "Radial Chart",
     "Transactions": "Transactions",
+    "AllTransactions": "All Transactions",
+    "AllTransactionsDesc": "A complete history of your financial activity",
     "AreaChart": "Area Chart",
     "LineChart": "Line Chart",
     "BarChart": "Bar Chart",
@@ -75,7 +77,40 @@
     "Income": "Income",
     "Expenses": "Expenses",
     "FromLastPeriod": "from last period",
-    "NoData": "No data for this period"
+    "NoData": "No data for this period",
+    "NoTransactions": "No transactions between {range}",
+    "NoSpending": "No spending between {range}",
+    "LoadFailed": "Couldn't load data",
+    "CashFlow": "Cash Flow",
+    "CashFlowDesc": "Your income and expenses over time",
+    "SpendingBreakdown": "Spending Breakdown",
+    "SpendingByCategoryDesc": "Spending by category for the selected period",
+    "RecentTransactions": "Recent Transactions",
+    "RecentTransactionsDesc": "Your latest financial activity",
+    "ViewAll": "View All",
+    "MonthlyCalendar": "Monthly Calendar",
+    "MonthlyCalendarDesc": "Daily income and expenses for the selected period",
+    "NotInPeriod": "Outside the selected period",
+    "PreviousMonth": "Previous month",
+    "NextMonth": "Next month",
+    "ActiveSubscriptions": "Active Subscriptions",
+    "ActiveSubscriptionsDesc": "Your recurring monthly payments",
+    "ComingUp": "Coming Up",
+    "ComingUpDesc": "Upcoming bills and payments",
+    "Uncategorized": "Uncategorized",
+    "Other": "Other",
+    "Amount": "Amount",
+    "NoSubscriptions": "You haven't added any subscriptions yet",
+    "TotalMonthlyCost": "Total monthly cost",
+    "Name": "Name",
+    "NextBilling": "Next billing",
+    "FreeTrial": "Trial",
+    "ManageSubscriptions": "Manage subscriptions",
+    "PerMonth": "per month",
+    "PerYear": "per year",
+    "NoUpcomingPayments": "No upcoming payments",
+    "TotalUpcoming": "Total upcoming",
+    "DaysLeft": "{days, plural, =0 {Due today} one {# day left} other {# days left}}"
   },
   "TransactionsPage": {
     "Header": "Transactions",
@@ -101,7 +136,7 @@
       "Amount": "Amount",
       "TooltipDesc": "Use [+] for income and [-] for expenses",
       "IncomeDesc": "This will count as income",
-      "ExpensesDesc":  "This will count as expenses",
+      "ExpensesDesc": "This will count as expenses",
       "Note": "Note",
       "NotePlaceholder": "Optional note"
     }
@@ -147,7 +182,17 @@
       },
       "Currency": {
         "Label": "Currency"
+      },
+      "Timezone": {
+        "Label": "Timezone",
+        "Description": "Dates are stored in UTC and shown in this timezone."
       }
+    },
+    "Theme": {
+      "Label": "Appearance",
+      "Light": "Light",
+      "Dark": "Dark",
+      "Description": "Applies instantly on this device only — no need to save."
     },
     "Version": "Version {version}"
   }

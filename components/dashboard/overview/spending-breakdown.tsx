@@ -1,5 +1,9 @@
 "use client";
 
+import { useMemo } from "react";
+import { AlertTriangleIcon, FileSearchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import {
   BarChart,
   Bar,
@@ -11,19 +15,57 @@ import {
   Cell,
 } from "recharts";
 
-// Mock spending data by category
-const spendingData = [
-  { category: "Housing", amount: 1500, color: "#8b5cf6" },
-  { category: "Food", amount: 850, color: "#3b82f6" },
-  { category: "Transport", amount: 320, color: "#10b981" },
-  { category: "Utilities", amount: 280, color: "#f59e0b" },
-  { category: "Entertainment", amount: 220, color: "#ef4444" },
-  { category: "Shopping", amount: 380, color: "#ec4899" },
-  { category: "Health", amount: 150, color: "#14b8a6" },
-  { category: "Other", amount: 180, color: "#6b7280" },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { filterPeriod } from "@/lib/dashboard/filter-period";
+import { formatCurrency, formatDateRange } from "@/lib/utils";
+import { CHART_RAMP } from "@/lib/dashboard/chart-colors";
+
+// The summary endpoint returns at most four slices (top three categories plus
+// an "Other" bucket); the modulo below is kept as cheap defence in case that
+// changes.
 
 export function SpendingBreakdown() {
+  const t = useTranslations("OverviewPage");
+  const params = useSearchParams();
+  const { data: summary, isLoading, isError } = useGetSummary();
+
+  const spendingData = useMemo(
+    () =>
+      (summary?.categories ?? []).map((c, i) => ({
+        category: c.name,
+        amount: Math.abs(c.value),
+        color: CHART_RAMP[i % CHART_RAMP.length],
+      })),
+    [summary]
+  );
+
+  if (isLoading) {
+    return <Skeleton className="h-[300px] w-full" />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <AlertTriangleIcon className="size-6 text-destructive" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
+  if (spendingData.length === 0) {
+    // Mirrors the range the DateFilter chip shows, so the empty copy names the
+    // exact window the user is looking at.
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">
+          {t("NoSpending", { range: formatDateRange(filterPeriod(params)) })}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -42,10 +84,15 @@ export function SpendingBreakdown() {
             horizontal={true}
             vertical={false}
           />
-          <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+          <XAxis
+            type="number"
+            tickFormatter={(value) =>
+              formatCurrency(Number(value), undefined, false)
+            }
+          />
           <YAxis type="category" dataKey="category" width={80} />
           <Tooltip
-            formatter={(value) => [`$${value}`, "Amount"]}
+            formatter={(value) => [formatCurrency(Number(value)), t("Amount")]}
             contentStyle={{
               backgroundColor: "hsl(var(--background))",
               borderColor: "hsl(var(--border))",

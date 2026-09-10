@@ -1,4 +1,8 @@
 "use client";
+import { useMemo } from "react";
+import { format } from "date-fns";
+import { AlertTriangleIcon, FileSearchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   BarChart,
   Bar,
@@ -10,258 +14,63 @@ import {
   Legend,
 } from "recharts";
 
-// Enhanced mock data with more months and detailed income/expense breakdown
-const data = [
-  {
-    name: "Jan",
-    Income: 6500,
-    Expenses: 4200,
-    Savings: 2300,
-    incomeBreakdown: {
-      Salary: 6000,
-      Investments: 300,
-      Other: 200,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 800,
-      Transportation: 400,
-      Utilities: 350,
-      Entertainment: 450,
-      Shopping: 300,
-      Other: 400,
-    },
-  },
-  {
-    name: "Feb",
-    Income: 5900,
-    Expenses: 3800,
-    Savings: 2100,
-    incomeBreakdown: {
-      Salary: 5500,
-      Investments: 250,
-      Other: 150,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 750,
-      Transportation: 350,
-      Utilities: 320,
-      Entertainment: 380,
-      Shopping: 200,
-      Other: 300,
-    },
-  },
-  {
-    name: "Mar",
-    Income: 8100,
-    Expenses: 5100,
-    Savings: 3000,
-    incomeBreakdown: {
-      Salary: 6000,
-      Investments: 300,
-      Bonus: 1600,
-      Other: 200,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 850,
-      Transportation: 420,
-      Utilities: 380,
-      Entertainment: 550,
-      Shopping: 900,
-      Other: 500,
-    },
-  },
-  {
-    name: "Apr",
-    Income: 7200,
-    Expenses: 4800,
-    Savings: 2400,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 350,
-      Other: 350,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 820,
-      Transportation: 400,
-      Utilities: 360,
-      Entertainment: 520,
-      Shopping: 700,
-      Other: 500,
-    },
-  },
-  {
-    name: "May",
-    Income: 7800,
-    Expenses: 5200,
-    Savings: 2600,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 400,
-      Freelance: 600,
-      Other: 300,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 850,
-      Transportation: 450,
-      Utilities: 380,
-      Entertainment: 620,
-      Shopping: 800,
-      Other: 600,
-    },
-  },
-  {
-    name: "Jun",
-    Income: 8400,
-    Expenses: 5500,
-    Savings: 2900,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 450,
-      Freelance: 1150,
-      Other: 300,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 900,
-      Transportation: 500,
-      Utilities: 400,
-      Entertainment: 700,
-      Shopping: 850,
-      Other: 650,
-    },
-  },
-  {
-    name: "Jul",
-    Income: 7900,
-    Expenses: 5100,
-    Savings: 2800,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 500,
-      Freelance: 600,
-      Other: 300,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 880,
-      Transportation: 470,
-      Utilities: 420,
-      Entertainment: 650,
-      Shopping: 580,
-      Other: 600,
-    },
-  },
-  {
-    name: "Aug",
-    Income: 8200,
-    Expenses: 5300,
-    Savings: 2900,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 550,
-      Freelance: 850,
-      Other: 300,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 900,
-      Transportation: 480,
-      Utilities: 450,
-      Entertainment: 670,
-      Shopping: 700,
-      Other: 600,
-    },
-  },
-  {
-    name: "Sep",
-    Income: 9100,
-    Expenses: 5800,
-    Savings: 3300,
-    incomeBreakdown: {
-      Salary: 6500,
-      Investments: 600,
-      Bonus: 1700,
-      Freelance: 300,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 950,
-      Transportation: 500,
-      Utilities: 450,
-      Entertainment: 800,
-      Shopping: 950,
-      Other: 650,
-    },
-  },
-  {
-    name: "Oct",
-    Income: 8350,
-    Expenses: 5240,
-    Savings: 3110,
-    incomeBreakdown: {
-      Salary: 7500,
-      Investments: 350,
-      Freelance: 500,
-    },
-    expenseBreakdown: {
-      Housing: 1500,
-      Food: 850,
-      Transportation: 320,
-      Utilities: 280,
-      Entertainment: 220,
-      Shopping: 380,
-      Health: 150,
-      Other: 180,
-    },
-  },
-  {
-    name: "Nov",
-    Income: 0,
-    Expenses: 0,
-    Savings: 0,
-    incomeBreakdown: {
-      Salary: 0,
-      Investments: 0,
-      Other: 0,
-    },
-    expenseBreakdown: {
-      Housing: 0,
-      Food: 0,
-      Transportation: 0,
-      Utilities: 0,
-      Entertainment: 0,
-      Shopping: 0,
-      Other: 0,
-    },
-  },
-  {
-    name: "Dec",
-    Income: 0,
-    Expenses: 0,
-    Savings: 0,
-    incomeBreakdown: {
-      Salary: 0,
-      Investments: 0,
-      Other: 0,
-    },
-    expenseBreakdown: {
-      Housing: 0,
-      Food: 0,
-      Transportation: 0,
-      Utilities: 0,
-      Entertainment: 0,
-      Shopping: 0,
-      Other: 0,
-    },
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  transactionsRangeFor,
+  useGetTransactionsRange,
+} from "@/features/transactions/api/use-get-transactions-range";
+import { aggregateByMonth } from "@/lib/dashboard/aggregate-by-month";
+import { formatCurrency, getLocale } from "@/lib/utils";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
+
+const MONTHS = 12;
 
 export function ExpenseChart() {
+  const t = useTranslations("OverviewPage");
+  const { data: transactions, isLoading, isError } =
+    useGetTransactionsRange(MONTHS);
+  const data = useMemo(() => aggregateByMonth(transactions ?? []), [transactions]);
+
+  if (isLoading) {
+    return <Skeleton className="h-[300px] w-full" />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <AlertTriangleIcon className="size-6 text-destructive" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    // Names the window the chart actually queried, like the sibling widgets
+    // name theirs. `getLocale` reads cookies, so it stays below the early
+    // returns above.
+    //
+    // Built here rather than with `formatDateRange`, which prints the year on
+    // the end date only. That is fine for the 30-day filter the other widgets
+    // report, but this window always crosses a year boundary, so
+    // "Oct 01 - Sep 09, 2026" would read as an impossible range.
+    const { locale, formatStringFull } = getLocale();
+    const { from, to } = transactionsRangeFor(MONTHS);
+    const range = `${format(from, formatStringFull, { locale })} - ${format(
+      to,
+      formatStringFull,
+      { locale }
+    )}`;
+
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[300px] w-full">
+        <FileSearchIcon className="size-6 text-muted-foreground" />
+        <p className="text-muted-foreground text-sm">
+          {t("NoTransactions", { range })}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -284,7 +93,7 @@ export function ExpenseChart() {
                 name === "Expenses" ||
                 name === "Savings"
               ) {
-                return [`$${value}`, name];
+                return [formatCurrency(Number(value)), name];
               }
               return [value, name];
             }}
@@ -295,9 +104,9 @@ export function ExpenseChart() {
             }}
           />
           <Legend />
-          <Bar dataKey="Income" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Expenses" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Savings" fill="#10b981" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="Income" fill={CHART_SERIES.income} radius={[2, 2, 0, 0]} />
+          <Bar dataKey="Expenses" fill={CHART_SERIES.expenses} radius={[2, 2, 0, 0]} />
+          <Bar dataKey="Savings" fill={CHART_SERIES.savings} radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

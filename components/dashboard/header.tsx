@@ -6,8 +6,7 @@ import { Logo } from "@/components/logo";
 import WelcomeMessage from "@/components/dashboard/welcome-message";
 import { useGetSettings } from "@/features/settings/api/use-get-settings";
 import { setCookie } from "@/lib/utils";
-import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
-import { Loader2Icon } from "lucide-react";
+import { UserMenu } from "@/features/auth/components/user-menu";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -32,12 +31,7 @@ const Header = () => {
             <Logo href="/" className="hidden sm:block" />
             <Navigation />
           </div>
-          <ClerkLoaded>
-            <UserButton />
-          </ClerkLoaded>
-          <ClerkLoading>
-            <Loader2Icon className="size-8 animate-spin text-slate-400" />
-          </ClerkLoading>
+          <UserMenu />
         </div>
         <WelcomeMessage />
         <Filters disabled={disabled} />
