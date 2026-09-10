@@ -105,7 +105,7 @@ const app = new Hono()
   )
   .post(
     "/",
-    zValidator("json", insertTransactionSchema.omit({ id: true })),
+    zValidator("json", insertTransactionSchema.omit({ id: true, userId: true })),
     async (c) => {
       const user = await getUser(c);
       const values = c.req.valid("json");
@@ -119,6 +119,7 @@ const app = new Hono()
         .values({
           id: createId(),
           ...values,
+          userId: user.id,
         })
         .returning();
       return c.json({ data });
@@ -126,7 +127,7 @@ const app = new Hono()
   )
   .post(
     "/bulk-create",
-    zValidator("json", z.array(insertTransactionSchema.omit({ id: true }))),
+    zValidator("json", z.array(insertTransactionSchema.omit({ id: true, userId: true }))),
     async (c) => {
       const user = await getUser(c);
       const values = c.req.valid("json");
@@ -137,7 +138,7 @@ const app = new Hono()
 
       const data = await db
         .insert(transactions)
-        .values(values.map((value) => ({ id: createId(), ...value })))
+        .values(values.map((value) => ({ id: createId(), ...value, userId: user.id })))
         .returning();
       return c.json({ data });
     }
@@ -183,7 +184,7 @@ const app = new Hono()
   .patch(
     "/:id",
     zValidator("param", z.object({ id: z.string().optional() })),
-    zValidator("json", insertTransactionSchema.omit({ id: true })),
+    zValidator("json", insertTransactionSchema.omit({ id: true, userId: true })),
     async (c) => {
       const user = await getUser(c);
       const { id } = c.req.valid("param");
