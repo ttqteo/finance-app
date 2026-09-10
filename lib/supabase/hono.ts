@@ -1,3 +1,4 @@
+import type { Database } from "@/db/database.types";
 import { createServerClient } from "@supabase/ssr";
 import type { Context } from "hono";
 import { getCookie } from "hono/cookie";
@@ -16,7 +17,7 @@ import { getCookie } from "hono/cookie";
 export const getSupabase = (c: Context) => {
   const cookies = getCookie(c);
 
-  return createServerClient(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {

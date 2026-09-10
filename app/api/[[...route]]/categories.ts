@@ -1,12 +1,28 @@
-import { db } from "@/db/drizze";
-import { categories, insertCategoriesSchema } from "@/db/schema";
-import { getUser } from "@/lib/supabase/hono";
-import { and, eq, inArray } from "drizzle-orm";
-import { Hono } from "hono";
+import { insertCategoriesSchema } from "@/db/schema";
+import { getSupabase, getUser } from "@/lib/supabase/hono";
 import { zValidator } from "@hono/zod-validator";
 import { createId } from "@paralleldrive/cuid2";
+import { Hono } from "hono";
 import { z } from "zod";
 
+type CategoryRow = {
+  id: string;
+  plaid_id: string | null;
+  name: string;
+  user_id: string;
+};
+
+/** Trả lại đúng hình dạng camelCase mà Drizzle vẫn trả, để client khỏi đổi. */
+const toCategory = (row: CategoryRow) => ({
+  id: row.id,
+  plaidId: row.plaid_id,
+  name: row.name,
+  userId: row.user_id,
+});
+
+// Mọi truy vấn dưới đây KHÔNG lọc `user_id`: RLS trong database đã lọc. Giữ
+// thêm một bộ lọc ở tầng ứng dụng nghĩa là có hai nơi cùng quyết định quyền
+// đọc, và hai nơi đó có ngày lệch nhau mà không ai phát hiện.
 const app = new Hono()
   .get("/", async (c) => {
     const user = await getUser(c);
@@ -14,10 +30,13 @@ const app = new Hono()
       return c.json({ error: "Unauthorized!" }, 401);
     }
 
-    const data = await db
-      .select({ id: categories.id, name: categories.name })
-      .from(categories)
-      .where(eq(categories.userId, user.id));
+    const { data, error } = await getSupabase(c)
+      .from("categories")
+      .select("id, name");
+
+    if (error) {
+      return c.json({ error: error.message }, 500);
+    }
 
     return c.json({ data });
   })
@@ -36,14 +55,16 @@ const app = new Hono()
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const [data] = await db
-        .select({ id: categories.id, name: categories.name })
-        .from(categories)
-        .where(and(eq(categories.userId, user.id), eq(categories.id, id)));
+      const { data } = await getSupabase(c)
+        .from("categories")
+        .select("id, name")
+        .eq("id", id)
+        .maybeSingle();
 
       if (!data) {
         return c.json({ error: "Not found" }, 400);
       }
+
       return c.json({ data });
     }
   )
@@ -58,15 +79,17 @@ const app = new Hono()
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const [data] = await db
-        .insert(categories)
-        .values({
-          id: createId(),
-          userId: user.id,
-          ...values,
-        })
-        .returning();
-      return c.json({ data });
+      const { data, error } = await getSupabase(c)
+        .from("categories")
+        .insert({ id: createId(), user_id: user.id, ...values })
+        .select()
+        .single();
+
+      if (error || !data) {
+        return c.json({ error: error?.message ?? "Failed to create" }, 500);
+      }
+
+      return c.json({ data: toCategory(data) });
     }
   )
   .post(
@@ -80,17 +103,16 @@ const app = new Hono()
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const data = await db
-        .delete(categories)
-        .where(
-          and(
-            eq(categories.userId, user.id),
-            inArray(categories.id, values.ids)
-          )
-        )
-        .returning({
-          id: categories.id,
-        });
+      const { data, error } = await getSupabase(c)
+        .from("categories")
+        .delete()
+        .in("id", values.ids)
+        .select("id");
+
+      if (error) {
+        return c.json({ error: error.message }, 500);
+      }
+
       return c.json({ data });
     }
   )
@@ -111,15 +133,18 @@ const app = new Hono()
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const [data] = await db
-        .update(categories)
-        .set(values)
-        .where(and(eq(categories.userId, user.id), eq(categories.id, id)))
-        .returning();
+      const { data } = await getSupabase(c)
+        .from("categories")
+        .update(values)
+        .eq("id", id)
+        .select()
+        .maybeSingle();
+
       if (!data) {
         return c.json({ error: "Not found" }, 400);
       }
-      return c.json({ data });
+
+      return c.json({ data: toCategory(data) });
     }
   )
   .delete(
@@ -137,13 +162,17 @@ const app = new Hono()
         return c.json({ error: "Unauthorized!" }, 401);
       }
 
-      const [data] = await db
-        .delete(categories)
-        .where(and(eq(categories.userId, user.id), eq(categories.id, id)))
-        .returning({ id: categories.id });
+      const { data } = await getSupabase(c)
+        .from("categories")
+        .delete()
+        .eq("id", id)
+        .select("id")
+        .maybeSingle();
+
       if (!data) {
         return c.json({ error: "Not found" }, 400);
       }
+
       return c.json({ data });
     }
   );
