@@ -668,18 +668,18 @@ Luôn in `Intl.DateTimeFormat().resolvedOptions().timeZone` và từ chối tin 
 | `outputFormat = "yyyyy-MM-dd"` (5 chữ y) → `"02025-02-03"`; `"HH:mm:sss"` thừa một `s` | `components/dashboard/transactions/import-card.tsx:8-9` | Bug có sẵn ở luồng import CSV, không liên quan overview |
 | Tháng trống bị bỏ khỏi trục X thay vì điền 0 | `lib/dashboard/aggregate-by-month.ts` | Jan/Feb/May sẽ hiện cách đều nhau như ba tháng liên tiếp. Đáng sửa nhưng đổi hợp đồng đang có test |
 | Nhãn tháng luôn tiếng Anh | `lib/dashboard/aggregate-by-month.ts` | `getLocale()` đã có sẵn; cách sạch là trả về `month` rồi để component tự dịch — cũng đổi hợp đồng đang có test |
-| `messages/en.json` thiếu newline cuối file; `ExpensesDesc` có double space ở cả hai locale | `messages/*.json` | Công cụ nào format lại sẽ tạo diff nhiễu |
-| **Biểu đồ danh mục loại bỏ giao dịch chưa phân loại, còn ô KPI phía trên thì tính** — `innerJoin` với bảng `categories` bỏ qua 63/68 dòng, nên tổng các cột nhỏ hơn hẳn số Expenses ngay bên trên cùng trang | `summary.ts` (`categories` vs `expensesAmount`) | Nằm trong `app/api/`. **Đây là món nợ duy nhất không nên để lâu** — sau khi copy card đã ghi trung thực "kỳ đã chọn", đây là thứ gây hiểu nhầm cuối cùng còn lại trên card đó |
-| Nhãn bucket `"Other"` viết cứng tiếng Anh, hiện nguyên tiếng Anh trong bản vi | `summary.ts:124` | Nằm trong `app/api/`; map ở component sẽ phải bám vào magic string |
+| ~~`messages/en.json` thiếu newline cuối file~~ — **ĐÃ SỬA**. Không tìm thấy khoá `ExpensesDesc` ở cả hai locale, có thể đã đổi tên | `messages/*.json` | — |
+| ~~**Biểu đồ danh mục loại bỏ giao dịch chưa phân loại**~~ — **ĐÃ SỬA**, xem "Đợt bổ sung". Đo lại trên dữ liệu thật: 34/39 dòng chi bị bỏ, tức **99,7%** số tiền chi biến mất khỏi biểu đồ (17.550.091,53 / 17.608.171,53) | `summary.ts` (`categories` vs `expensesAmount`) | ~~Nằm trong `app/api/`~~ — sau khi copy card đã ghi trung thực "kỳ đã chọn", đây là thứ gây hiểu nhầm cuối cùng còn lại trên card đó |
+| ~~Nhãn bucket `"Other"` viết cứng tiếng Anh~~ — **ĐÃ SỬA** cùng "Đợt bổ sung 2": route không còn đặt tên rổ nào, `topCategories` nhận nhãn đã dịch | ~~`summary.ts:124`~~ | — |
 | Không có cột `icon`/`color` cho `categories` — mọi bản đồ tên→icon viết cứng đều vỡ vì tên danh mục do người dùng tự đặt | `db/schema.ts` | Cần đổi schema và `app/api/`; để làm cùng đợt migrate Supabase |
-| `PALETTE` trùng ý đồ với `COLORS` trong `pie-variant.tsx`, và bộ token `--chart-1…5` trong `globals.css` **không nơi nào dùng** | `spending-breakdown.tsx`, `pie-variant.tsx:12`, `globals.css:33-37` | Gom một lượt ở đợt Material 3, vì đợt đó vốn đã sửa markup mấy file này. Lưu ý: hex cố định không đổi theo theme, `--chart-N` thì có |
+| ~~`PALETTE` trùng `COLORS`, `--chart-1…5` không nơi nào dùng~~ — **ĐÃ SỬA** ở đợt Midday: `lib/dashboard/chart-colors.ts` là nguồn duy nhất, cả 10 biểu đồ đọc token nên đổi theo theme | ~~`spending-breakdown.tsx`, `pie-variant.tsx`, `globals.css`~~ | — |
 | Cookie `currency` ghi trong `useEffect` sau khi `useGetSettings()` xong, còn `formatCurrency` đọc đồng bộ lúc render và ghi cookie không kích hoạt re-render → số tiền có thể hiện USD rồi **không bao giờ tự sửa** | `header.tsx` + `lib/utils.ts:35` | Lỗi có sẵn toàn repo (`columns.tsx`, data grid), không phải do plan này |
 | `getLocale()`/`formatDateRange()` chỉ chạy được ở browser. Hiện an toàn nhờ **hai** điều kiện cùng lúc: repo không có `prefetchQuery`/`HydrationBoundary` nào, **và** TanStack bật `isFetching` trong SSR qua đường optimistic result (`useBaseQuery.js:43` không có guard `isServer`) | `transaction-list.tsx`, `spending-breakdown.tsx` | Chưa vỡ. Nhưng thêm SSR prefetch cho dashboard — bước tối ưu tự nhiên tiếp theo — là **vỡ ngay**. `date-filter.tsx:80` đã phải có cờ `mounted` đúng vì lý do này |
 | `formatCurrency` sẽ **ném lỗi** với mã tiền tệ lạ: `currencyConfig[currency].locale` không có guard, mà `currency` là `text` tự do trong schema | `lib/utils.ts:41` | Hiện an toàn vì nơi ghi duy nhất dùng `z.enum(["VND","USD"])`. Nhưng đây là code đầu tiên truyền giá trị theo từng dòng vào hàm đó |
 | `frequency` lạ bị **âm thầm** gắn nhãn "mỗi tháng" và tính đủ trọng số vào tổng hàng tháng | `subscription-list.tsx` | Hướng fallback thì hợp lý; vấn đề là nó im lặng, không cảnh báo gì |
 | `HORIZON_DAYS` chỉ điều khiển thanh bar, **không lọc danh sách** — gói năm cách 340 ngày vẫn nằm trong mục "Sắp tới" với thanh 0% | `upcoming-payments.tsx` | Quyết định sản phẩm: lọc lại, hay nới horizon cho gói năm có nghĩa |
 | Trang `app/(site)/subscriptions/page.tsx` (khác trang trong dashboard) **hỏng hoàn toàn**: mong `/api/subscriptions` trả object `{plan, status,...}` và gọi `/api/subscriptions/cancel`, `/renew` — **hai endpoint không tồn tại** trong route Hono | `app/(site)/subscriptions/page.tsx` | Hỏng sẵn từ trước, không liên quan overview. Nhưng là trang chết chứ không phải trang lỗi nhẹ |
-| Khối dựng khoảng thời gian bị lặp 3 lần và cả 3 cùng sai giống nhau: `new Date("2025-05-13")` parse thành nửa đêm UTC nên người ở phía tây UTC thấy lùi một ngày | `date-filter.tsx:39-44`, `transaction-list.tsx:47-52`, `spending-breakdown.tsx:55-60` | Sai giống hệt nhau nên chip và chữ vẫn khớp. **Đừng sửa lẻ một bản** — tách helper rồi sửa cả ba cùng lúc |
+| ~~Khối dựng khoảng thời gian lặp 3 lần~~ — **ĐÃ SỬA từ trước** ở commit `17393c7`, tách thành `lib/dashboard/filter-period.ts`; nay có 4 nơi gọi chung | ~~`date-filter.tsx`, `transaction-list.tsx`, `spending-breakdown.tsx`~~ | — |
 
 ## Thứ tự so với các đợt việc khác
 
@@ -693,13 +693,66 @@ Plan này chỉ đổi **luồng dữ liệu**, đợt M3 đổi **markup**. Là
 ## Định nghĩa hoàn thành
 
 - [x] **Tab Overview** của `/dashboard` không còn con số bịa nào — 6/6 widget đọc dữ liệu thật
-- [ ] ~~Toàn bộ `/dashboard` không còn con số bịa~~ — **CHƯA ĐẠT, cố ý**
-- [ ] `pnpm test` xanh, tối thiểu 9 test cho 2 pure function
-- [ ] `npx tsc --noEmit` vẫn đúng 11 lỗi có sẵn, không phát sinh lỗi mới
+- [x] **Toàn bộ `/dashboard` không còn con số bịa** — đạt ở đợt sau, xem "Đợt bổ sung" bên dưới
+- [x] `pnpm test` xanh — 26 test / 5 file (`aggregate-by-month`, `daily-totals`, `next-payment-date`, `top-categories`, `get-settings`)
+- [x] `npx tsc --noEmit` vẫn đúng 11 lỗi có sẵn, không phát sinh lỗi mới
 - [ ] Mỗi khối đều có trạng thái loading và trạng thái rỗng đúng nghĩa, chữ lấy từ `messages/en.json` và `vi.json` chứ không hardcode
 - [ ] Mọi số tiền hiển thị qua `formatCurrency`, không hardcode ký hiệu tiền tệ
 
+### Đợt bổ sung: đóng nốt ô thứ hai
+
+Làm theo đúng "Đề xuất khi làm tiếp" ở dưới, không phát sinh quyết định mới:
+
+| Việc | Kết quả |
+|---|---|
+| Tab **Budget** | Gỡ. Schema không có bảng budget nào, nên không có gì thật để đặt vào và cũng không có trang để trỏ tới |
+| Tab **Settings** | Gỡ. Đây là món tệ nhất: giao diện điều khiển giả, gõ vào ô rồi bấm "Save Changes" mà không có gì xảy ra |
+| Tab **Accounts** / **Categories** | Thành link tới `/dashboard/accounts` và `/dashboard/categories`. Panel cũ là bản dựng lại của chính hai trang đó bằng số bịa |
+| Ô KPI **"Đầu Tư"** | Gỡ khỏi `data-grid.tsx`. `value={12580000} percentageChange={10}` viết cứng, nằm ngay hàng đầu `/dashboard` — con số bịa dễ thấy nhất trên trang mà plan gốc không nhắc tới. Lưới còn 3 cột |
+| `AccountsList` / `CategoriesList` / `SettingsPanel` | Xoá; không còn nơi nào tham chiếu |
+| Chữ "All Transactions" viết cứng | Chuyển sang `OverviewPage.AllTransactions{,Desc}`, thêm ở cả `en.json` và `vi.json` |
+
+Link Settings vẫn giữ vì `/dashboard/settings` là trang thật; chỉ *tab* giả bị gỡ.
+
+Kiểm chứng: `npx tsc --noEmit` đúng 11 lỗi có sẵn, `npx vitest run` 18 pass / 1 todo, `next lint` sạch trên các file đã sửa.
+
+Ngoài phạm vi mock data, cùng đợt còn sửa ba thứ về tốc độ và trạng thái lỗi — ghi ở đây vì chúng đụng cùng file:
+
+- `lib/hono.ts` lấy base URL từ `window.location.origin` thay vì `NEXT_PUBLIC_APP_URL`. Env ghi `:3000` còn `next dev` chạy `:3001` (cổng 3000 bị server cũ giữ), nên mọi request rời origin, mất cookie Clerk, và react-query ngồi retry — skeleton quay mãi trông y như "tải chậm"
+- `summary.ts` gộp 4 truy vấn độc lập vào một `Promise.all`. Đo được: Neon `ap-southeast-1`, 73-190ms mỗi round-trip khi nóng, 583ms khi nguội
+- `DataGrid`/`DataChart` có nhánh `isError`. Trước đó request hỏng rơi thẳng vào markup thành công với `data` undefined, tức hiện số 0 chắc nịch — chính điều làm lỗi mạng trông như "bạn không có giao dịch nào"
+
+### Đợt bổ sung 2: biểu đồ danh mục khớp lại với ô KPI
+
+Món nợ được đánh dấu "duy nhất không nên để lâu" ở bảng trên. Đo lại trước khi sửa cho thấy nặng hơn ước tính trong plan:
+
+```
+chi (amount < 0)          : 39 dòng
+  trong đó category NULL  : 34 dòng
+biểu đồ hiện (innerJoin)  :         58.080
+ô KPI hiện (mọi dòng)     : 17.608.171,53
+bị giấu khỏi biểu đồ      : 17.550.091,53  (99,7%)
+```
+
+Không phải "tổng nhỏ hơn một chút" — biểu đồ gần như không hiển thị gì, ngay cạnh một ô KPI đếm đủ.
+
+| Việc | Nơi |
+|---|---|
+| `innerJoin(categories)` → `leftJoin` | `summary.ts` |
+| Bỏ gộp top-3 + `"Other"` khỏi route; route trả về **mọi** danh mục chi, dòng chưa phân loại mang `name: null` | `summary.ts` |
+| Gộp top-N và đặt tên hai rổ chuyển thành hàm thuần, TDD 7 test | `lib/dashboard/top-categories.ts` |
+| Gọi hàm đó trong `select` chứ không phải `queryFn` — query key không chứa locale, làm ở `queryFn` sẽ đóng băng nhãn theo ngôn ngữ lúc cache | `use-get-summary.ts` |
+| Thêm khoá `OverviewPage.Other` (`Other` / `Khác`); `Uncategorized` đã có sẵn | `messages/*.json` |
+
+Việc này cũng đóng luôn dòng nợ "nhãn `Other` viết cứng tiếng Anh" ở bảng trên: route không còn đặt tên rổ nào nữa.
+
+Kiểm chứng chạy thẳng trên DB thật, áp `topCategories` vào kết quả `leftJoin` rồi so với tổng chi: **lệch 0**.
+
+**Phát hiện thêm, chưa sửa:** cột thật trong DB tên là `category__id` (hai gạch dưới) — `db/schema.ts:43` ánh xạ `categoryId` sang đúng tên đó nên mọi thứ chạy, nhưng bất kỳ SQL viết tay nào cũng sẽ vấp. Đổi tên cột cần migration, để cùng đợt Supabase. Cùng chỗ đó, `transactionsRelations` khai `fields: [transactions.id]` cho **cả hai** quan hệ, đáng lẽ là `accountId` và `categoryId`; hiện vô hại vì không truy vấn nào dùng relations API.
+
 ### Vì sao ô thứ hai không tick được
+
+> Ghi chú lịch sử: phần dưới mô tả trạng thái **trước** đợt bổ sung ở trên. Giữ nguyên vì nó giải thích vì sao các tab đó từng tồn tại.
 
 Plan này phạm vi hoá quanh 9 widget của **tab Overview**, và không ai kiểm tra các tab còn lại cho tới tận nhóm cuối. `components/dashboard/overview/index.tsx` vẫn render bốn tab nữa, cách một cú bấm trên chính `/dashboard`:
 
