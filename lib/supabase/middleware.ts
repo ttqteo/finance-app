@@ -29,14 +29,15 @@ export const updateSession = async (request: NextRequest) => {
     }
   );
 
-  // Phải là getUser() chứ không phải getSession(): getUser() hỏi server Supabase
-  // để xác thực token, còn getSession() chỉ đọc cookie nên tin cả token bịa.
+  // `getClaims()` chứ không phải `getSession()` trần: getSession chỉ đọc cookie
+  // nên tin cả token bịa, còn getClaims xác minh chữ ký ES256 tại chỗ bằng
+  // WebCrypto với JWKS đã cache — an toàn tương đương `getUser()` mà không tốn
+  // một lượt mạng 200–600ms trên MỌI request.
   //
-  // getUser() KHÔNG ném lỗi khi không có session — nó trả { user: null }. Đó là
-  // khác biệt với `auth()` của Clerk và là lý do lớp bug "404 thành 500" biến mất.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Việc gia hạn token vẫn chạy: getClaims gọi getSession bên trong, và chính
+  // getSession mới là chỗ refresh khi token hết hạn rồi ghi cookie mới qua
+  // `setAll` ở trên.
+  const { data } = await supabase.auth.getClaims();
 
-  return { response, user };
+  return { response, user: data?.claims ?? null };
 };

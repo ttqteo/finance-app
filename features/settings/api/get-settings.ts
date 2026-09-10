@@ -5,26 +5,26 @@ import { eq } from "drizzle-orm";
 
 /**
  * Chạy trên MỌI request có render trang, vì `i18n/request.ts` gọi nó để chọn
- * ngôn ngữ — kể cả lúc render 404.
+ * ngôn ngữ — kể cả lúc render 404. Chính vì thế nó phải rẻ, và phải không bao
+ * giờ ném lỗi.
  *
- * Trước đây chỗ này phải bọc `try/catch`: `auth()` của Clerk NÉM LỖI khi
- * `clerkMiddleware()` không chạy cho request đó, mà matcher lại cố tình bỏ qua
- * các đường dẫn hình dạng tài nguyên tĩnh. Đường dẫn kiểu `/favicon.png` không
- * có file thật rơi xuống App Router, render 404 qua root layout, đụng phải cú
- * ném đó, và một 404 bình thường bị trả về thành 500.
+ * Rẻ: `getClaims()` xác minh chữ ký JWT tại chỗ bằng JWKS đã cache, thay vì
+ * `getUser()` vốn hỏi server Supabase mất 200–600ms mỗi lần dựng trang.
  *
- * `supabase.auth.getUser()` trả `{ user: null }` chứ không ném, nên cả lớp bug
- * đó biến mất — không còn gì để bọc.
+ * Không ném: trước đây chỗ này phải bọc `try/catch` vì `auth()` của Clerk NÉM
+ * LỖI khi `clerkMiddleware()` không chạy, mà matcher lại cố tình bỏ qua các
+ * đường dẫn hình dạng tài nguyên tĩnh. `/favicon.png` không có file thật rơi
+ * xuống App Router, render 404 qua root layout, đụng cú ném đó, và một 404
+ * bình thường bị trả thành 500. API của Supabase trả null nên hết cả lớp bug.
  */
 export const getUserSettings = async () => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
 
-  const [data] = user
-    ? await db.select().from(userSettings).where(eq(userSettings.userId, user.id))
+  const [rows] = userId
+    ? await db.select().from(userSettings).where(eq(userSettings.userId, userId))
     : [];
 
-  return data;
+  return rows;
 };

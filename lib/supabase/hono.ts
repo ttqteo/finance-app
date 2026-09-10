@@ -30,15 +30,32 @@ export const getSupabase = (c: Context) => {
 };
 
 /**
- * Trả user hoặc null — không ném lỗi. Handler tự quyết định trả 401.
+ * Trả `{ id, email }` hoặc null — không ném lỗi, handler tự quyết định trả 401.
  *
- * Khác với `getAuth()` của Clerk ở chỗ nó xác thực token với server Supabase
- * chứ không chỉ đọc cookie.
+ * Dùng `getClaims()` chứ KHÔNG dùng `getUser()`. Cả hai đều xác thực thật,
+ * nhưng `getUser()` gọi sang server Supabase mỗi lần, đo được 200–600ms một
+ * lượt. Handler nào cũng gọi một lần, cộng thêm một lần nữa ở middleware, nên
+ * một lần mở dashboard bắn khoảng chục lượt như thế — vài giây chỉ để hỏi
+ * "ai đấy".
+ *
+ * `getClaims()` xác minh chữ ký ES256 ngay tại chỗ bằng WebCrypto với khoá công
+ * khai lấy từ JWKS (chỉ tải một lần rồi cache), nên không tốn lượt mạng nào.
+ * Chữ ký giả không qua nổi, và nếu project dùng khoá đối xứng hoặc runtime
+ * không có WebCrypto thì thư viện tự lùi về `getUser()`.
+ *
+ * Đánh đổi: claim được tin cho tới lúc token hết hạn, nên đăng xuất ở nơi khác
+ * không có hiệu lực tức thì như `getUser()`. Refresh token bị thu hồi vẫn chặn
+ * được ở lần middleware refresh kế tiếp, nên khoảng hở bị chặn trên bởi tuổi
+ * của access token.
  */
 export const getUser = async (c: Context) => {
-  const {
-    data: { user },
-  } = await getSupabase(c).auth.getUser();
+  const { data } = await getSupabase(c).auth.getClaims();
+  const claims = data?.claims;
 
-  return user;
+  if (!claims?.sub) return null;
+
+  return {
+    id: claims.sub,
+    email: typeof claims.email === "string" ? claims.email : undefined,
+  };
 };

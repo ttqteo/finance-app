@@ -25,6 +25,10 @@ const firstNameOf = (user: User | null) => {
 /**
  * Thay cho `useUser()` và `useAuth()` của Clerk. Trả đủ cả ba thứ mà code cũ
  * đang dùng (`user`, `isLoaded`, `isSignedIn`) để chỗ gọi chỉ phải đổi import.
+ *
+ * Chỉ nghe `onAuthStateChange`, không gọi thêm `getUser()`: khi subscribe nó
+ * phát ngay sự kiện INITIAL_SESSION với session đọc từ storage, nên lời gọi kia
+ * vừa thừa vừa tốn một lượt mạng sang server Supabase mỗi lần mở trang.
  */
 export const useUser = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -34,13 +38,8 @@ export const useUser = () => {
     const supabase = createClient();
     let active = true;
 
-    supabase.auth.getUser().then(({ data }) => {
-      if (!active) return;
-      setUser(data.user);
-      setIsLoaded(true);
-    });
-
-    // Bắt cả đăng xuất ở tab khác lẫn lần refresh token định kỳ.
+    // INITIAL_SESSION lúc subscribe, rồi SIGNED_IN/SIGNED_OUT/TOKEN_REFRESHED
+    // sau đó — kể cả khi đăng xuất ở tab khác.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
       setUser(session?.user ?? null);
