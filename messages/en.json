@@ -188,6 +188,12 @@
         "Description": "Dates are stored in UTC and shown in this timezone."
       }
     },
+    "Theme": {
+      "Label": "Appearance",
+      "Light": "Light",
+      "Dark": "Dark",
+      "Description": "Applies instantly on this device only — no need to save."
+    },
     "Version": "Version {version}"
   }
 }

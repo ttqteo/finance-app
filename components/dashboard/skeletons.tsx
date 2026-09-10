@@ -59,22 +59,36 @@ export const TablePageSkeleton = ({ rows = 8 }: { rows?: number }) => (
   </Card>
 );
 
-/** Matches the settings card, which is a short form with a version footer. */
+/**
+ * Matches the settings card: one column of stacked fields (language, currency,
+ * timezone) ending in a full-width Save button, then the appearance section
+ * below a divider, then the version footer. An earlier version drew the fields
+ * side by side, which is not how the form lays them out.
+ */
 export const FormPageSkeleton = () => (
   <Card>
     <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
       <Skeleton className="h-7 w-44" />
     </CardHeader>
     <CardContent>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-        {[0, 1].map((i) => (
-          <div key={i} className="space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        <div className="space-y-4 pt-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ))}
+          <Skeleton className="h-10 w-full" />
+        </div>
       </div>
-      <Skeleton className="mt-6 h-10 w-32" />
+      <div className="mt-8 grid grid-cols-1 border-t pt-6 sm:grid-cols-2 md:grid-cols-3">
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+      </div>
     </CardContent>
     <CardFooter>
       <Skeleton className="h-4 w-28" />

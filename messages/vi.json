@@ -188,6 +188,12 @@
         "Description": "Mốc thời gian lưu theo UTC và hiển thị theo múi giờ này."
       }
     },
+    "Theme": {
+      "Label": "Giao diện",
+      "Light": "Sáng",
+      "Dark": "Tối",
+      "Description": "Áp dụng ngay trên thiết bị này, không cần lưu."
+    },
     "Version": "Phiên bản {version}"
   }
 }
