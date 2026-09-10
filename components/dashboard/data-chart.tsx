@@ -6,9 +6,13 @@ import {
   SpendingPie,
   SpendingPieLoading,
 } from "@/components/dashboard/spending-pie";
+import { AlertTriangleIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export const DataChart = () => {
-  const { data, isLoading } = useGetSummary();
+  const t = useTranslations("OverviewPage");
+  const { data, isLoading, isError } = useGetSummary();
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
@@ -21,6 +25,18 @@ export const DataChart = () => {
       </div>
     );
   }
+
+  // Same reason as DataGrid: on failure the charts used to render with an
+  // undefined series, i.e. an empty axis that reads as "you had no activity".
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-y-4 items-center justify-center h-[350px] w-full">
+        <AlertTriangleIcon className="size-6 text-destructive" />
+        <p className="text-muted-foreground text-sm">{t("LoadFailed")}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
       <div className="col-span-1 lg:col-span-3 xl:col-span-4">
