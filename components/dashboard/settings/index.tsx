@@ -16,6 +16,7 @@ import SettingsForm from "@/features/settings/components/settings-form";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { FormPageSkeleton } from "@/components/dashboard/skeletons";
 
 const formSchema = insertUserSettingsSchema.pick({
   language: true,
@@ -47,19 +48,7 @@ const SettingsPage = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">
-            {t("Common.Page.Header", { key: t("SettingsPage.Header") })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Spinner />
-        </CardContent>
-        <CardFooter className="text-muted-foreground">
-          {t("SettingsPage.Version", { version: appConfig.version })}
-        </CardFooter>
-      </Card>
+      <FormPageSkeleton />
     );
   }
 

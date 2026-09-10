@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { columns } from "./columns";
 import ImportCard from "./import-card";
 import UploadButton from "./upload-button";
+import { TablePageSkeleton } from "@/components/dashboard/skeletons";
 
 enum VARIANTS {
   LIST = "LIST",
@@ -56,16 +57,7 @@ const TransactionsPage = () => {
 
   if (transactionsQuery.isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-8 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-[500px] w-full flex items-center justify-center">
-            <Loader2Icon className="size-6 text-slate-300 animate-spin" />
-          </div>
-        </CardContent>
-      </Card>
+      <TablePageSkeleton />
     );
   }
 

@@ -10,6 +10,7 @@ import { useNewCategory } from "@/features/categories/hooks/use-new-category";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { columns } from "./columns";
 import { useTranslations } from "next-intl";
+import { TablePageSkeleton } from "@/components/dashboard/skeletons";
 
 const CategoriesPage = () => {
   const t = useTranslations();
@@ -23,16 +24,7 @@ const CategoriesPage = () => {
 
   if (categoriesQuery.isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-8 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-[500px] w-full flex items-center justify-center">
-            <Loader2Icon className="size-6 text-slate-300 animate-spin" />
-          </div>
-        </CardContent>
-      </Card>
+      <TablePageSkeleton />
     );
   }
 
