@@ -22,6 +22,42 @@
 
 ---
 
+## ⚠️ Sửa lại plan: dùng `getClaims()`, KHÔNG dùng `getUser()`
+
+Plan này (Task 8, 9, 10) viết `supabase.auth.getUser()` ở khắp nơi. **Sai về mặt
+hiệu năng, và người dùng báo ngay: đăng nhập Google chậm.**
+
+`getUser()` xác thực token bằng cách gọi sang server Supabase. Đo thực tế từ máy
+này: **200–600ms một lượt**. Mà nó chạy ở middleware trên MỌI request, thêm một
+lần nữa ở root layout qua `get-settings`, rồi thêm một lần ở mỗi handler — 27 chỗ
+gọi. Một lần mở dashboard bắn ~5 request API là khoảng **12 lượt khứ hồi**, vài
+giây chỉ để hỏi "ai đấy".
+
+Project này ký JWT bằng **ES256** và có công bố JWKS (kiểm bằng
+`/auth/v1/.well-known/jwks.json`), nên `getClaims()` xác minh chữ ký **ngay tại
+chỗ** bằng WebCrypto với khoá tải một lần rồi cache — không tốn lượt mạng nào.
+
+Đã đọc phần cài đặt của `getClaims()` trước khi đổi, xác nhận hai điều:
+
+- nó gọi `getSession()` trước, mà chính `getSession()` mới là chỗ refresh token
+  hết hạn — nên middleware vẫn gia hạn session bình thường;
+- nếu khoá là đối xứng (HS*) hoặc runtime không có WebCrypto thì nó **tự lùi về
+  `getUser()`**, tức là hỏng an toàn chứ không âm thầm tin bừa.
+
+**Đánh đổi:** claim được tin cho tới lúc access token hết hạn, nên đăng xuất ở
+thiết bị khác không có hiệu lực tức thì. Refresh token bị thu hồi vẫn chặn được ở
+lần middleware refresh kế tiếp, nên khoảng hở bị chặn trên bởi tuổi access token
+(mặc định 1 tiếng). Muốn thu hồi tức thì thì trả `getUser()` về **chỉ ở
+middleware** — một lượt mỗi request thay vì mười hai.
+
+Mọi đoạn code `getUser()` bên dưới đọc theo tinh thần này; bản đã commit dùng
+`getClaims()`. Xem commit `a82a888`.
+
+**Cũng bỏ luôn package `cookie`** mà Task 8 định thêm: `getCookie(c)` của
+`hono/cookie` đã trả về đủ mọi cookie rồi.
+
+---
+
 ## Quy ước chung
 
 **TDD ở đâu áp dụng được:** suite Vitest hiện tại là `environment: "node"`, chỉ phủ pure function trong `lib/dashboard/`. Không có jsdom, không có testing-library. Migration này phần lớn là UI + tích hợp, nên:
@@ -559,6 +595,16 @@ Expected: `404` (không phải `500`).
 # Phase 2 — Chuyển database sang Supabase
 
 ## Task 11: Đổi driver và `DATABASE_URL`
+
+> **Đã tách làm hai và phần đầu XONG rồi** (commit `5f31dc1`).
+>
+> Task này gộp "đổi driver" với "đổi database" vào một bước. Tách ra thì nếu
+> sau đó có hỏng, biết ngay là do bên nào. **Phần driver đã chạy và đã kiểm
+> chứng ngay trên Neon hiện tại**: `postgres-js` nối được, đọc đủ 6 bảng,
+> PostgreSQL 16.15. `runtime` cũng đã sang `"nodejs"`.
+>
+> **Còn lại đúng Step 4 + Step 5**: trỏ `DATABASE_URL` sang Supabase rồi
+> `pnpm db:migrate`. Cần connection string, không tự lấy hộ được.
 
 **Files:** Modify `db/drizze.ts`, `app/api/[[...route]]/route.ts`, `.env`, `.env.example`, `package.json`
 
