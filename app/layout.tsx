@@ -56,7 +56,6 @@ export default async function RootLayout({
             <ThemeProvider
               attribute="class"
               defaultTheme="light"
-              enableSystem
               disableTransitionOnChange
             >
               <TooltipProvider delayDuration={0}>
