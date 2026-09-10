@@ -13,6 +13,7 @@ import {
   LineChart,
 } from "recharts";
 import { CustomTooltip } from "@/components/dashboard/custom-tooltip";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
 
 type Props = {
   data: {
@@ -39,14 +40,14 @@ export const LineVariant = ({ data }: Props) => {
         <Line
           dot={false}
           dataKey="income"
-          stroke="#3d82f6"
+          stroke={CHART_SERIES.income}
           strokeWidth={2}
           className="drop-shadow-sm"
         />
         <Line
           dot={false}
           dataKey="expenses"
-          stroke="#f42f5e"
+          stroke={CHART_SERIES.expenses}
           strokeWidth={2}
           className="drop-shadow-sm"
         />

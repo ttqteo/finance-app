@@ -21,6 +21,7 @@ import {
 } from "@/features/transactions/api/use-get-transactions-range";
 import { aggregateByMonth } from "@/lib/dashboard/aggregate-by-month";
 import { formatCurrency, getLocale } from "@/lib/utils";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
 
 const MONTHS = 12;
 
@@ -103,9 +104,9 @@ export function ExpenseChart() {
             }}
           />
           <Legend />
-          <Bar dataKey="Income" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Expenses" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Savings" fill="#10b981" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="Income" fill={CHART_SERIES.income} radius={[2, 2, 0, 0]} />
+          <Bar dataKey="Expenses" fill={CHART_SERIES.expenses} radius={[2, 2, 0, 0]} />
+          <Bar dataKey="Savings" fill={CHART_SERIES.savings} radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

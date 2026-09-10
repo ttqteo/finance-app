@@ -19,11 +19,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { filterPeriod } from "@/lib/dashboard/filter-period";
 import { formatCurrency, formatDateRange } from "@/lib/utils";
+import { CHART_RAMP } from "@/lib/dashboard/chart-colors";
 
 // The summary endpoint returns at most four slices (top three categories plus
 // an "Other" bucket); the modulo below is kept as cheap defence in case that
 // changes.
-const PALETTE = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 export function SpendingBreakdown() {
   const t = useTranslations("OverviewPage");
@@ -35,7 +35,7 @@ export function SpendingBreakdown() {
       (summary?.categories ?? []).map((c, i) => ({
         category: c.name,
         amount: Math.abs(c.value),
-        color: PALETTE[i % PALETTE.length],
+        color: CHART_RAMP[i % CHART_RAMP.length],
       })),
     [summary]
   );

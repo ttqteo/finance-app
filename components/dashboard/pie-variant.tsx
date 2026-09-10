@@ -8,8 +8,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { CHART_RAMP } from "@/lib/dashboard/chart-colors";
 
-const COLORS = ["#0062FF", "#12C6FF", "#FF647F", "#FF9354"];
 
 type Props = {
   data: {
@@ -66,7 +66,7 @@ export const PieVariant = ({ data = [] }: Props) => {
           labelLine={false}
         >
           {data.map((_entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell key={`cell-${index}`} fill={CHART_RAMP[index % CHART_RAMP.length]} />
           ))}
         </Pie>
       </PieChart>

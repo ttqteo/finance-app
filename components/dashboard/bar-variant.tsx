@@ -11,6 +11,7 @@ import {
   Bar,
 } from "recharts";
 import { CustomTooltip } from "@/components/dashboard/custom-tooltip";
+import { CHART_SERIES } from "@/lib/dashboard/chart-colors";
 
 type Props = {
   data: {
@@ -34,8 +35,8 @@ export const BarVariant = ({ data }: Props) => {
           tickMargin={16}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="income" fill="#3d82f6" className="drop-shadow-sm" />
-        <Bar dataKey="expenses" fill="#f42f5e" className="drop-shadow-sm" />
+        <Bar dataKey="income" fill={CHART_SERIES.income} />
+        <Bar dataKey="expenses" fill={CHART_SERIES.expenses} />
       </BarChart>
     </ResponsiveContainer>
   );

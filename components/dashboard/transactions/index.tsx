@@ -56,7 +56,7 @@ const TransactionsPage = () => {
 
   if (transactionsQuery.isLoading) {
     return (
-      <Card className="border-none drop-shadow-sm">
+      <Card>
         <CardHeader>
           <Skeleton className="h-8 w-48" />
         </CardHeader>
@@ -103,7 +103,7 @@ const TransactionsPage = () => {
   }
 
   return (
-    <Card className="border-none drop-shadow-sm">
+    <Card>
       <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
         <CardTitle className="text-xl line-clamp-1">
           {t("Common.Page.Header", { key: t("TransactionsPage.Header") })}
