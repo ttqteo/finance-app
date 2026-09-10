@@ -14,9 +14,11 @@ export default function DashboardLayout({ children }: Props) {
       <QueryProvider>
         <SheetProvider />
         <Sidebar />
-        <div className="flex flex-1 flex-col w-screen pl-16">
+        <div className="flex flex-1 flex-col w-full pl-16">
           <Header />
-          <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
+          <main className="flex flex-1 flex-col gap-4 p-4 pt-[4.5rem]">
+            {children}
+          </main>
         </div>
         <Tools />
       </QueryProvider>
