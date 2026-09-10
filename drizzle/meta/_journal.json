@@ -71,6 +71,20 @@
       "when": 1789011190097,
       "tag": "0009_lucky_scourge",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789011497800,
+      "tag": "0010_rls_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789011565631,
+      "tag": "0011_summary_function",
+      "breakpoints": true
     }
   ]
 }
