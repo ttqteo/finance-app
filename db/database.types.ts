@@ -6,9 +6,9 @@
  * Supabase CLI đã đăng nhập. Khi nào chạy được thì sinh đè lên file này —
  * hình dạng đã theo đúng khuôn của bản sinh tự động để thay thẳng được.
  *
- * Lưu ý về kiểu ngày: PostgREST trả `timestamp` thành CHUỖI, không phải `Date`
- * như Drizzle. Xem `lib/pg-date.ts` — chuỗi đó không có múi giờ nên phải chuẩn
- * hoá trước khi đưa vào `new Date()`.
+ * Lưu ý về kiểu ngày: PostgREST trả mốc thời gian thành CHUỖI, không phải
+ * `Date` như Drizzle. Từ migration 0012 các cột là `timestamptz` nên chuỗi có
+ * kèm offset; `lib/pg-date.ts` vẫn là chốt chặn phòng khi có cột khai thiếu.
  */
 
 export type Json =
