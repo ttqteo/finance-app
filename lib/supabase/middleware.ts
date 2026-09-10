@@ -4,8 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Refresh access token của Supabase rồi ghi cookie mới vào response.
  *
- * Đây là nơi DUY NHẤT gia hạn session, nên middleware phải chạy trước mọi
- * request render trang hay gọi API — xem matcher trong `middleware.ts`.
+ * Đây là nơi DUY NHẤT gia hạn session, nên proxy phải chạy trước mọi
+ * request render trang hay gọi API — xem matcher trong `proxy.ts`.
  */
 export const updateSession = async (request: NextRequest) => {
   let response = NextResponse.next({ request });

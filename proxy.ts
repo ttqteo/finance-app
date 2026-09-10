@@ -3,7 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED = [/^\/dashboard(\/.*)?$/, /^\/api(\/.*)?$/];
 
-export default async function middleware(request: NextRequest) {
+// Next 16 renamed middleware to proxy: same job, same `config.matcher`, but it
+// now runs on the Node.js runtime instead of the Edge one.
+export default async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
 
   const path = request.nextUrl.pathname;
@@ -25,7 +27,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 // Giữ nguyên matcher Clerk để lại: nó loại trừ các đường dẫn hình dạng tài
-// nguyên tĩnh cho middleware khỏi chạy trên mọi file trong public/.
+// nguyên tĩnh cho proxy khỏi chạy trên mọi file trong public/.
 //
 // Hệ quả: đường dẫn dạng tài nguyên mà KHÔNG có file thật (/favicon.png,
 // /sw.js...) rơi xuống App Router và render 404 qua root layout mà không có
