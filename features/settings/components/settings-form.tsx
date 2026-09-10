@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { insertUserSettingsSchema } from "@/db/schema";
+import { timezoneLabel, timezoneOptions } from "@/lib/timezones";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,7 @@ import { z } from "zod";
 const formSchema = insertUserSettingsSchema.pick({
   language: true,
   currency: true,
+  timezone: true,
 });
 
 type FormValues = z.input<typeof formSchema>;
@@ -107,6 +109,41 @@ const SettingsForm = ({ defaultValues, onSubmit, disabled }: Props) => {
                   </SelectContent>
                 </Select>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="timezone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("SettingsPage.Form.Timezone.Label")}</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value || "UTC"}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                  </FormControl>
+                  {/* Danh sách dài nên chiều cao có giới hạn; Radix Select có
+                      sẵn gõ-để-nhảy theo chữ cái đầu. Múi giờ của máy đứng đầu
+                      danh sách. */}
+                  <SelectContent className="max-h-72">
+                    {timezoneOptions().map((tz) => (
+                      <SelectItem key={tz} value={tz}>
+                        {timezoneLabel(tz)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>
+                {t("SettingsPage.Form.Timezone.Description")}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

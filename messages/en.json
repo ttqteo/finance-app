@@ -182,6 +182,10 @@
       },
       "Currency": {
         "Label": "Currency"
+      },
+      "Timezone": {
+        "Label": "Timezone",
+        "Description": "Dates are stored in UTC and shown in this timezone."
       }
     },
     "Version": "Version {version}"

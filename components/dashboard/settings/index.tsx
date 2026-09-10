@@ -21,6 +21,7 @@ import { FormPageSkeleton } from "@/components/dashboard/skeletons";
 const formSchema = insertUserSettingsSchema.pick({
   language: true,
   currency: true,
+  timezone: true,
 });
 
 type FormValues = z.input<typeof formSchema>;
@@ -36,6 +37,7 @@ const SettingsPage = () => {
   const defaultValues = {
     language: data?.language,
     currency: data?.currency,
+    timezone: data?.timezone,
   };
 
   const onSubmit = (values: FormValues) => {

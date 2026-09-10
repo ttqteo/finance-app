@@ -182,6 +182,10 @@
       },
       "Currency": {
         "Label": "Tiền tệ"
+      },
+      "Timezone": {
+        "Label": "Múi giờ",
+        "Description": "Mốc thời gian lưu theo UTC và hiển thị theo múi giờ này."
       }
     },
     "Version": "Phiên bản {version}"

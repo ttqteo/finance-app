@@ -57,7 +57,7 @@ export const transactions = pgTable(
     amount: bigint("amount", { mode: "number" }).notNull(),
     payee: text("payee").notNull(),
     notes: text("notes"),
-    date: timestamp("date", { mode: "date" }).notNull(),
+    date: timestamp("date", { mode: "date", withTimezone: true }).notNull(),
     accountId: text("account_id").notNull(),
     // Trước đây `transactions` không có cột chủ sở hữu nào, chỉ suy ra qua
     // `account_id → accounts.user_id`. Thêm cột thật để policy RLS rẻ đi:
@@ -99,7 +99,12 @@ export const userSettings = pgTable("user_settings", {
   userId: uuid("user_id").primaryKey(),
   language: text("language").notNull().default("en"),
   currency: text("currency").notNull().default("USD"),
-  updatedAt: timestamp("updated_at", { mode: "date" })
+  // Múi giờ HIỂN THỊ, dạng IANA ("Asia/Ho_Chi_Minh"). Mọi mốc thời gian trong
+  // database là `timestamptz`, tức luôn lưu theo UTC; cột này chỉ quyết định
+  // quy đổi ra giờ nào lúc hiện lên màn hình. Tách bạch hai thứ đó là điều
+  // giữ cho một giao dịch không đổi ngày khi người dùng đi công tác.
+  timezone: text("timezone").notNull().default("UTC"),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
@@ -113,15 +118,15 @@ export const subscriptions = pgTable("subscriptions", {
   name: text("name").notNull(),
   amount: bigint("amount", { mode: "number" }).notNull(),
   frequency: text("frequency").notNull(), // e.g., 'monthly', 'yearly'
-  startDate: timestamp("start_date", { mode: "date" }).notNull(),
+  startDate: timestamp("start_date", { mode: "date", withTimezone: true }).notNull(),
   currency: text("currency").default("VND").notNull(),
   hasFreeTrial: boolean("has_free_trial").default(false),
   categoryId: text("category_id").references(() => categories.id, {
     onDelete: "set null",
   }),
   notes: text("notes"),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" })
+  createdAt: timestamp("created_at", { mode: "date", withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
@@ -146,19 +151,20 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   userId: uuid("user_id").notNull().unique(), // One subscription per user
   plan: text("plan").notNull(), // 'FREE', 'PREMIUM'
   status: text("status").notNull(), // 'ACTIVE', 'CANCELLED', 'EXPIRED'
-  startDate: timestamp("start_date", { mode: "date" }).notNull(),
-  endDate: timestamp("end_date", { mode: "date" }), // Null for lifetime or auto-renewing indefinite? Better to have renewal date.
-  renewalDate: timestamp("renewal_date", { mode: "date" }),
+  startDate: timestamp("start_date", { mode: "date", withTimezone: true }).notNull(),
+  endDate: timestamp("end_date", { mode: "date", withTimezone: true }), // Null for lifetime or auto-renewing indefinite? Better to have renewal date.
+  renewalDate: timestamp("renewal_date", { mode: "date", withTimezone: true }),
   frequency: text("frequency"), // 'MONTHLY', 'YEARLY'
   stripeSubscriptionId: text("stripe_subscription_id"),
   stripeCustomerId: text("stripe_customer_id"),
   stripePriceId: text("stripe_price_id"),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end", {
     mode: "date",
+    withTimezone: true,
   }),
   cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" })
+  createdAt: timestamp("created_at", { mode: "date", withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),

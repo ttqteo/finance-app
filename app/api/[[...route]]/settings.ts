@@ -8,6 +8,7 @@ type SettingsRow = {
   user_id: string;
   language: string;
   currency: string;
+  timezone: string;
   updated_at: string;
 };
 
@@ -20,6 +21,7 @@ const toSettings = (row: SettingsRow) => ({
   userId: row.user_id,
   language: row.language,
   currency: row.currency,
+  timezone: row.timezone,
   updatedAt: pgTimestampToIso(row.updated_at),
 });
 
@@ -70,6 +72,7 @@ const app = new Hono()
       insertUserSettingsSchema.pick({
         language: true,
         currency: true,
+        timezone: true,
       })
     ),
     async (c) => {

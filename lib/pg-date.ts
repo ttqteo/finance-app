@@ -1,17 +1,17 @@
 /**
- * Drizzle (mode "date") trả về `Date`. PostgREST trả về CHUỖI.
+ * Chốt chặn cuối cho việc đọc mốc thời gian từ PostgREST.
  *
- * Với cột `timestamp` (không có múi giờ), chuỗi đó trông như
- * `"2026-01-15T00:00:00"` — không có `Z`, không có offset. Và `new Date()` đọc
- * chuỗi ISO KHÔNG có múi giờ theo GIỜ ĐỊA PHƯƠNG, trong khi cùng dữ liệu đó qua
- * Drizzle rồi `JSON.stringify` lại ra `"2026-01-15T00:00:00.000Z"`, tức UTC.
+ * Bối cảnh: Drizzle (mode "date") trả `Date`, PostgREST trả CHUỖI. Hồi các cột
+ * còn là `timestamp` trần, chuỗi đó trông như `"2026-01-15T00:00:00"` — không
+ * `Z`, không offset — mà `new Date()` đọc chuỗi ISO thiếu múi giờ theo GIỜ ĐỊA
+ * PHƯƠNG. Ở UTC+7 là giao dịch nửa đêm nhảy về hôm trước.
  *
- * Bỏ qua chỗ này là lệch nguyên một múi giờ: ở Việt Nam (UTC+7) giao dịch nửa
- * đêm nhảy về ngày hôm trước, đúng loại lỗi mà mấy cái test trong
- * `lib/dashboard/__tests__/` đã phải đi dọn một lần rồi.
+ * Từ migration 0012 mọi cột đã là `timestamptz`, nên PostgREST luôn trả kèm
+ * offset và hàm này gần như chỉ còn cho chuỗi đi qua. Vẫn giữ vì nó rẻ và vì
+ * nó biến một giả định ngầm thành thứ có test: cột mới ai đó lỡ khai bằng
+ * `timestamp` trần thì chỗ này vẫn đỡ được, thay vì âm thầm lệch một múi giờ.
  *
- * Quy ước: dữ liệu trong cột `timestamp` là UTC (Drizzle vẫn luôn ghi vào như
- * vậy), nên chuỗi thiếu múi giờ được hiểu là UTC.
+ * Quy ước: chuỗi thiếu múi giờ được hiểu là UTC.
  */
 
 /** Chuỗi timestamp của Postgres có mang sẵn múi giờ không? */
