@@ -8,7 +8,7 @@
 
 Track spending across accounts, stay on top of every subscription, and follow gold prices and Vietnamese stocks — in a fast, bilingual dashboard that works just as well on your phone.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -70,7 +70,7 @@ Track spending across accounts, stay on top of every subscription, and follow go
 
 ```
 Browser ──▶ Next.js (App Router)
-             ├─ middleware ────── refreshes the Supabase session cookie
+             ├─ proxy ─────────── refreshes the Supabase session cookie
              └─ /api/* (Hono) ─── per-request Supabase client carrying the user's JWT
                                    └─▶ Postgres ── RLS: auth.uid() = user_id
 ```
@@ -83,7 +83,7 @@ Browser ──▶ Next.js (App Router)
 
 | Layer | Choice |
 | --- | --- |
-| Framework | Next.js 15 (App Router, Turbopack), React 19 |
+| Framework | Next.js 16 (App Router, Turbopack), React 19 |
 | API | Hono with zod validation and a typed RPC client |
 | Data fetching | TanStack Query |
 | Database & auth | Supabase — Postgres, Auth (email + Google), row-level security |
@@ -150,7 +150,7 @@ Open [http://localhost:3001](http://localhost:3001) and create an account.
 | `pnpm dev` | Dev server on port 3001 (Turbopack) |
 | `pnpm build` · `pnpm start` | Production build and server |
 | `pnpm test` | Vitest — unit tests, plus the RLS suite when its variables are set |
-| `pnpm lint` | ESLint via `next lint` |
+| `pnpm lint` | ESLint (flat config in `eslint.config.mjs`) |
 | `pnpm db:generate` | Generate a migration from `db/schema.ts` |
 | `pnpm db:migrate` | Apply migrations |
 | `pnpm db:studio` | Browse the database in Drizzle Studio |
