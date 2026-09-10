@@ -17,6 +17,7 @@ import { columns } from "./columns";
 import ImportCard from "./import-card";
 import UploadButton from "./upload-button";
 import { TablePageSkeleton } from "@/components/dashboard/skeletons";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
 
 enum VARIANTS {
   LIST = "LIST",
@@ -31,6 +32,7 @@ const INITIAL_IMPORT_RESULTS = {
 
 const TransactionsPage = () => {
   const t = useTranslations();
+  const timezone = useTimezone();
 
   const [AccountDialog, confirm] = useSelectAccount();
   const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
@@ -114,7 +116,7 @@ const TransactionsPage = () => {
       </CardHeader>
       <CardContent>
         <DataTable
-          columns={columns(t)}
+          columns={columns(t, timezone)}
           data={transactions}
           filterKey="payee"
           filterKeyTranslate={t("TransactionsPage.Column.Payee")}

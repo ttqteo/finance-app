@@ -7,7 +7,7 @@ import { client } from "@/lib/hono";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, getLocale } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { formatInTz } from "@/lib/format-date";
 import { InferResponseType } from "hono";
 import { ArrowUpDownIcon } from "lucide-react";
 import AccountColumn from "./account-column";
@@ -20,7 +20,10 @@ export type ResponseType = InferResponseType<
 >["data"][0];
 
 export const columns = (
-  t: (key: string) => string
+  t: (key: string) => string,
+  // Nhận múi giờ qua tham số chứ không tự đọc: đây là factory tạo cột, không
+  // phải component, nên không gọi hook được. Chỗ gọi lấy bằng `useTimezone()`.
+  timezone: string
 ): ColumnDef<ResponseType>[] => [
   {
     id: "select",
@@ -58,9 +61,11 @@ export const columns = (
       );
     },
     cell: ({ row }) => {
-      const date = row.getValue("date") as Date;
+      // API trả chuỗi ISO chứ không phải `Date` — kiểu cũ ghi `Date` là sai,
+      // chỉ tình cờ chạy được vì date-fns v3 nhận cả chuỗi.
+      const date = row.getValue("date") as string;
       const { locale, formatNormal } = getLocale();
-      return <span>{format(date, formatNormal, { locale })}</span>;
+      return <span>{formatInTz(date, formatNormal, timezone, locale)}</span>;
     },
   },
   {

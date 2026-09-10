@@ -1,4 +1,7 @@
-import { format } from "date-fns";
+"use client";
+
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
 import {
   AreaChart,
   Area,
@@ -20,6 +23,8 @@ type Props = {
 };
 
 export const AreaVariant = ({ data }: Props) => {
+  const timezone = useTimezone();
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <AreaChart data={data}>
@@ -38,7 +43,7 @@ export const AreaVariant = ({ data }: Props) => {
           axisLine={false}
           tickLine={false}
           dataKey="date"
-          tickFormatter={(value) => format(value, "dd MMM")}
+          tickFormatter={(value) => formatInTz(value, "dd MMM", timezone)}
           style={{ fontSize: "12px" }}
           tickMargin={16}
         />

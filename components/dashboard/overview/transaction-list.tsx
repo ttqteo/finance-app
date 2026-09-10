@@ -1,12 +1,13 @@
 "use client";
 
-import { format } from "date-fns";
 import {
   AlertTriangleIcon,
   ArrowDownRight,
   ArrowUpRight,
   FileSearchIcon,
 } from "lucide-react";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 
@@ -26,6 +27,7 @@ export function TransactionList({
 }: TransactionListProps) {
   const t = useTranslations("OverviewPage");
   const params = useSearchParams();
+  const timezone = useTimezone();
   const { data: transactions, isLoading, isError } = useGetTransactions();
 
   // Limit the number of transactions shown unless extended view
@@ -84,7 +86,7 @@ export function TransactionList({
               </p>
               <p className="text-sm text-muted-foreground">
                 {transaction.account} •{" "}
-                {format(new Date(transaction.date), formatNormal, { locale })}
+                {formatInTz(transaction.date, formatNormal, timezone, locale)}
               </p>
             </div>
             <div className="text-right">

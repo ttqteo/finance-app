@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { format } from "date-fns";
+import { useTimezone } from "@/features/settings/hooks/use-timezone";
+import { formatInTz } from "@/lib/format-date";
 import { AlertTriangleIcon, Check, FileSearchIcon, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -22,6 +23,7 @@ import { formatCurrency, getLocale } from "@/lib/utils";
 
 export function SubscriptionList() {
   const t = useTranslations("OverviewPage");
+  const timezone = useTimezone();
   const { data: subscriptions, isLoading, isError } = useGetSubscriptions();
 
   // Yearly plans are divided by twelve so every row contributes a comparable
@@ -124,13 +126,14 @@ export function SubscriptionList() {
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                {format(
+                {formatInTz(
                   nextPaymentDate(
                     new Date(subscription.startDate),
                     subscription.frequency
                   ),
                   formatNormal,
-                  { locale }
+                  timezone,
+                  locale
                 )}
               </TableCell>
             </TableRow>
