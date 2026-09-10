@@ -68,6 +68,8 @@
     "RadarChart": "Radar Chart",
     "RadialChart": "Radial Chart",
     "Transactions": "Transactions",
+    "AllTransactions": "All Transactions",
+    "AllTransactionsDesc": "A complete history of your financial activity",
     "AreaChart": "Area Chart",
     "LineChart": "Line Chart",
     "BarChart": "Bar Chart",
@@ -96,6 +98,7 @@
     "ComingUp": "Coming Up",
     "ComingUpDesc": "Upcoming bills and payments",
     "Uncategorized": "Uncategorized",
+    "Other": "Other",
     "Amount": "Amount",
     "NoSubscriptions": "You haven't added any subscriptions yet",
     "TotalMonthlyCost": "Total monthly cost",
@@ -133,7 +136,7 @@
       "Amount": "Amount",
       "TooltipDesc": "Use [+] for income and [-] for expenses",
       "IncomeDesc": "This will count as income",
-      "ExpensesDesc":  "This will count as expenses",
+      "ExpensesDesc": "This will count as expenses",
       "Note": "Note",
       "NotePlaceholder": "Optional note"
     }

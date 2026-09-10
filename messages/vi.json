@@ -68,6 +68,8 @@
     "RadarChart": "Biểu Đồ Radar",
     "RadialChart": "Biểu Đồ Hình Tròn",
     "Transactions": "Giao Dịch",
+    "AllTransactions": "Tất Cả Giao Dịch",
+    "AllTransactionsDesc": "Toàn bộ lịch sử hoạt động tài chính của bạn",
     "AreaChart": "Biểu Đồ Khu Vực",
     "LineChart": "Biểu Đồ Đường",
     "BarChart": "Biểu Đồ Cột",
@@ -96,6 +98,7 @@
     "ComingUp": "Sắp Tới",
     "ComingUpDesc": "Hóa đơn và khoản thanh toán sắp tới",
     "Uncategorized": "Chưa Phân Loại",
+    "Other": "Khác",
     "Amount": "Số tiền",
     "NoSubscriptions": "Bạn chưa thêm gói đăng ký nào",
     "TotalMonthlyCost": "Tổng chi phí hàng tháng",
@@ -133,7 +136,7 @@
       "Amount": "Số tiền",
       "TooltipDesc": "Dùng [+] cho thu nhập và [-] cho chi phí",
       "IncomeDesc": "Cái này sẽ tính là thu nhập.",
-      "ExpensesDesc":  "Cái này sẽ tính là chi phí.",
+      "ExpensesDesc": "Cái này sẽ tính là chi phí.",
       "Note": "Ghi chú",
       "NotePlaceholder": "Ghi chú tùy chọn"
     }
