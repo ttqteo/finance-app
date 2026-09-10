@@ -1,12 +1,21 @@
-import { db } from "@/db/drizze";
-import { accounts, categories, transactions } from "@/db/schema";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
-import { getUser } from "@/lib/supabase/hono";
+import { pgTimestampToIso } from "@/lib/pg-date";
+import { getSupabase, getUser } from "@/lib/supabase/hono";
 import { zValidator } from "@hono/zod-validator";
 import { differenceInDays, parse, subDays } from "date-fns";
-import { and, desc, eq, gte, lt, lte, sql, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
+
+/**
+ * Hình dạng JSON mà hàm `summary()` trong database trả về
+ * (xem `drizzle/0011_summary_function.sql`).
+ */
+type SummaryPayload = {
+  current: { income: number; expenses: number; remaining: number };
+  last: { income: number; expenses: number; remaining: number };
+  categories: { name: string | null; value: number }[];
+  days: { date: string; income: number; expenses: number }[];
+};
 
 const app = new Hono().get(
   "/",
@@ -34,122 +43,63 @@ const app = new Hono().get(
       : defaultFrom;
     const endDate = to ? parse(to, "yyyy-MM-dd", new Date()) : defaultTo;
 
+    // Mốc kỳ trước vẫn tính bằng date-fns rồi truyền xuống, thay vì để SQL tự
+    // tính: hai thư viện không nhất thiết chia ngày giống nhau ở biên, giữ một
+    // nguồn duy nhất cho phép tính này an toàn hơn.
     const periodLength = differenceInDays(endDate, startDate) + 1;
     const lastPeriodStart = subDays(startDate, periodLength);
     const lastPeriodEnd = subDays(endDate, periodLength);
 
-    async function fetchFinancialData(
-      userId: string,
-      startDate: Date,
-      endDate: Date
-    ) {
-      return await db
-        .select({
-          income:
-            sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
-              Number
-            ),
-          expenses:
-            sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
-              Number
-            ),
-          remaining: sum(transactions.amount).mapWith(Number),
-        })
-        .from(transactions)
-        .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .where(
-          and(
-            accountId ? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, userId),
-            gte(transactions.date, startDate),
-            lte(transactions.date, endDate)
-          )
-        );
+    // Bốn truy vấn tổng hợp cũ gộp thành một lời gọi. `security invoker` nên
+    // RLS vẫn lọc theo user.
+    const { data, error } = await getSupabase(c).rpc("summary", {
+      p_from: startDate.toISOString(),
+      p_to: endDate.toISOString(),
+      p_last_from: lastPeriodStart.toISOString(),
+      p_last_to: lastPeriodEnd.toISOString(),
+      p_account_id: accountId ?? null,
+    });
+
+    if (error || !data) {
+      return c.json({ error: error?.message ?? "Failed to load summary" }, 500);
     }
 
-    // None of these four queries depends on another, so they go out together.
-    // Awaiting them one at a time cost four serial Neon round-trips — roughly
-    // 80-190ms each once warm, and ~600ms on a cold start.
-    const [currentPeriod, lastPeriod, category, activeDays] = await Promise.all([
-      fetchFinancialData(user.id, startDate, endDate).then(
-        ([period]) => period
-      ),
-      fetchFinancialData(user.id, lastPeriodStart, lastPeriodEnd).then(
-        ([period]) => period
-      ),
-      db
-        .select({
-          name: categories.name,
-          value: sql`SUM(ABS(${transactions.amount}))`.mapWith(Number),
-        })
-        .from(transactions)
-        .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        // LEFT, not INNER: `transactions.categoryId` is nullable, so an inner
-        // join dropped every uncategorised expense from this list while
-        // `expensesAmount` above still counted it. Those rows now come back
-        // with `name: null` and the client labels them.
-        .leftJoin(categories, eq(transactions.categoryId, categories.id))
-        .where(
-          and(
-            accountId ? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, user.id),
-            lt(transactions.amount, 0),
-            gte(transactions.date, startDate),
-            lte(transactions.date, endDate)
-          )
-        )
-        .groupBy(categories.name)
-        .orderBy(desc(sql`SUM(ABS(${transactions.amount}))`)),
-      db
-        .select({
-          date: transactions.date,
-          income:
-            sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
-              Number
-            ),
-          expenses:
-            sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`.mapWith(
-              Number
-            ),
-        })
-        .from(transactions)
-        .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .where(
-          and(
-            accountId ? eq(transactions.accountId, accountId) : undefined,
-            eq(accounts.userId, user.id),
-            gte(transactions.date, startDate),
-            lte(transactions.date, endDate)
-          )
-        )
-        .groupBy(transactions.date)
-        .orderBy(transactions.date),
-    ]);
+    const summary = data as unknown as SummaryPayload;
 
     const incomeChange = calculatePercentageChange(
-      currentPeriod.income,
-      lastPeriod.income
+      summary.current.income,
+      summary.last.income
     );
     const expensesChange = calculatePercentageChange(
-      currentPeriod.expenses,
-      lastPeriod.expenses
+      summary.current.expenses,
+      summary.last.expenses
     );
     const remainingChange = calculatePercentageChange(
-      currentPeriod.remaining,
-      lastPeriod.remaining
+      summary.current.remaining,
+      summary.last.remaining
     );
 
-    const days = fillMissingDays(activeDays, startDate, endDate);
+    // `fillMissingDays` ở lại TypeScript: nó là hàm thuần đã có test trong
+    // `lib/dashboard/__tests__/`, dịch sang SQL là vứt luôn chỗ test đó.
+    const days = fillMissingDays(
+      summary.days.map((day) => ({
+        date: new Date(pgTimestampToIso(day.date)),
+        income: day.income,
+        expenses: day.expenses,
+      })),
+      startDate,
+      endDate
+    );
 
     return c.json({
       data: {
-        remainingAmount: currentPeriod.remaining,
+        remainingAmount: summary.current.remaining,
         remainingChange,
-        incomeAmount: currentPeriod.income,
+        incomeAmount: summary.current.income,
         incomeChange,
-        expensesAmount: currentPeriod.expenses,
+        expensesAmount: summary.current.expenses,
         expensesChange,
-        categories: category,
+        categories: summary.categories,
         days,
       },
     });
