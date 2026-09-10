@@ -1,4 +1,4 @@
-import vnstock, { types } from "vnstock-js";
+import vnstock from "vnstock-js";
 import StockPage from "@/components/homepage/stocks";
 import { Metadata } from "next";
 

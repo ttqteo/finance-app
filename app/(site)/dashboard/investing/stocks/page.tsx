@@ -88,8 +88,16 @@ export default function StocksPage() {
       const data = await getCurrentPrice(stock.symbol);
       console.log(`Price data for ${stock.symbol}:`, data);
 
-      if (data && typeof data.close === "number") {
-        updateStockPrice(stock.id, data.close);
+      // v1.5.1 đổi `stock.price` thành `priceBoard`, và hàng trả về không còn
+      // `close` — giá khớp hiện tại nằm ở `price`.
+      //
+      // Ngoài phiên `price` có thể bằng 0, nên lùi về `referencePrice` (giá
+      // tham chiếu). Ghi 0 vào giá cổ phiếu trong danh mục là làm sai hẳn giá
+      // trị tài sản, tệ hơn nhiều so với hiện giá tham chiếu.
+      const price = data?.price || data?.referencePrice;
+
+      if (typeof price === "number" && price > 0) {
+        updateStockPrice(stock.id, price);
       }
     } catch (error) {
       console.error("Failed to fetch price", error);

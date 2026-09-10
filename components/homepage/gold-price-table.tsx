@@ -25,7 +25,26 @@ import {
 } from "@tanstack/react-table";
 import { Clock, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { types } from "vnstock-js";
+import { VnstockTypes } from "vnstock-js";
+
+/**
+ * vnstock-js v1.5.1 đổi hình dạng dữ liệu vàng. Bảng field map trong
+ * `dist/pipeline/transform/configs/commodity.js` cho thấy đây thuần tuý là đổi
+ * tên: type_code→code, buy→buyPrice, sell→sellPrice, alter_buy→buyChange,
+ * alter_sell→sellChange, update_time→updatedAt.
+ *
+ * NHƯNG ba thứ bị bỏ hẳn, không map sang đâu cả: `histories`, `yesterday_buy`,
+ * `yesterday_sell`. Vì vậy hai cột "Hôm qua" và tooltip liệt kê lịch sử trong
+ * ngày đã gỡ khỏi bảng — dữ liệu không còn tồn tại ở đầu nguồn.
+ *
+ * Cố ý KHÔNG suy "giá hôm qua" ra từ `price - change`: field map chứng minh
+ * `*Change` chính là `alter_*` cũ, tức biến động TRONG NGÀY chứ không phải so
+ * với phiên trước. Lấy nó trừ đi sẽ ra một con số trông có vẻ đúng mà sai —
+ * trong app tài chính thì thà không hiện còn hơn.
+ *
+ * `updatedAt` giờ là chuỗi ngày ("2026-09-10"), không còn epoch có giờ phút.
+ */
+type GoldRow = VnstockTypes.GoldPriceGiaVang;
 
 const GOLD_TYPE_MAP: Record<string, string> = {
   BTSJC: "BTMC SJC",
@@ -61,46 +80,31 @@ const formatPriceChange = (change: number) => {
   };
 };
 
-// Format timestamp to date and time
-const formatDateTime = (timestamp: number) => {
-  const date = new Date(timestamp * 1000);
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear();
+const changeBadgeClass = (type: string) =>
+  type === "increase"
+    ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-700"
+    : "bg-rose-100 text-rose-700 hover:bg-rose-100 hover:text-rose-700";
 
-  return `${hours}:${minutes} ${day}/${month}/${year}`;
-};
-
-// Define columns for the data table
-const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
+const columns: ColumnDef<GoldRow>[] = [
   {
-    accessorKey: "type_code",
+    accessorKey: "code",
     cell: ({ row }) => {
-      const typeCode = row.getValue("type_code") as string;
-      return (
-        <div className="font-medium">{GOLD_TYPE_MAP[typeCode] ?? typeCode}</div>
-      );
+      // API trả `name` là "GOLD" cho mọi dòng nên không dùng được làm nhãn;
+      // bảng tra tay vẫn là nguồn tên duy nhất.
+      const code = row.getValue("code") as string;
+      return <div className="font-medium">{GOLD_TYPE_MAP[code] ?? code}</div>;
     },
   },
   {
-    accessorKey: "buy",
+    accessorKey: "buyPrice",
     cell: ({ row }) => {
-      const buyPrice = row.original.buy;
-      const buyChange = formatPriceChange(row.original.alter_buy);
+      const buyChange = formatPriceChange(row.original.buyChange);
 
       return (
         <div className="flex items-center justify-center gap-2">
-          {formatPrice(buyPrice)}
+          {formatPrice(row.original.buyPrice)}
           {buyChange && (
-            <Badge
-              className={
-                buyChange.type === "increase"
-                  ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-700"
-                  : "bg-rose-100 text-rose-700 hover:bg-rose-100 hover:text-rose-700"
-              }
-            >
+            <Badge className={changeBadgeClass(buyChange.type)}>
               {buyChange.value}
             </Badge>
           )}
@@ -109,22 +113,15 @@ const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
     },
   },
   {
-    accessorKey: "sell",
+    accessorKey: "sellPrice",
     cell: ({ row }) => {
-      const sellPrice = row.original.sell;
-      const sellChange = formatPriceChange(row.original.alter_sell);
+      const sellChange = formatPriceChange(row.original.sellChange);
 
       return (
         <div className="flex items-center justify-center gap-2">
-          {formatPrice(sellPrice)}
+          {formatPrice(row.original.sellPrice)}
           {sellChange && (
-            <Badge
-              className={
-                sellChange.type === "increase"
-                  ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-700"
-                  : "bg-rose-100 text-rose-700 hover:bg-rose-100 hover:text-rose-700"
-              }
-            >
+            <Badge className={changeBadgeClass(sellChange.type)}>
               {sellChange.value}
             </Badge>
           )}
@@ -133,79 +130,13 @@ const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
     },
   },
   {
-    accessorKey: "yesterday_buy",
-    cell: ({ row }) => {
-      const yesterdayBuy = row.original.yesterday_buy;
-
-      return (
-        <div className="text-center">
-          {yesterdayBuy !== null ? formatPrice(yesterdayBuy) : "N/A"}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "yesterday_sell",
-    cell: ({ row }) => {
-      const yesterdaySell = row.original.yesterday_sell;
-
-      return (
-        <div className="text-center">
-          {yesterdaySell !== null ? formatPrice(yesterdaySell) : "N/A"}
-        </div>
-      );
-    },
-  },
-  {
-    id: "history",
+    id: "trend",
     header: "Biến động",
     cell: ({ row }) => {
-      const typeCode = row.getValue("type_code") as string;
-      const histories = row.original.histories;
-
-      if (!histories || histories.length < 2) {
-        return <div className="text-center">-</div>;
-      }
-
-      const now = new Date();
-      const todayKey = `${now.getFullYear()}-${
-        now.getMonth() + 1
-      }-${now.getDate()}`;
-      const yesterday = new Date(now);
-      yesterday.setDate(now.getDate() - 1);
-      const yesterdayKey = `${yesterday.getFullYear()}-${
-        yesterday.getMonth() + 1
-      }-${yesterday.getDate()}`;
-
-      const grouped = histories.reduce<
-        Record<string, types.GoldPriceGiaVangNet[]>
-      >((acc, h) => {
-        const key = `${h.create_year}-${h.create_month}-${h.create_day}`;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(h);
-        return acc;
-      }, {});
-
-      const latestToday = grouped[todayKey]?.reduce((a, b) =>
-        a.update_time > b.update_time ? a : b
-      );
-      const latestYesterday = grouped[yesterdayKey]?.reduce((a, b) =>
-        a.update_time > b.update_time ? a : b
-      );
-
-      if (!latestToday || !latestYesterday) {
-        return <div className="text-center">-</div>;
-      }
-
-      const latestPrice = latestToday.sell;
-      const previousPrice = latestYesterday.sell;
+      const { code, sellChange, buyChange, updatedAt } = row.original;
 
       const trend: "up" | "down" | "neutral" =
-        latestPrice > previousPrice
-          ? "up"
-          : latestPrice < previousPrice
-          ? "down"
-          : "neutral";
+        sellChange > 0 ? "up" : sellChange < 0 ? "down" : "neutral";
 
       return (
         <div className="flex justify-center">
@@ -224,24 +155,22 @@ const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
                   )}
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="w-80" side="right">
+              <TooltipContent className="w-72" side="right">
                 <div className="space-y-2">
                   <div className="font-medium">
-                    Lịch sử giá {GOLD_TYPE_MAP[typeCode]}
+                    {GOLD_TYPE_MAP[code] ?? code}
                   </div>
-                  <div className="space-y-1">
-                    {histories.map((history, index) => (
-                      <div key={index} className="flex justify-between text-sm">
-                        <div className="flex items-center">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {formatDateTime(history.update_time)}
-                        </div>
-                        <div className="flex space-x-2">
-                          <span>Mua: {formatPrice(history.buy)}</span>
-                          <span>Bán: {formatPrice(history.sell)}</span>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex items-center text-sm">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {updatedAt}
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Mua: {formatPrice(row.original.buyPrice)}</span>
+                    <span>Bán: {formatPrice(row.original.sellPrice)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Thay đổi mua: {buyChange}</span>
+                    <span>Thay đổi bán: {sellChange}</span>
                   </div>
                 </div>
               </TooltipContent>
@@ -253,13 +182,9 @@ const columns: ColumnDef<types.GoldPriceGiaVangNet>[] = [
   },
 ];
 
-export function GoldPriceDataTable({
-  goldPrice,
-}: {
-  goldPrice: types.GoldPriceGiaVangNet[];
-}) {
+export function GoldPriceDataTable({ goldPrice }: { goldPrice: GoldRow[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [data] = useState<types.GoldPriceGiaVangNet[]>(goldPrice);
+  const [data] = useState<GoldRow[]>(goldPrice);
 
   const table = useReactTable({
     data,
@@ -271,10 +196,6 @@ export function GoldPriceDataTable({
       sorting,
     },
   });
-
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
 
   return (
     <div className="max-h-[450px] overflow-y-auto">
@@ -290,26 +211,17 @@ export function GoldPriceDataTable({
                 Triệu đồng/lượng
               </div>
             </TableHead>
+            {/* Chỉ còn một nhóm "Hôm nay": nhóm "Hôm qua" đã gỡ cùng với hai
+                cột không còn dữ liệu. Ngày lấy từ chính dòng dữ liệu chứ không
+                lấy `new Date()`, để tiêu đề luôn khớp với số bên dưới. */}
             <TableHead colSpan={2} className="text-center border">
-              Hôm nay ({data[0]?.create_day || today.getDate()}/
-              {data[0]?.create_month || today.getMonth() + 1}/
-              {data[0]?.create_year || today.getFullYear()})
-            </TableHead>
-            <TableHead colSpan={2} className="text-center border">
-              Hôm qua ({yesterday.getDate()}/{yesterday.getMonth() + 1}/
-              {yesterday.getFullYear()})
+              Hôm nay ({data[0]?.updatedAt ?? "—"})
             </TableHead>
             <TableHead rowSpan={2} className="align-middle border text-center">
               <div className="font-bold">Biến động</div>
             </TableHead>
           </TableRow>
           <TableRow>
-            <TableHead className="text-center border font-medium">
-              Giá mua
-            </TableHead>
-            <TableHead className="text-center border font-medium">
-              Giá bán
-            </TableHead>
             <TableHead className="text-center border font-medium">
               Giá mua
             </TableHead>
