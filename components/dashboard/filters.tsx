@@ -14,11 +14,14 @@ type Props = {
 
 export const Filters = ({ disabled }: Props) => {
   return (
-    <div className="flex flex-col md:flex-row items-center gap-y-2 md:gap-y-0 md:gap-x-2">
+    // Stacked and full-width inside the mobile filter sheet, one inline row in
+    // the desktop header. Stacking only went wrong when it happened *inside*
+    // the fixed h-14 bar, which is no longer where mobile renders these.
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-2">
       <AccountFilter disabled={disabled} />
       {/* TODO: Add this select to DateRange */}
       <Select defaultValue="month">
-        <SelectTrigger className="w-[180px] lg:w-auto h-9 px-3 transition">
+        <SelectTrigger className="h-9 w-full px-3 transition md:w-[180px] lg:w-auto">
           <SelectValue placeholder="Select view" />
         </SelectTrigger>
         <SelectContent>

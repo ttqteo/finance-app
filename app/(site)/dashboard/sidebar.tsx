@@ -92,7 +92,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="fixed z-10 top-0 left-0 flex h-screen flex-col justify-center px-1 pl-3">
+    <div className="fixed z-10 top-0 left-0 hidden h-screen flex-col justify-center px-1 pl-3 md:flex">
       <div className="flex h-16 items-center justify-center border-b border-gray-800">
         <div className="flex h-8 w-8 items-center justify-center">
           <Logo href={PREFIX_URL} />
