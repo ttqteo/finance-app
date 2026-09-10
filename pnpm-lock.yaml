@@ -136,10 +136,10 @@ importers:
         version: 3.2.0(date-fns@3.6.0)
       drizzle-orm:
         specifier: ^0.36.4
-        version: 0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(react@19.1.0)
+        version: 0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(postgres@3.4.9)(react@19.1.0)
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(react@19.1.0))(zod@3.24.3)
+        version: 0.5.1(drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(postgres@3.4.9)(react@19.1.0))(zod@3.24.3)
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.1.0)
@@ -167,6 +167,9 @@ importers:
       next-themes:
         specifier: ^0.4.3
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
       query-string:
         specifier: ^9.1.1
         version: 9.1.1
@@ -4215,6 +4218,10 @@ packages:
   postgres-range@1.1.4:
     resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
 
+  postgres@3.4.9:
+    resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
+    engines: {node: '>=12'}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -7542,17 +7549,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(react@19.1.0):
+  drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(postgres@3.4.9)(react@19.1.0):
     optionalDependencies:
       '@neondatabase/serverless': 0.10.4
       '@opentelemetry/api': 1.9.0
       '@types/pg': 8.11.6
       '@types/react': 19.1.2
+      postgres: 3.4.9
       react: 19.1.0
 
-  drizzle-zod@0.5.1(drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(react@19.1.0))(zod@3.24.3):
+  drizzle-zod@0.5.1(drizzle-orm@0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(postgres@3.4.9)(react@19.1.0))(zod@3.24.3):
     dependencies:
-      drizzle-orm: 0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(react@19.1.0)
+      drizzle-orm: 0.36.4(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.1.2)(postgres@3.4.9)(react@19.1.0)
       zod: 3.24.3
 
   dunder-proto@1.0.1:
@@ -9419,6 +9427,8 @@ snapshots:
   postgres-interval@3.0.0: {}
 
   postgres-range@1.1.4: {}
+
+  postgres@3.4.9: {}
 
   prelude-ls@1.2.1: {}
 
